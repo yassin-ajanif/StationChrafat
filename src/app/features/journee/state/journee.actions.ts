@@ -31,7 +31,6 @@ export const JourneeActions = createActionGroup({
     'Set Draft Config': props<{ config: Partial<JourneeDraftConfig> }>(),
     'Start Journee': props<{
       chefDePisteId: number;
-      bombisteId: number;
       shiftSlot: ShiftSlot;
     }>(),
     'Start Journee Success': props<{ id: number; openedAt: string }>(),
@@ -49,6 +48,16 @@ export const JourneeActions = createActionGroup({
       indexSortie?: number | null;
     }>(),
 
+    'Add Nozzle Bombiste': props<{ bombisteId: number }>(),
+    'Remove Nozzle Bombiste': props<{ bombisteId: number }>(),
+
+    'Update Nozzle Bombiste Payment': props<{
+      bombisteId: number;
+      cash?: number;
+      tpe?: number;
+      bons?: number;
+    }>(),
+
     'Load Lavage Bons': emptyProps(),
     'Load Lavage Bons Success': props<{ bons: LavageBon[] }>(),
     'Load Lavage Bons Failure': props<{ error: string }>(),
@@ -57,6 +66,8 @@ export const JourneeActions = createActionGroup({
     'Update Lavage Bon': props<{ id: number; bon: LavageBonDraftInput }>(),
     'Remove Lavage Bon': props<{ id: number }>(),
 
+    'Set Lavage Chef Vidange Lavage': props<{ chefVidangeLavageId: number | null }>(),
+
     'Load Vidange Bons': emptyProps(),
     'Load Vidange Bons Success': props<{ bons: VidangeBon[] }>(),
     'Load Vidange Bons Failure': props<{ error: string }>(),
@@ -64,6 +75,8 @@ export const JourneeActions = createActionGroup({
     'Add Vidange Bon': props<{ bon: VidangeBonDraftInput }>(),
     'Update Vidange Bon': props<{ id: number; bon: VidangeBonDraftInput }>(),
     'Remove Vidange Bon': props<{ id: number }>(),
+
+    'Set Vidange Chef Vidange Lavage': props<{ chefVidangeLavageId: number | null }>(),
 
     'Load Encaissement Clients': emptyProps(),
     'Load Encaissement Clients Success': props<{ clients: EncaissementClientOption[] }>(),

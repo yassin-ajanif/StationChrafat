@@ -1,8 +1,34 @@
+import {
+  PaymentSplit,
+  computePaymentDifference,
+  computePaymentTotal,
+  emptyPaymentSplit,
+} from './payment-split.model';
+
 export type NozzleStatus = 'active' | 'offline';
+
+export type BombisteNozzlePayment = PaymentSplit;
+
+export function emptyBombisteNozzlePayment(): BombisteNozzlePayment {
+  return emptyPaymentSplit();
+}
+
+export function computeBombistePaymentTotal(payments: BombisteNozzlePayment): number {
+  return computePaymentTotal(payments);
+}
+
+export function computeBombistePaymentDifference(
+  payments: BombisteNozzlePayment,
+  expectedAmount: number,
+): number {
+  return computePaymentDifference(payments, expectedAmount);
+}
 
 export interface NozzleIndexLine {
   id: number;
   nozzleId: number;
+  /** Opérateur (bombiste) responsable de ce pistolet. */
+  bombisteId: number;
   island: string;
   pumpLabel: string;
   fuelCode: string;
@@ -69,6 +95,66 @@ export function isLineValid(line: NozzleIndexLine): boolean {
   return line.indexEntree >= line.indexSortie + line.tankReturn;
 }
 
-export function canProceedNozzleStep(lines: NozzleIndexLine[]): boolean {
-  return lines.every(isLineValid);
+export interface NozzleLineWithTotals {
+  line: NozzleIndexLine;
+  quantity: number;
+  total: number;
+}
+
+export interface NozzleBombisteGroup {
+  bombisteId: number;
+  bombisteName: string;
+  rows: NozzleLineWithTotals[];
+  totals: { liters: number; amount: number };
+  payments: BombisteNozzlePayment;
+  paymentTotal: number;
+  /** Encaissements saisis − total ventes carburant (positif = surplus, négatif = manque). */
+  paymentDifference: number;
+}
+
+export function mapLinesWithTotals(lines: NozzleIndexLine[]): NozzleLineWithTotals[] {
+  return lines.map((line) => ({
+    line,
+    quantity: computeLineQuantity(line),
+    total: computeLineTotal(line),
+  }));
+}
+
+export function buildNozzleBombisteGroups(
+  lines: NozzleIndexLine[],
+  selectedBombisteIds: number[],
+  operatorNameById: Map<number, string>,
+  paymentsByBombisteId: Map<number, BombisteNozzlePayment> = new Map(),
+): NozzleBombisteGroup[] {
+  return selectedBombisteIds.map((bombisteId) => {
+    const groupLines = lines.filter((line) => line.bombisteId === bombisteId);
+    const rows = mapLinesWithTotals(groupLines);
+    const active = rows.filter(({ line }) => line.status === 'active');
+    const amount = active.reduce((sum, row) => sum + row.total, 0);
+    const payments = paymentsByBombisteId.get(bombisteId) ?? emptyBombisteNozzlePayment();
+
+    return {
+      bombisteId,
+      bombisteName: operatorNameById.get(bombisteId) ?? `Bombiste #${bombisteId}`,
+      rows,
+      totals: {
+        liters: active.reduce((sum, row) => sum + row.quantity, 0),
+        amount,
+      },
+      payments,
+      paymentTotal: computeBombistePaymentTotal(payments),
+      paymentDifference: computeBombistePaymentDifference(payments, amount),
+    };
+  });
+}
+
+export function canProceedNozzleStep(
+  lines: NozzleIndexLine[],
+  selectedBombisteIds: number[],
+): boolean {
+  if (selectedBombisteIds.length === 0) {
+    return false;
+  }
+  const relevant = lines.filter((line) => selectedBombisteIds.includes(line.bombisteId));
+  return relevant.length > 0 && relevant.every(isLineValid);
 }

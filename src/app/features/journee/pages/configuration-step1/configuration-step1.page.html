@@ -10,7 +10,7 @@
   <div
     class="configuration-step1__card space-y-8 rounded-[var(--radius-card)] border-t-4 border-primary bg-surface-container-lowest p-8 shadow-sm"
   >
-    <div class="grid gap-6 md:grid-cols-2">
+    <div class="grid gap-6 md:grid-cols-1">
       <div>
         <label class="configuration-step1__label" for="chef-de-piste">Chef de piste (opérateur)</label>
         <select
@@ -26,23 +26,6 @@
           }
         </select>
         <p class="configuration-step1__hint">Responsable de la clôture de ce shift.</p>
-      </div>
-
-      <div>
-        <label class="configuration-step1__label" for="bombiste">Bombiste</label>
-        <select
-          id="bombiste"
-          class="configuration-step1__select"
-          [value]="bombisteId() ?? ''"
-          (change)="onBombisteChange($event)"
-          [disabled]="operatorsLoading()"
-        >
-          <option value="">Sélectionner le bombiste…</option>
-          @for (op of operators(); track op.id) {
-            <option [value]="op.id">{{ op.name }}</option>
-          }
-        </select>
-        <p class="configuration-step1__hint">Pompiste sur pistolets pour ce shift.</p>
       </div>
     </div>
 

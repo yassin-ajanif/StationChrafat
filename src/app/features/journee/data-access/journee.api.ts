@@ -10,6 +10,7 @@ import {
 import { DepenseLine } from '../models/depense.model';
 import { ValidationExtras } from '../models/journee-validation.model';
 import { NozzleIndexLine } from '../models/nozzle-index.model';
+import { emptyPaymentSplit } from '../models/payment-split.model';
 import {
   JourneeKpis,
   JourneeSummary,
@@ -72,7 +73,6 @@ export class JourneeApi {
 
   startJournee(payload: {
     chefDePisteId: number;
-    bombisteId: number;
     shiftSlot: ShiftSlot;
   }) {
     return of({ id: 99, ...payload, openedAt: new Date().toISOString() }).pipe(delay(500));
@@ -87,6 +87,7 @@ export class JourneeApi {
       {
         id: 1,
         nozzleId: 101,
+        bombisteId: 1,
         island: 'ILOT 1',
         pumpLabel: 'L1-P01',
         fuelCode: 'SSP',
@@ -101,6 +102,7 @@ export class JourneeApi {
       {
         id: 2,
         nozzleId: 102,
+        bombisteId: 1,
         island: 'ILOT 1',
         pumpLabel: 'L1-P02',
         fuelCode: 'SSP_VP',
@@ -115,6 +117,7 @@ export class JourneeApi {
       {
         id: 3,
         nozzleId: 103,
+        bombisteId: 1,
         island: 'ILOT 1',
         pumpLabel: 'L1-P03',
         fuelCode: 'GAS',
@@ -129,6 +132,7 @@ export class JourneeApi {
       {
         id: 4,
         nozzleId: 104,
+        bombisteId: 1,
         island: 'ILOT 1',
         pumpLabel: 'L1-P04',
         fuelCode: 'SSP',
@@ -143,6 +147,7 @@ export class JourneeApi {
       {
         id: 5,
         nozzleId: 105,
+        bombisteId: 1,
         island: 'ILOT 1',
         pumpLabel: 'L1-P05',
         fuelCode: 'SSP',
@@ -157,6 +162,7 @@ export class JourneeApi {
       {
         id: 6,
         nozzleId: 201,
+        bombisteId: 2,
         island: 'ILOT 2',
         pumpLabel: 'L2-P10',
         fuelCode: 'GAS',
@@ -171,6 +177,7 @@ export class JourneeApi {
       {
         id: 7,
         nozzleId: 211,
+        bombisteId: 2,
         island: 'ILOT 2',
         pumpLabel: 'L2-P11',
         fuelCode: 'SSP_VP',
@@ -192,21 +199,25 @@ export class JourneeApi {
         id: 1,
         bonNumber: 'LAV-8801',
         clientRef: '12345-A-12',
+        chefVidangeLavageId: 2,
         lines: [{ id: 1, washType: 'Complet', amount: 80 }],
         consumedProducts: [
           { productName: 'Shampoing', quantity: 2, unitPrice: 15 },
           { productName: 'Cire', quantity: 1, unitPrice: 25 },
         ],
+        payments: { cash: 130, tpe: 0, bons: 0 },
       },
       {
         id: 2,
         bonNumber: 'LAV-8802',
         clientRef: '67890-B-34',
+        chefVidangeLavageId: 3,
         lines: [
           { id: 2, washType: 'Express', amount: 50 },
           { id: 3, washType: 'Intérieur', amount: 25 },
         ],
         consumedProducts: [],
+        payments: { cash: 75, tpe: 0, bons: 0 },
       },
     ];
     return of(bons).pipe(delay(300));
@@ -218,21 +229,25 @@ export class JourneeApi {
         id: 1,
         bonNumber: 'VID-8901',
         vehicleRef: '12345-A-12',
+        chefVidangeLavageId: 2,
         lines: [{ id: 1, serviceType: 'Vidange complète', amount: 120 }],
         consumedProducts: [
           { productName: 'Huile moteur 10W40', quantity: 4, unitPrice: 45 },
           { productName: 'Filtre à huile', quantity: 1, unitPrice: 35 },
         ],
+        payments: { cash: 0, tpe: 355, bons: 0 },
       },
       {
         id: 2,
         bonNumber: 'VID-8902',
         vehicleRef: '67890-B-34',
+        chefVidangeLavageId: 3,
         lines: [
           { id: 2, serviceType: 'Vidange + filtre', amount: 150 },
           { id: 3, serviceType: 'Pack entretien', amount: 80 },
         ],
         consumedProducts: [],
+        payments: { cash: 100, tpe: 130, bons: 0 },
       },
     ];
     return of(bons).pipe(delay(300));

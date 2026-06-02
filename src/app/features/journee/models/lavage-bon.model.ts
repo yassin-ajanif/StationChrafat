@@ -1,3 +1,11 @@
+import {
+  PaymentSplit,
+  computePaymentDifference,
+  computePaymentTotal,
+  emptyPaymentSplit,
+  paymentDifferenceLabel,
+} from './payment-split.model';
+
 export interface LavageConsumedProduct {
   productName: string;
   quantity: number;
@@ -15,8 +23,10 @@ export interface LavageBon {
   id: number;
   bonNumber: string;
   clientRef: string;
+  chefVidangeLavageId: number;
   lines: LavageBonServiceLine[];
   consumedProducts: LavageConsumedProduct[];
+  payments: PaymentSplit;
 }
 
 export const LAVAGE_WASH_TYPES = ['Complet', 'Express', 'Chassis', 'Intérieur'] as const;
@@ -37,8 +47,10 @@ export type LavageConsumableProduct = (typeof LAVAGE_CONSUMABLE_PRODUCTS)[number
 export interface LavageBonDraftInput {
   bonNumber: string;
   clientRef: string;
+  chefVidangeLavageId: number;
   lines: Pick<LavageBonServiceLine, 'washType' | 'amount'>[];
   consumedProducts: LavageConsumedProduct[];
+  payments: PaymentSplit;
 }
 
 export interface LavageServiceTableRow {
@@ -117,10 +129,14 @@ export function buildLavageBonDraft(
 
 export function isLavageBonTablesValid(input: {
   bonNumber: string;
+  chefVidangeLavageId: number | null;
   serviceRows: LavageServiceTableRow[];
   productRows: LavageProductTableRow[];
 }): boolean {
   if (input.bonNumber.trim().length === 0) {
+    return false;
+  }
+  if (input.chefVidangeLavageId == null) {
     return false;
   }
   if (filledServiceRows(input.serviceRows).length === 0) {
@@ -200,3 +216,5 @@ export function suggestNextLavageBonNumber(
   }, 8800);
   return `LAV-${max + 1}`;
 }
+
+export { emptyPaymentSplit, computePaymentTotal, computePaymentDifference, paymentDifferenceLabel };

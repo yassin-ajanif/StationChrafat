@@ -8,6 +8,8 @@ import {
 import { EncaissementClientOption } from '../models/encaissement.model';
 import { createEmptyEncaissementLine } from '../models/encaissement.model';
 import { createEmptyDepenseLine } from '../models/depense.model';
+import { emptyBombisteNozzlePayment } from '../models/nozzle-index.model';
+import { emptyPaymentSplit } from '../models/payment-split.model';
 import { ValidationExtras } from '../models/journee-validation.model';
 import { JourneeActions } from './journee.actions';
 
@@ -46,10 +48,13 @@ const emptyDraft = (): JourneeDraft => ({
   id: null,
   config: {
     chefDePisteId: null,
-    bombisteId: null,
     shiftSlot: null,
     openedAt: new Date().toISOString(),
   },
+  selectedNozzleBombisteIds: [],
+  nozzleBombistePayments: [],
+  lavageChefVidangeLavageId: null,
+  vidangeChefVidangeLavageId: null,
   nozzleIndexes: [],
   lavageBons: [],
   vidangeBons: [],
@@ -240,8 +245,10 @@ export const journeeFeature = createFeature({
               id: nextBonId,
               bonNumber: bon.bonNumber.trim(),
               clientRef: bon.clientRef.trim(),
+              chefVidangeLavageId: bon.chefVidangeLavageId,
               lines,
               consumedProducts: bon.consumedProducts ?? [],
+              payments: bon.payments ?? emptyPaymentSplit(),
             },
           ],
         },
@@ -273,8 +280,10 @@ export const journeeFeature = createFeature({
                   ...b,
                   bonNumber: bon.bonNumber.trim(),
                   clientRef: bon.clientRef.trim(),
+                  chefVidangeLavageId: bon.chefVidangeLavageId,
                   lines,
                   consumedProducts: bon.consumedProducts ?? [],
+                  payments: bon.payments ?? emptyPaymentSplit(),
                 }
               : b,
           ),
@@ -287,6 +296,14 @@ export const journeeFeature = createFeature({
       draft: {
         ...state.draft,
         lavageBons: state.draft.lavageBons.filter((b) => b.id !== id),
+      },
+    })),
+
+    on(JourneeActions.setLavageChefVidangeLavage, (state, { chefVidangeLavageId }) => ({
+      ...state,
+      draft: {
+        ...state.draft,
+        lavageChefVidangeLavageId: chefVidangeLavageId,
       },
     })),
 
@@ -333,8 +350,10 @@ export const journeeFeature = createFeature({
               id: nextBonId,
               bonNumber: bon.bonNumber.trim(),
               vehicleRef: bon.vehicleRef.trim(),
+              chefVidangeLavageId: bon.chefVidangeLavageId,
               lines,
               consumedProducts: bon.consumedProducts ?? [],
+              payments: bon.payments ?? emptyPaymentSplit(),
             },
           ],
         },
@@ -366,8 +385,10 @@ export const journeeFeature = createFeature({
                   ...b,
                   bonNumber: bon.bonNumber.trim(),
                   vehicleRef: bon.vehicleRef.trim(),
+                  chefVidangeLavageId: bon.chefVidangeLavageId,
                   lines,
                   consumedProducts: bon.consumedProducts ?? [],
+                  payments: bon.payments ?? emptyPaymentSplit(),
                 }
               : b,
           ),
@@ -380,6 +401,14 @@ export const journeeFeature = createFeature({
       draft: {
         ...state.draft,
         vidangeBons: state.draft.vidangeBons.filter((b) => b.id !== id),
+      },
+    })),
+
+    on(JourneeActions.setVidangeChefVidangeLavage, (state, { chefVidangeLavageId }) => ({
+      ...state,
+      draft: {
+        ...state.draft,
+        vidangeChefVidangeLavageId: chefVidangeLavageId,
       },
     })),
 
@@ -550,5 +579,66 @@ export const journeeFeature = createFeature({
         }),
       },
     })),
+
+    on(JourneeActions.addNozzleBombiste, (state, { bombisteId }) => {
+      const selected = state.draft.selectedNozzleBombisteIds;
+      if (selected.includes(bombisteId)) {
+        return state;
+      }
+      const hasPayment = state.draft.nozzleBombistePayments.some(
+        (entry) => entry.bombisteId === bombisteId,
+      );
+      return {
+        ...state,
+        draft: {
+          ...state.draft,
+          selectedNozzleBombisteIds: [...selected, bombisteId],
+          nozzleBombistePayments: hasPayment
+            ? state.draft.nozzleBombistePayments
+            : [
+                ...state.draft.nozzleBombistePayments,
+                { bombisteId, ...emptyBombisteNozzlePayment() },
+              ],
+        },
+      };
+    }),
+
+    on(JourneeActions.removeNozzleBombiste, (state, { bombisteId }) => ({
+      ...state,
+      draft: {
+        ...state.draft,
+        selectedNozzleBombisteIds: state.draft.selectedNozzleBombisteIds.filter(
+          (id) => id !== bombisteId,
+        ),
+        nozzleBombistePayments: state.draft.nozzleBombistePayments.filter(
+          (entry) => entry.bombisteId !== bombisteId,
+        ),
+      },
+    })),
+
+    on(JourneeActions.updateNozzleBombistePayment, (state, { bombisteId, cash, tpe, bons }) => {
+      const existing = state.draft.nozzleBombistePayments.find(
+        (entry) => entry.bombisteId === bombisteId,
+      );
+      const nextEntry = {
+        bombisteId,
+        cash: cash ?? existing?.cash ?? 0,
+        tpe: tpe ?? existing?.tpe ?? 0,
+        bons: bons ?? existing?.bons ?? 0,
+      };
+      const nozzleBombistePayments = existing
+        ? state.draft.nozzleBombistePayments.map((entry) =>
+            entry.bombisteId === bombisteId ? nextEntry : entry,
+          )
+        : [...state.draft.nozzleBombistePayments, nextEntry];
+
+      return {
+        ...state,
+        draft: {
+          ...state.draft,
+          nozzleBombistePayments,
+        },
+      };
+    }),
   ),
 });

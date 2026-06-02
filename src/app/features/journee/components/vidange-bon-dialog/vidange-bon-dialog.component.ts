@@ -8,13 +8,18 @@ import {
   VidangeBon,
   buildVidangeBonDraft,
   computeDraftBonTotal,
+  computePaymentDifference,
+  computePaymentTotal,
+  emptyPaymentSplit,
   filledProductRows,
   filledServiceRows,
   isVidangeBonTablesValid,
+  paymentDifferenceLabel,
   productTableAmountTotal,
   productTableQtyTotal,
   serviceTableTotal,
 } from '../../models/vidange-bon.model';
+import { PaymentSplit, isPaymentSplitBalanced } from '../../models/payment-split.model';
 
 const DEFAULT_SERVICE_ROWS = 1;
 const DEFAULT_PRODUCT_ROWS = 1;
@@ -43,6 +48,7 @@ export class VidangeBonDialogComponent {
   readonly open = input(false);
   readonly suggestedBonNumber = input('');
   readonly editBon = input<VidangeBon | null>(null);
+  readonly defaultChefVidangeLavageId = input<number | null>(null);
 
   readonly saved = output<VidangeBonDraftInput>();
   readonly closed = output<void>();
@@ -57,6 +63,7 @@ export class VidangeBonDialogComponent {
 
   readonly bonNumber = signal('');
   readonly vehicleRef = signal('');
+  readonly payments = signal<PaymentSplit>(emptyPaymentSplit());
   readonly serviceRows = signal<ServiceTableRow[]>([]);
   readonly productRows = signal<ProductTableRow[]>([]);
 
@@ -74,13 +81,28 @@ export class VidangeBonDialogComponent {
     computeDraftBonTotal(this.serviceRows(), this.productRows()),
   );
 
-  readonly canSave = computed(() =>
-    isVidangeBonTablesValid({
-      bonNumber: this.bonNumber(),
-      serviceRows: this.serviceRows(),
-      productRows: this.productRows(),
-    }),
+  readonly paymentTotal = computed(() => computePaymentTotal(this.payments()));
+
+  readonly paymentDifference = computed(() =>
+    computePaymentDifference(this.payments(), this.bonTotal()),
   );
+
+  readonly paymentDifferenceLabel = paymentDifferenceLabel;
+
+  readonly canSave = computed(() => {
+    const chefVidangeLavageId = this.defaultChefVidangeLavageId();
+    if (chefVidangeLavageId == null) {
+      return false;
+    }
+    return (
+      isVidangeBonTablesValid({
+        bonNumber: this.bonNumber(),
+        chefVidangeLavageId,
+        serviceRows: this.serviceRows(),
+        productRows: this.productRows(),
+      }) && isPaymentSplitBalanced(this.payments(), this.bonTotal())
+    );
+  });
 
   constructor() {
     effect(() => {
@@ -101,6 +123,7 @@ export class VidangeBonDialogComponent {
     this.productSeq = 0;
     this.bonNumber.set(bon.bonNumber);
     this.vehicleRef.set(bon.vehicleRef);
+    this.payments.set({ ...(bon.payments ?? emptyPaymentSplit()) });
     this.serviceRows.set(
       bon.lines.length > 0
         ? bon.lines.map((line) => ({
@@ -127,6 +150,7 @@ export class VidangeBonDialogComponent {
     this.productSeq = 0;
     this.bonNumber.set(suggestedNumber);
     this.vehicleRef.set('');
+    this.payments.set(emptyPaymentSplit());
     this.serviceRows.set(this.createEmptyServiceRows(DEFAULT_SERVICE_ROWS));
     this.productRows.set(this.createEmptyProductRows(DEFAULT_PRODUCT_ROWS));
   }
@@ -183,6 +207,13 @@ export class VidangeBonDialogComponent {
     this.patchProductRow(rowId, { unitPrice });
   }
 
+  onPaymentInput(field: keyof PaymentSplit, event: Event): void {
+    const raw = (event.target as HTMLInputElement).value.trim();
+    const parsed = raw === '' ? 0 : Number(raw);
+    const value = Number.isNaN(parsed) ? 0 : Math.max(0, parsed);
+    this.payments.update((current) => ({ ...current, [field]: value }));
+  }
+
   private patchServiceRow(rowId: number, patch: Partial<ServiceTableRow>): void {
     this.serviceRows.update((rows) =>
       rows.map((row) => (row.id === rowId ? { ...row, ...patch } : row)),
@@ -220,11 +251,17 @@ export class VidangeBonDialogComponent {
       return;
     }
     const draft = buildVidangeBonDraft(this.serviceRows(), this.productRows());
+    const chefVidangeLavageId = this.defaultChefVidangeLavageId();
+    if (chefVidangeLavageId == null) {
+      return;
+    }
     this.saved.emit({
       bonNumber: this.bonNumber(),
       vehicleRef: this.vehicleRef(),
+      chefVidangeLavageId,
       lines: draft.lines,
       consumedProducts: draft.consumedProducts,
+      payments: this.payments(),
     });
   }
 

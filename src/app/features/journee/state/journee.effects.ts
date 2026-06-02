@@ -59,8 +59,8 @@ export class JourneeEffects {
   startJournee$ = createEffect(() =>
     this.actions$.pipe(
       ofType(JourneeActions.startJournee),
-      switchMap(({ chefDePisteId, bombisteId, shiftSlot }) =>
-        this.api.startJournee({ chefDePisteId, bombisteId, shiftSlot }).pipe(
+      switchMap(({ chefDePisteId, shiftSlot }) =>
+        this.api.startJournee({ chefDePisteId, shiftSlot }).pipe(
           switchMap((result) =>
             this.api.hasActiveJournee().pipe(
               map(() =>

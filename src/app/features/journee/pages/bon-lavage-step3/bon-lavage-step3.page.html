@@ -14,9 +14,33 @@
         </p>
       </div>
     </div>
-    <app-button variant="primary" (pressed)="openNewBonDialog()">
-      + Nouveau bon
-    </app-button>
+    <div class="flex flex-wrap items-end gap-3">
+      <div class="min-w-[16rem]">
+        <label class="bon-lavage-step3__label" for="lavage-chef-select">
+          Responsable vidange / lavage
+        </label>
+        <select
+          id="lavage-chef-select"
+          class="bon-lavage-step3__select"
+          [value]="selectedChefId() ?? ''"
+          (change)="onChefChange($event)"
+          [disabled]="operatorsLoading()"
+          required
+        >
+          <option value="" disabled selected hidden>Sélectionner le responsable…</option>
+          @for (op of operators(); track op.id) {
+            <option [value]="op.id">{{ op.name }}</option>
+          }
+        </select>
+      </div>
+      <app-button
+        variant="primary"
+        [disabled]="selectedChefId() == null"
+        (pressed)="openNewBonDialog()"
+      >
+        + Nouveau bon
+      </app-button>
+    </div>
   </header>
 
   @if (loadError(); as err) {
@@ -27,6 +51,7 @@
     [open]="dialogOpen()"
     [suggestedBonNumber]="suggestedBonNumber()"
     [editBon]="editingBon()"
+    [defaultChefVidangeLavageId]="selectedChefId()"
     (saved)="onBonSaved($event)"
     (closed)="closeDialog()"
   />
@@ -65,10 +90,16 @@
                 Chargement des bons lavage…
               </td>
             </tr>
+          } @else if (selectedChefId() == null) {
+            <tr>
+              <td colspan="6" class="py-12 text-center text-on-surface-variant">
+                Sélectionnez le responsable vidange / lavage pour afficher et déclarer les bons.
+              </td>
+            </tr>
           } @else if (bons().length === 0) {
             <tr>
               <td colspan="6" class="py-12 text-center text-on-surface-variant">
-                Aucun bon déclaré. Cliquez sur « Nouveau bon » pour commencer.
+                Aucun bon pour ce responsable. Cliquez sur « Nouveau bon » pour en ajouter un.
               </td>
             </tr>
           } @else {
@@ -172,7 +203,7 @@
               </td>
               <td class="px-4 py-5 text-right">
                 <p class="font-display text-2xl font-bold leading-none text-primary tabular-nums md:text-3xl">
-                  {{ total() | number: '1.2-2' }}
+                  {{ filteredTotal() | number: '1.2-2' }}
                 </p>
                 <p class="mt-1 text-sm font-semibold text-primary">DH</p>
               </td>

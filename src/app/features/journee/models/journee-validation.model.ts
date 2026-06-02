@@ -1,5 +1,8 @@
 import { EncaissementLine, PaymentMode, isEncaissementLineFilled } from './encaissement.model';
-import { Operator } from './journee.model';
+import { Operator, resolveOperatorName } from './journee.model';
+import { LavageBon, computeBonProductsAmount as computeLavageBonProductsAmount, computeBonServicesAmount as computeLavageBonServicesAmount } from './lavage-bon.model';
+import { PaymentSplit, emptyPaymentSplit } from './payment-split.model';
+import { VidangeBon, computeBonProductsAmount as computeVidangeBonProductsAmount, computeBonServicesAmount as computeVidangeBonServicesAmount } from './vidange-bon.model';
 
 export interface ValidationExtras {
   shopProducts: number;
@@ -13,11 +16,29 @@ export interface NonCashDetailRow {
   amount: number;
 }
 
+export interface FuelSalesBombisteDetail {
+  bombisteId: number;
+  bombisteName: string;
+  liters: number;
+  salesTotal: number;
+  payments: PaymentSplit;
+}
+
+export interface ChefSalesDetail {
+  chefId: number;
+  chefName: string;
+  salesTotal: number;
+  payments: PaymentSplit;
+}
+
 export interface JourneeValidationSummary {
   revenue: {
     fuelSales: number;
+    fuelSalesByBombiste: FuelSalesBombisteDetail[];
     shopProducts: number;
+    shopProductsByChef: ChefSalesDetail[];
     services: number;
+    servicesByChef: ChefSalesDetail[];
     grossTotal: number;
   };
   cashMovements: {
@@ -50,11 +71,8 @@ export function formatRemittanceOperatorName(name: string): string {
 export function resolveRemittanceOperator(
   operators: Operator[],
   chefDePisteId: number | null,
-  bombisteId: number | null,
 ): string {
-  const operator =
-    operators.find((o) => o.id === bombisteId) ??
-    operators.find((o) => o.id === chefDePisteId);
+  const operator = operators.find((o) => o.id === chefDePisteId);
   return operator ? formatRemittanceOperatorName(operator.name) : '—';
 }
 
@@ -93,8 +111,100 @@ export function buildNonCashDetails(lines: EncaissementLine[]): NonCashDetailRow
   }));
 }
 
+function sumPaymentSplits(a: PaymentSplit, b: PaymentSplit): PaymentSplit {
+  return {
+    cash: a.cash + b.cash,
+    tpe: a.tpe + b.tpe,
+    bons: a.bons + b.bons,
+  };
+}
+
+function scalePaymentSplit(payments: PaymentSplit, ratio: number): PaymentSplit {
+  return {
+    cash: payments.cash * ratio,
+    tpe: payments.tpe * ratio,
+    bons: payments.bons * ratio,
+  };
+}
+
+function accumulateChefSales(
+  byChef: Map<number, { total: number; payments: PaymentSplit }>,
+  chefId: number,
+  amount: number,
+  payments: PaymentSplit,
+): void {
+  if (amount <= 0) {
+    return;
+  }
+  const existing = byChef.get(chefId) ?? { total: 0, payments: emptyPaymentSplit() };
+  byChef.set(chefId, {
+    total: existing.total + amount,
+    payments: sumPaymentSplits(existing.payments, payments),
+  });
+}
+
+function processBonForChefSales(
+  byChef: Map<number, { total: number; payments: PaymentSplit }>,
+  chefId: number,
+  servicesAmount: number,
+  productsAmount: number,
+  payments: PaymentSplit,
+  kind: 'services' | 'products',
+): void {
+  const amount = kind === 'services' ? servicesAmount : productsAmount;
+  if (amount <= 0) {
+    return;
+  }
+  const bonTotal = servicesAmount + productsAmount;
+  const ratio = bonTotal > 0 ? amount / bonTotal : 0;
+  accumulateChefSales(byChef, chefId, amount, scalePaymentSplit(payments, ratio));
+}
+
+export function buildChefSalesDetailsFromBons(
+  lavageBons: LavageBon[],
+  vidangeBons: VidangeBon[],
+  operators: Operator[],
+  kind: 'services' | 'products',
+): ChefSalesDetail[] {
+  const byChef = new Map<number, { total: number; payments: PaymentSplit }>();
+
+  for (const bon of lavageBons) {
+    processBonForChefSales(
+      byChef,
+      bon.chefVidangeLavageId,
+      computeLavageBonServicesAmount(bon),
+      computeLavageBonProductsAmount(bon),
+      bon.payments ?? emptyPaymentSplit(),
+      kind,
+    );
+  }
+  for (const bon of vidangeBons) {
+    processBonForChefSales(
+      byChef,
+      bon.chefVidangeLavageId,
+      computeVidangeBonServicesAmount(bon),
+      computeVidangeBonProductsAmount(bon),
+      bon.payments ?? emptyPaymentSplit(),
+      kind,
+    );
+  }
+
+  return Array.from(byChef.entries())
+    .map(([chefId, data]) => ({
+      chefId,
+      chefName: resolveOperatorName(operators, chefId),
+      salesTotal: data.total,
+      payments: data.payments,
+    }))
+    .filter((detail) => detail.salesTotal > 0)
+    .sort((a, b) => a.chefName.localeCompare(b.chefName, 'fr'));
+}
+
 export function buildJourneeValidationSummary(input: {
   fuelSales: number;
+  fuelSalesByBombiste: FuelSalesBombisteDetail[];
+  lavageBons: LavageBon[];
+  vidangeBons: VidangeBon[];
   servicesTotal: number;
   encaissementsTotal: number;
   depensesTotal: number;
@@ -102,8 +212,20 @@ export function buildJourneeValidationSummary(input: {
   extras: ValidationExtras;
   operators: Operator[];
   chefDePisteId: number | null;
-  bombisteId: number | null;
 }): JourneeValidationSummary {
+  const servicesByChef = buildChefSalesDetailsFromBons(
+    input.lavageBons,
+    input.vidangeBons,
+    input.operators,
+    'services',
+  );
+  const shopProductsByChef = buildChefSalesDetailsFromBons(
+    input.lavageBons,
+    input.vidangeBons,
+    input.operators,
+    'products',
+  );
+
   const grossTotal =
     input.fuelSales + input.extras.shopProducts + input.servicesTotal;
 
@@ -117,8 +239,11 @@ export function buildJourneeValidationSummary(input: {
   return {
     revenue: {
       fuelSales: input.fuelSales,
+      fuelSalesByBombiste: input.fuelSalesByBombiste,
       shopProducts: input.extras.shopProducts,
+      shopProductsByChef,
       services: input.servicesTotal,
+      servicesByChef,
       grossTotal,
     },
     cashMovements: {
@@ -131,7 +256,6 @@ export function buildJourneeValidationSummary(input: {
     remittanceOperatorName: resolveRemittanceOperator(
       input.operators,
       input.chefDePisteId,
-      input.bombisteId,
     ),
     nonCashDetails: buildNonCashDetails(input.encaissements),
   };

@@ -31,14 +31,12 @@ export class ConfigurationStep1Page implements OnInit {
   readonly startError = this.store.selectSignal(selectStartError);
 
   readonly chefId = computed(() => this.draft().config.chefDePisteId);
-  readonly bombisteId = computed(() => this.draft().config.bombisteId);
   readonly shiftSlot = computed(() => this.draft().config.shiftSlot);
   readonly openedAt = computed(() => this.draft().config.openedAt);
 
   readonly canStart = computed(
     () =>
       this.chefId() != null &&
-      this.bombisteId() != null &&
       this.shiftSlot() != null &&
       !this.startingJournee(),
   );
@@ -57,26 +55,16 @@ export class ConfigurationStep1Page implements OnInit {
     );
   }
 
-  onBombisteChange(event: Event): void {
-    const value = (event.target as HTMLSelectElement).value;
-    this.store.dispatch(
-      JourneeActions.setDraftConfig({
-        config: { bombisteId: value ? Number(value) : null },
-      }),
-    );
-  }
-
   onSlotChange(slot: ShiftSlot): void {
     this.store.dispatch(JourneeActions.setDraftConfig({ config: { shiftSlot: slot } }));
   }
 
   start(): void {
     const chefDePisteId = this.chefId();
-    const bombisteId = this.bombisteId();
     const shiftSlot = this.shiftSlot();
-    if (chefDePisteId == null || bombisteId == null || shiftSlot == null) {
+    if (chefDePisteId == null || shiftSlot == null) {
       return;
     }
-    this.store.dispatch(JourneeActions.startJournee({ chefDePisteId, bombisteId, shiftSlot }));
+    this.store.dispatch(JourneeActions.startJournee({ chefDePisteId, shiftSlot }));
   }
 }

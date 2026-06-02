@@ -1,3 +1,11 @@
+import {
+  PaymentSplit,
+  computePaymentDifference,
+  computePaymentTotal,
+  emptyPaymentSplit,
+  paymentDifferenceLabel,
+} from './payment-split.model';
+
 export interface VidangeConsumedProduct {
   productName: string;
   quantity: number;
@@ -15,8 +23,10 @@ export interface VidangeBon {
   id: number;
   bonNumber: string;
   vehicleRef: string;
+  chefVidangeLavageId: number;
   lines: VidangeBonServiceLine[];
   consumedProducts: VidangeConsumedProduct[];
+  payments: PaymentSplit;
 }
 
 export const VIDANGE_SERVICE_TYPES = [
@@ -40,8 +50,10 @@ export type VidangeConsumableProduct = (typeof VIDANGE_CONSUMABLE_PRODUCTS)[numb
 export interface VidangeBonDraftInput {
   bonNumber: string;
   vehicleRef: string;
+  chefVidangeLavageId: number;
   lines: Pick<VidangeBonServiceLine, 'serviceType' | 'amount'>[];
   consumedProducts: VidangeConsumedProduct[];
+  payments: PaymentSplit;
 }
 
 export interface VidangeServiceTableRow {
@@ -120,10 +132,14 @@ export function buildVidangeBonDraft(
 
 export function isVidangeBonTablesValid(input: {
   bonNumber: string;
+  chefVidangeLavageId: number | null;
   serviceRows: VidangeServiceTableRow[];
   productRows: VidangeProductTableRow[];
 }): boolean {
   if (input.bonNumber.trim().length === 0) {
+    return false;
+  }
+  if (input.chefVidangeLavageId == null) {
     return false;
   }
   if (filledServiceRows(input.serviceRows).length === 0) {
@@ -203,3 +219,5 @@ export function suggestNextVidangeBonNumber(
   }, 8900);
   return `VID-${max + 1}`;
 }
+
+export { emptyPaymentSplit, computePaymentTotal, computePaymentDifference, paymentDifferenceLabel };

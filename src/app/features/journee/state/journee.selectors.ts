@@ -13,10 +13,10 @@ import {
   canProceedLavageStep,
 } from '../models/lavage-bon.model';
 import {
+  buildNozzleBombisteGroups,
   canProceedNozzleStep,
-  computeLineQuantity,
-  computeLineTotal,
   computeSessionSummary,
+  mapLinesWithTotals,
 } from '../models/nozzle-index.model';
 import {
   computeVidangeBonsTotal,
@@ -58,6 +58,18 @@ export const {
 
 export const selectLavageBons = createSelector(selectDraft, (draft) => draft.lavageBons);
 
+export const selectLavageChefVidangeLavageId = createSelector(
+  selectDraft,
+  (draft) => draft.lavageChefVidangeLavageId,
+);
+
+export const selectFilteredLavageBons = createSelector(
+  selectLavageBons,
+  selectLavageChefVidangeLavageId,
+  (bons, chefId) =>
+    chefId == null ? [] : bons.filter((bon) => bon.chefVidangeLavageId === chefId),
+);
+
 export const selectLavageBonsTotal = createSelector(selectLavageBons, (bons) =>
   computeLavageBonsTotal(bons),
 );
@@ -67,6 +79,18 @@ export const selectCanProceedLavageStep = createSelector(selectLavageBons, (bons
 );
 
 export const selectVidangeBons = createSelector(selectDraft, (draft) => draft.vidangeBons);
+
+export const selectVidangeChefVidangeLavageId = createSelector(
+  selectDraft,
+  (draft) => draft.vidangeChefVidangeLavageId,
+);
+
+export const selectFilteredVidangeBons = createSelector(
+  selectVidangeBons,
+  selectVidangeChefVidangeLavageId,
+  (bons, chefId) =>
+    chefId == null ? [] : bons.filter((bon) => bon.chefVidangeLavageId === chefId),
+);
 
 export const selectVidangeBonsTotal = createSelector(selectVidangeBons, (bons) =>
   computeVidangeBonsTotal(bons),
@@ -105,20 +129,57 @@ export const selectNozzleIndexes = createSelector(
   (draft) => draft.nozzleIndexes,
 );
 
+export const selectSelectedNozzleBombisteIds = createSelector(
+  selectDraft,
+  (draft) => draft.selectedNozzleBombisteIds,
+);
+
+export const selectAvailableNozzleBombistes = createSelector(
+  selectOperators,
+  selectNozzleIndexes,
+  selectSelectedNozzleBombisteIds,
+  (operators, lines, selectedIds) => {
+    const idsWithNozzles = new Set(lines.map((line) => line.bombisteId));
+    return operators.filter(
+      (operator) => idsWithNozzles.has(operator.id) && !selectedIds.includes(operator.id),
+    );
+  },
+);
+
 export const selectNozzleLinesWithTotals = createSelector(selectNozzleIndexes, (lines) =>
-  lines.map((line) => ({
-    line,
-    quantity: computeLineQuantity(line),
-    total: computeLineTotal(line),
-  })),
+  mapLinesWithTotals(lines),
 );
 
-export const selectNozzleSessionSummary = createSelector(selectNozzleIndexes, (lines) =>
-  computeSessionSummary(lines),
+export const selectNozzleBombisteGroups = createSelector(
+  selectNozzleIndexes,
+  selectSelectedNozzleBombisteIds,
+  selectOperators,
+  selectDraft,
+  (lines, selectedIds, operators, draft) => {
+    const operatorNameById = new Map(operators.map((operator) => [operator.id, operator.name]));
+    const paymentsByBombisteId = new Map(
+      draft.nozzleBombistePayments.map((entry) => [entry.bombisteId, entry]),
+    );
+    return buildNozzleBombisteGroups(lines, selectedIds, operatorNameById, paymentsByBombisteId);
+  },
 );
 
-export const selectCanProceedNozzleStep = createSelector(selectNozzleIndexes, (lines) =>
-  canProceedNozzleStep(lines),
+export const selectNozzleSessionSummary = createSelector(
+  selectNozzleIndexes,
+  selectSelectedNozzleBombisteIds,
+  (lines, selectedIds) => {
+    const relevant =
+      selectedIds.length === 0
+        ? []
+        : lines.filter((line) => selectedIds.includes(line.bombisteId));
+    return computeSessionSummary(relevant);
+  },
+);
+
+export const selectCanProceedNozzleStep = createSelector(
+  selectNozzleIndexes,
+  selectSelectedNozzleBombisteIds,
+  (lines, selectedIds) => canProceedNozzleStep(lines, selectedIds),
 );
 
 export const selectJourneeValidationSummary = createSelector(
@@ -126,16 +187,40 @@ export const selectJourneeValidationSummary = createSelector(
   selectOperators,
   selectValidationExtras,
   selectNozzleSessionSummary,
+  selectNozzleBombisteGroups,
+  selectLavageBons,
+  selectVidangeBons,
   selectLavageBonsTotal,
   selectVidangeBonsTotal,
   selectEncaissementsTotal,
   selectDepensesTotal,
-  (draft, operators, extras, nozzleSummary, lavageTotal, vidangeTotal, encTotal, depTotal) => {
+  (
+    draft,
+    operators,
+    extras,
+    nozzleSummary,
+    bombisteGroups,
+    lavageBons,
+    vidangeBons,
+    lavageTotal,
+    vidangeTotal,
+    encTotal,
+    depTotal,
+  ) => {
     if (!extras) {
       return null;
     }
     return buildJourneeValidationSummary({
       fuelSales: nozzleSummary.totalAmount,
+      fuelSalesByBombiste: bombisteGroups.map((group) => ({
+        bombisteId: group.bombisteId,
+        bombisteName: group.bombisteName,
+        liters: group.totals.liters,
+        salesTotal: group.totals.amount,
+        payments: group.payments,
+      })),
+      lavageBons,
+      vidangeBons,
       servicesTotal: lavageTotal + vidangeTotal,
       encaissementsTotal: encTotal,
       depensesTotal: depTotal,
@@ -143,7 +228,6 @@ export const selectJourneeValidationSummary = createSelector(
       extras,
       operators,
       chefDePisteId: draft.config.chefDePisteId,
-      bombisteId: draft.config.bombisteId,
     });
   },
 );

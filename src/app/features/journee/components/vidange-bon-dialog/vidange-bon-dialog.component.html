@@ -22,7 +22,7 @@
             }
           </h2>
           <p class="mt-1 text-sm text-on-surface-variant">
-            Remplissez les deux tableaux â€” lignes vides ignorÃ©es Ã  l'enregistrement.
+            Remplissez les deux tableaux ? lignes vides ignorées à l'enregistrement.
           </p>
         </div>
         <button
@@ -31,14 +31,14 @@
           aria-label="Fermer"
           (click)="cancel()"
         >
-          Ã—
+          ×
         </button>
       </header>
 
       <div class="max-h-[70vh] overflow-y-auto px-6 py-5">
         <div class="mb-6 grid gap-4 sm:grid-cols-2">
           <div>
-            <label class="vidange-bon-dialog__label" for="dialog-bon-number">NÂ° bon</label>
+            <label class="vidange-bon-dialog__label" for="dialog-bon-number">N° bon</label>
             <input
               id="dialog-bon-number"
               type="text"
@@ -48,7 +48,7 @@
             />
           </div>
           <div>
-            <label class="vidange-bon-dialog__label" for="dialog-vehicle-ref">VÃ©hicule / plaque</label>
+            <label class="vidange-bon-dialog__label" for="dialog-vehicle-ref">Véhicule / plaque</label>
             <input
               id="dialog-vehicle-ref"
               type="text"
@@ -93,7 +93,7 @@
                         (change)="updateServiceType(row.id, $event)"
                         [attr.aria-label]="'Type de service ligne ' + (i + 1)"
                       >
-                        <option value="">â€”</option>
+                        <option value="">?</option>
                         @for (type of serviceTypes; track type) {
                           <option [value]="type">{{ type }}</option>
                         }
@@ -118,7 +118,7 @@
                         (click)="clearServiceRow(row.id)"
                         [attr.aria-label]="'Effacer service ligne ' + (i + 1)"
                       >
-                        Ã—
+                        ×
                       </button>
                     </td>
                   </tr>
@@ -147,7 +147,7 @@
         </section>
 
         <section>
-          <p class="vidange-bon-dialog__label mb-3">Produits consommÃ©s</p>
+          <p class="vidange-bon-dialog__label mb-3">Produits consommés</p>
           <div class="overflow-hidden rounded-[var(--radius-card)] border border-outline-variant">
             <table class="vidange-bon-dialog__table w-full border-collapse text-sm">
               <thead>
@@ -159,7 +159,7 @@
                     Produit
                   </th>
                   <th class="w-20 px-3 py-2.5 text-right font-display text-xs font-bold uppercase text-white">
-                    QtÃ©
+                    Qté
                   </th>
                   <th class="w-28 px-3 py-2.5 text-right font-display text-xs font-bold uppercase text-white">
                     Prix unit. (DH)
@@ -182,7 +182,7 @@
                         (change)="updateProductName(row.id, $event)"
                         [attr.aria-label]="'Produit ligne ' + (i + 1)"
                       >
-                        <option value="">Produitâ€¦</option>
+                        <option value="">Produit?</option>
                         @for (name of consumableProducts; track name) {
                           <option [value]="name">{{ name }}</option>
                         }
@@ -194,10 +194,10 @@
                         class="vidange-bon-dialog__cell-input vidange-bon-dialog__cell-input--block text-right tabular-nums"
                         min="0"
                         step="1"
-                        placeholder="QtÃ©"
+                        placeholder="Qté"
                         [value]="row.quantity ?? ''"
                         (input)="updateProductQty(row.id, $event)"
-                        [attr.aria-label]="'QuantitÃ© ligne ' + (i + 1)"
+                        [attr.aria-label]="'Quantité ligne ' + (i + 1)"
                       />
                     </td>
                     <td class="px-2 py-1.5">
@@ -220,7 +220,7 @@
                         (click)="clearProductRow(row.id)"
                         [attr.aria-label]="'Effacer produit ligne ' + (i + 1)"
                       >
-                        Ã—
+                        ×
                       </button>
                     </td>
                   </tr>
@@ -253,7 +253,7 @@
 
         <section
           class="vidange-bon-dialog__recap mt-8 rounded-[var(--radius-card)] border border-outline-variant bg-surface-container px-5 py-4"
-          aria-label="RÃ©capitulatif du bon"
+          aria-label="Récapitulatif du bon"
         >
           <p class="vidange-bon-dialog__label mb-3">Total du bon</p>
           <dl class="grid gap-2 text-sm sm:grid-cols-2">
@@ -271,7 +271,7 @@
               <dd class="font-semibold tabular-nums text-on-surface">
                 {{ productAmountTotal() | number: '1.2-2' }} DH
                 <span class="font-normal text-on-surface-variant">
-                  ({{ productQtyTotal() }} u. Â· {{ filledProductCount() }} ligne{{ filledProductCount() > 1 ? 's' : '' }})
+                  ({{ productQtyTotal() }} u. · {{ filledProductCount() }} ligne{{ filledProductCount() > 1 ? 's' : '' }})
                 </span>
               </dd>
             </div>
@@ -281,6 +281,85 @@
             <span class="font-display text-2xl font-bold tabular-nums text-primary">
               {{ bonTotal() | number: '1.2-2' }} DH
             </span>
+          </div>
+
+          <div class="vidange-bon-dialog__payments mt-5 border-t border-outline-variant pt-5">
+            <p class="vidange-bon-dialog__label mb-3">Répartition des encaissements</p>
+            <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+              <div>
+                <label class="vidange-bon-dialog__label" for="vidange-payment-cash">Espèces (DH)</label>
+                <input
+                  id="vidange-payment-cash"
+                  type="number"
+                  class="vidange-bon-dialog__input text-right tabular-nums"
+                  [value]="payments().cash || ''"
+                  (input)="onPaymentInput('cash', $event)"
+                  min="0"
+                  step="0.01"
+                  inputmode="decimal"
+                />
+              </div>
+              <div>
+                <label class="vidange-bon-dialog__label" for="vidange-payment-tpe">TPE (DH)</label>
+                <input
+                  id="vidange-payment-tpe"
+                  type="number"
+                  class="vidange-bon-dialog__input text-right tabular-nums"
+                  [value]="payments().tpe || ''"
+                  (input)="onPaymentInput('tpe', $event)"
+                  min="0"
+                  step="0.01"
+                  inputmode="decimal"
+                />
+              </div>
+              <div>
+                <label class="vidange-bon-dialog__label" for="vidange-payment-bons">Bons (DH)</label>
+                <input
+                  id="vidange-payment-bons"
+                  type="number"
+                  class="vidange-bon-dialog__input text-right tabular-nums"
+                  [value]="payments().bons || ''"
+                  (input)="onPaymentInput('bons', $event)"
+                  min="0"
+                  step="0.01"
+                  inputmode="decimal"
+                />
+              </div>
+              <div class="flex flex-col justify-end">
+                <p class="vidange-bon-dialog__label">Total saisi</p>
+                <p class="font-display text-xl font-bold tabular-nums text-on-surface">
+                  {{ paymentTotal() | number: '1.2-2' }}
+                  <span class="text-sm font-semibold">DH</span>
+                </p>
+              </div>
+              <div class="flex flex-col justify-end">
+                <p class="vidange-bon-dialog__label">Écart</p>
+                <p
+                  class="font-display text-xl font-bold tabular-nums"
+                  [class.text-on-surface-variant]="paymentDifference() === 0"
+                  [class.text-secondary]="paymentDifference() > 0"
+                  [class.text-primary]="paymentDifference() < 0"
+                >
+                  @if (paymentDifference() > 0) {
+                    +{{ paymentDifference() | number: '1.2-2' }}
+                  } @else {
+                    {{ paymentDifference() | number: '1.2-2' }}
+                  }
+                  <span class="text-sm font-semibold">DH</span>
+                </p>
+                <p
+                  class="mt-1 text-sm font-semibold"
+                  [class.text-on-surface-variant]="paymentDifference() === 0"
+                  [class.text-secondary]="paymentDifference() > 0"
+                  [class.text-primary]="paymentDifference() < 0"
+                >
+                  {{ paymentDifferenceLabel(paymentDifference()) }}
+                  <span class="font-normal text-on-surface-variant">
+                    (attendu {{ bonTotal() | number: '1.2-2' }} DH)
+                  </span>
+                </p>
+              </div>
+            </div>
           </div>
         </section>
       </div>

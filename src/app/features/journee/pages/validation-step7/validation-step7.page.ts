@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
@@ -31,12 +31,31 @@ export class ValidationStep7Page implements OnInit {
   readonly submitting = this.store.selectSignal(selectSubmittingJournee);
   readonly submitError = this.store.selectSignal(selectSubmitJourneeError);
 
+  readonly fuelDetailsExpanded = signal(false);
+  readonly shopDetailsExpanded = signal(false);
+  readonly servicesDetailsExpanded = signal(false);
+
+  toggleFuelDetails(): void {
+    this.fuelDetailsExpanded.update((expanded) => !expanded);
+  }
+
+  toggleShopDetails(): void {
+    this.shopDetailsExpanded.update((expanded) => !expanded);
+  }
+
+  toggleServicesDetails(): void {
+    this.servicesDetailsExpanded.update((expanded) => !expanded);
+  }
+
   ngOnInit(): void {
     if (this.draft().id == null) {
       void this.router.navigate(['/journees', 'nouvelle', 'configuration-step1']);
       return;
     }
     this.store.dispatch(JourneeActions.loadValidationExtras());
+    this.store.dispatch(JourneeActions.loadOperators());
+    this.store.dispatch(JourneeActions.loadLavageBons());
+    this.store.dispatch(JourneeActions.loadVidangeBons());
   }
 
   submit(): void {

@@ -8,6 +8,7 @@ import {
   computeBonConsumedQty,
   computeBonServicesAmount,
   computeBonTotal,
+  computeVidangeBonsTotal,
   suggestNextVidangeBonNumber,
 } from '../../models/vidange-bon.model';
 import { VidangeBonDraftInput } from '../../models/vidange-bon.model';
@@ -15,10 +16,13 @@ import { JourneeActions } from '../../state/journee.actions';
 import {
   selectCanProceedVidangeStep,
   selectDraft,
+  selectFilteredVidangeBons,
+  selectOperators,
+  selectOperatorsLoading,
   selectVidangeBons,
   selectVidangeBonsError,
   selectVidangeBonsLoading,
-  selectVidangeBonsTotal,
+  selectVidangeChefVidangeLavageId,
 } from '../../state/journee.selectors';
 
 @Component({
@@ -33,11 +37,15 @@ export class BonVidangeStep4Page implements OnInit {
   private readonly router = inject(Router);
 
   readonly draft = this.store.selectSignal(selectDraft);
-  readonly bons = this.store.selectSignal(selectVidangeBons);
-  readonly total = this.store.selectSignal(selectVidangeBonsTotal);
+  readonly allBons = this.store.selectSignal(selectVidangeBons);
+  readonly bons = this.store.selectSignal(selectFilteredVidangeBons);
+  readonly selectedChefId = this.store.selectSignal(selectVidangeChefVidangeLavageId);
+  readonly filteredTotal = computed(() => computeVidangeBonsTotal(this.bons()));
   readonly loading = this.store.selectSignal(selectVidangeBonsLoading);
   readonly loadError = this.store.selectSignal(selectVidangeBonsError);
   readonly canProceed = this.store.selectSignal(selectCanProceedVidangeStep);
+  readonly operators = this.store.selectSignal(selectOperators);
+  readonly operatorsLoading = this.store.selectSignal(selectOperatorsLoading);
 
   readonly dialogOpen = signal(false);
   readonly editingBonId = signal<number | null>(null);
@@ -47,10 +55,10 @@ export class BonVidangeStep4Page implements OnInit {
     if (id == null) {
       return null;
     }
-    return this.bons().find((bon) => bon.id === id) ?? null;
+    return this.allBons().find((bon) => bon.id === id) ?? null;
   });
 
-  readonly suggestedBonNumber = computed(() => suggestNextVidangeBonNumber(this.bons()));
+  readonly suggestedBonNumber = computed(() => suggestNextVidangeBonNumber(this.allBons()));
 
   readonly computeBonTotal = computeBonTotal;
   readonly computeBonServicesAmount = computeBonServicesAmount;
@@ -62,11 +70,21 @@ export class BonVidangeStep4Page implements OnInit {
       return;
     }
     this.store.dispatch(JourneeActions.loadVidangeBons());
+    this.store.dispatch(JourneeActions.loadOperators());
   }
 
   openNewBonDialog(): void {
+    if (this.selectedChefId() == null) {
+      return;
+    }
     this.editingBonId.set(null);
     this.dialogOpen.set(true);
+  }
+
+  onChefChange(event: Event): void {
+    const raw = (event.target as HTMLSelectElement).value;
+    const chefVidangeLavageId = raw === '' ? null : Number(raw);
+    this.store.dispatch(JourneeActions.setVidangeChefVidangeLavage({ chefVidangeLavageId }));
   }
 
   openEditBonDialog(id: number): void {
@@ -80,11 +98,16 @@ export class BonVidangeStep4Page implements OnInit {
   }
 
   onBonSaved(bon: VidangeBonDraftInput): void {
+    const chefVidangeLavageId = this.selectedChefId();
+    if (chefVidangeLavageId == null) {
+      return;
+    }
+    const bonWithChef = { ...bon, chefVidangeLavageId };
     const id = this.editingBonId();
     if (id != null) {
-      this.store.dispatch(JourneeActions.updateVidangeBon({ id, bon }));
+      this.store.dispatch(JourneeActions.updateVidangeBon({ id, bon: bonWithChef }));
     } else {
-      this.store.dispatch(JourneeActions.addVidangeBon({ bon }));
+      this.store.dispatch(JourneeActions.addVidangeBon({ bon: bonWithChef }));
     }
     this.closeDialog();
   }
