@@ -1,0 +1,17 @@
+@reference '../../../../tailwind.css';
+
+.nozzle-icon {
+  @apply shrink-0 object-contain;
+
+  &--sm {
+    @apply h-9 w-5;
+  }
+
+  &--md {
+    @apply h-11 w-6;
+  }
+
+  &--lg {
+    @apply h-[4.5rem] w-10;
+  }
+}

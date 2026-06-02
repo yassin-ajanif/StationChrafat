@@ -11,8 +11,8 @@ import { provideStore } from '@ngrx/store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 
 import { routes } from './app.routes';
-import { JourneeEffects } from './features/journee/state/journee.effects';
-import { journeeFeature } from './features/journee/state/journee.reducer';
+import { JourneeEffects } from './module/journee/state/journee.effects';
+import { journeeFeature } from './module/journee/state/journee.reducer';
 
 export const appConfig: ApplicationConfig = {
   providers: [

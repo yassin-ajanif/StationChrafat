@@ -1,9 +1,16 @@
-import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Component, computed, inject, signal } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
-interface NavItem {
+interface NavLink {
   label: string;
   route: string;
+  exact?: boolean;
+}
+
+interface NavGroup {
+  label: string;
+  baseRoute: string;
+  children: NavLink[];
 }
 
 @Component({
@@ -14,11 +21,28 @@ interface NavItem {
   styleUrl: './app-shell.component.scss',
 })
 export class AppShellComponent {
-  readonly navItems: NavItem[] = [
-    { label: 'Dashboard', route: '/journees' },
+  private readonly router = inject(Router);
+
+  readonly navLinks: NavLink[] = [
+    { label: 'Dashboard', route: '/journees', exact: true },
     { label: 'Lavage', route: '/lavage' },
     { label: 'Vidange', route: '/vidange' },
-    { label: 'Station', route: '/station' },
     { label: 'Journée', route: '/journees' },
   ];
+
+  readonly navGroups: NavGroup[] = [
+    {
+      label: 'Station',
+      baseRoute: '/station',
+      children: [{ label: 'Stock', route: '/station/stock' }],
+    },
+  ];
+
+  readonly stationExpanded = signal(true);
+
+  readonly isStationRoute = computed(() => this.router.url.startsWith('/station'));
+
+  toggleStationMenu(): void {
+    this.stationExpanded.update((expanded) => !expanded);
+  }
 }

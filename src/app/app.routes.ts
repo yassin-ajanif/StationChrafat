@@ -10,11 +10,15 @@ export const routes: Routes = [
       {
         path: 'journees',
         loadChildren: () =>
-          import('./features/journee/journee.routes').then((m) => m.JOURNEE_ROUTES),
+          import('./module/journee/journee.routes').then((m) => m.JOURNEE_ROUTES),
       },
       { path: 'lavage', redirectTo: 'journees' },
       { path: 'vidange', redirectTo: 'journees' },
-      { path: 'station', redirectTo: 'journees' },
+      {
+        path: 'station',
+        loadChildren: () =>
+          import('./module/stock/stock.routes').then((m) => m.STOCK_ROUTES),
+      },
     ],
   },
   { path: '**', redirectTo: 'journees' },
