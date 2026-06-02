@@ -1,0 +1,46 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Barlow Condensed', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+
+  --color-primary: #bb0014;
+  --color-primary-container: #e71421;
+  --color-on-primary: #ffffff;
+  --color-secondary: #8c4f00;
+  --color-secondary-container: #fd9923;
+  --color-surface: #fcf9f8;
+  --color-surface-container: #f0eded;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-surface: #1c1b1b;
+  --color-on-surface-variant: #5e3f3c;
+  --color-outline: #936e6a;
+  --color-outline-variant: #e8bcb7;
+  --color-inverse-surface: #1a1a1a;
+  --color-inverse-on-surface: #f3f0ef;
+  --color-table-header: #3a3a3a;
+  --color-kpi-orange: #f7941d;
+  --color-success: #2e7d32;
+  --color-warning-bg: #fff8e1;
+  --color-warning-text: #f57f17;
+  --color-primary-fixed: #ffdad6;
+
+  --radius-button: 2px;
+  --radius-card: 8px;
+  --spacing-touch: 44px;
+  --width-sidebar: 240px;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-body);
+    color: var(--color-on-surface);
+    background-color: var(--color-surface);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+  }
+}

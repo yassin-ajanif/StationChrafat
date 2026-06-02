@@ -1,0 +1,7 @@
+@reference '../../../../tailwind.css';
+
+.app-shell {
+  &__nav-link--active {
+    @apply border-l-4 border-primary bg-white/10 text-inverse-on-surface;
+  }
+}

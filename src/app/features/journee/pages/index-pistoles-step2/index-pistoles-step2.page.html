@@ -1,0 +1,162 @@
+<div class="index-pistoles-step2 flex w-full flex-col">
+  <header class="mb-6 flex flex-wrap items-start justify-between gap-4">
+    <div class="flex items-start gap-3">
+      <span
+        class="flex size-10 shrink-0 items-center justify-center rounded bg-primary/10 text-primary"
+        aria-hidden="true"
+      >⛽</span>
+      <div>
+        <h1 class="font-display text-2xl font-bold uppercase text-on-surface">
+          Étape 2 : Saisie des index d'entrée
+        </h1>
+        <p class="mt-1 text-base text-on-surface-variant">
+          Relevez les index de début de shift pour chaque pistolet actif.
+        </p>
+      </div>
+    </div>
+    <div class="no-print flex flex-wrap gap-2">
+      <app-button variant="secondary" (pressed)="exportCsv()">Exporter CSV</app-button>
+      <app-button variant="secondary" (pressed)="print()">Imprimer</app-button>
+    </div>
+  </header>
+
+  @if (loadError(); as err) {
+    <p class="mb-4 text-sm text-primary" role="alert">{{ err }}</p>
+  }
+
+  <section
+    class="w-full overflow-hidden rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest shadow-sm"
+    aria-busy="{{ loading() }}"
+  >
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse text-base">
+        <thead>
+          <tr class="bg-table-header">
+            <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">Ilot</th>
+            <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">Pistolet</th>
+            <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">Carburant</th>
+            <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">Index entrée</th>
+            <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">Index sortie</th>
+            <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">Remise cuve</th>
+            <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">Quantité (L)</th>
+            <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">P.U (DH)</th>
+            <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">Total (DH)</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (loading()) {
+            <tr>
+              <td colspan="9" class="py-12 text-center text-base text-on-surface-variant">
+                Chargement des pistolets…
+              </td>
+            </tr>
+          } @else {
+            @for (row of rows(); track row.line.id) {
+              <tr
+                class="border-t border-outline-variant/50"
+                [class.bg-surface-container/60]="row.line.status === 'offline'"
+                [class.opacity-70]="row.line.status === 'offline'"
+                [class.bg-primary/5]="lineInvalid(row.line)"
+              >
+                <td class="px-4 py-3.5">{{ row.line.island }}</td>
+                <td class="px-4 py-3.5 font-semibold">{{ row.line.pumpLabel }}</td>
+                <td class="px-4 py-3.5">
+                  <span
+                    class="inline-block rounded px-2.5 py-1 text-sm font-semibold text-white"
+                    [style.background-color]="row.line.fuelColor"
+                  >
+                    {{ row.line.fuelLabel }}
+                  </span>
+                </td>
+                <td class="px-4 py-3.5">
+                  @if (row.line.status === 'offline') {
+                    <span class="inline-block rounded bg-on-surface-variant/20 px-2.5 py-1 text-sm font-semibold uppercase">
+                      HS
+                    </span>
+                  } @else {
+                    <input
+                      type="number"
+                      class="min-h-[var(--spacing-touch)] w-32 rounded border px-3 text-base text-right"
+                      [class.border-outline]="!lineInvalid(row.line)"
+                      [class.border-primary]="lineInvalid(row.line)"
+                      [class.ring-1]="lineInvalid(row.line)"
+                      [class.ring-primary/30]="lineInvalid(row.line)"
+                      [value]="row.line.indexEntree ?? ''"
+                      (input)="onIndexInput(row.line.id, 'entree', $event)"
+                      min="0"
+                      step="0.01"
+                      inputmode="decimal"
+                      [attr.aria-label]="'Index entrée ' + row.line.pumpLabel"
+                    />
+                  }
+                </td>
+                <td class="px-4 py-3.5">
+                  @if (row.line.status === 'offline') {
+                    <span class="text-on-surface-variant">—</span>
+                  } @else {
+                    <input
+                      type="number"
+                      class="min-h-[var(--spacing-touch)] w-32 rounded border px-3 text-base text-right"
+                      [class.border-outline]="!lineInvalid(row.line)"
+                      [class.border-primary]="lineInvalid(row.line)"
+                      [class.ring-1]="lineInvalid(row.line)"
+                      [class.ring-primary/30]="lineInvalid(row.line)"
+                      [value]="row.line.indexSortie ?? ''"
+                      (input)="onIndexInput(row.line.id, 'sortie', $event)"
+                      min="0"
+                      step="0.01"
+                      inputmode="decimal"
+                      [attr.aria-label]="'Index sortie ' + row.line.pumpLabel"
+                    />
+                  }
+                </td>
+                <td class="px-4 py-3.5 text-right text-on-surface-variant">
+                  {{ row.line.tankReturn | number: '1.2-2' }}
+                </td>
+                <td class="px-4 py-3.5 text-right tabular-nums">{{ row.quantity | number: '1.2-2' }}</td>
+                <td class="px-4 py-3.5 text-right tabular-nums">{{ row.line.unitPrice | number: '1.2-2' }}</td>
+                <td class="px-4 py-3.5 text-right font-semibold tabular-nums">{{ row.total | number: '1.2-2' }}</td>
+              </tr>
+            }
+          }
+        </tbody>
+        <tfoot>
+          @if (!loading() && rows().length > 0) {
+            <tr class="border-t-2 border-outline-variant bg-surface-container">
+              <td
+                colspan="6"
+                class="px-4 py-5 font-display text-sm font-bold uppercase tracking-wide text-on-surface"
+              >
+                Totaux de la session
+              </td>
+              <td class="px-4 py-5 text-right text-base font-bold tabular-nums text-on-surface">
+                {{ sessionTotals().liters | number: '1.2-2' }}
+                <span class="ml-1 font-normal text-on-surface-variant">L</span>
+              </td>
+              <td class="px-4 py-5"></td>
+              <td class="px-4 py-5 text-right">
+                <p class="font-display text-2xl font-bold leading-none text-primary tabular-nums md:text-3xl">
+                  {{ sessionTotals().amount | number: '1.2-2' }}
+                </p>
+                <p class="mt-1 text-sm font-semibold text-primary">DH</p>
+              </td>
+            </tr>
+          }
+        </tfoot>
+      </table>
+    </div>
+  </section>
+
+  <footer class="no-print mt-8 flex flex-wrap justify-between gap-4">
+    <a routerLink="/journees/nouvelle/configuration-step1">
+      <app-button variant="secondary">← Retour</app-button>
+    </a>
+    <app-button
+      variant="primary"
+      [disabled]="!canProceed() || loading()"
+      (pressed)="next()"
+    >
+      Suivant →
+    </app-button>
+  </footer>
+</div>

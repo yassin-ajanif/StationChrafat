@@ -1,0 +1,52 @@
+@reference '../../../../../tailwind.css';
+
+.bon-lavage-step3 {
+  &__table-wrap {
+    @apply min-w-0;
+  }
+
+  &__table {
+    table-layout: fixed;
+
+    th,
+    td {
+      @apply break-words;
+    }
+  }
+
+  &__col-bon {
+    width: 7rem;
+  }
+
+  &__col-services {
+    width: 14%;
+  }
+
+  &__col-products {
+    width: 28%;
+  }
+
+  &__col-client {
+    width: 12%;
+  }
+
+  &__col-amount {
+    width: 7rem;
+  }
+
+  &__col-actions {
+    width: 9rem;
+  }
+
+  &__icon-action {
+    @apply relative inline-flex size-10 items-center justify-center rounded border border-outline-variant bg-surface-container-lowest text-on-surface-variant transition hover:border-primary hover:bg-primary/5 hover:text-primary;
+
+    &--danger:hover {
+      @apply border-primary bg-primary/10 text-primary;
+    }
+  }
+
+  &__icon-action-tooltip {
+    @apply pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 -translate-x-1/2 whitespace-nowrap rounded bg-inverse-surface px-2.5 py-1 text-xs font-semibold text-inverse-on-surface opacity-0 shadow-md transition group-hover:opacity-100 group-focus-visible:opacity-100;
+  }
+}

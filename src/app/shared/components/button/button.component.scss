@@ -1,0 +1,15 @@
+@reference '../../../../tailwind.css';
+
+.app-button {
+  &--primary {
+    @apply rounded-[var(--radius-button)] bg-primary text-on-primary hover:bg-primary-container;
+  }
+
+  &--secondary {
+    @apply rounded-[var(--radius-button)] border-2 border-on-surface bg-surface-container-lowest text-on-surface hover:bg-surface-container;
+  }
+
+  &--ghost {
+    @apply rounded-[var(--radius-card)] bg-transparent text-on-surface hover:bg-surface-container;
+  }
+}

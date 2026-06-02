@@ -1,0 +1,22 @@
+<div class="wizard-placeholder mx-auto max-w-2xl rounded-[var(--radius-card)] border border-dashed border-outline bg-surface-container-lowest p-12 text-center">
+  <h2 class="font-display text-xl font-bold uppercase">{{ title() }}</h2>
+  <p class="wizard-placeholder__message mt-4 text-on-surface-variant">
+    Cette étape sera implémentée prochainement. Le flux et la navigation sont en place.
+  </p>
+  <div class="wizard-placeholder__actions mt-8 flex flex-wrap justify-center gap-4">
+    @if (prevStep) {
+      <a [routerLink]="prevLink()">
+        <app-button variant="secondary">Retour</app-button>
+      </a>
+    }
+    @if (nextStep) {
+      <a [routerLink]="nextLink()">
+        <app-button variant="primary">Suivant : {{ nextStep.label }}</app-button>
+      </a>
+    } @else {
+      <a routerLink="/journees">
+        <app-button variant="primary">Retour à la liste</app-button>
+      </a>
+    }
+  </div>
+</div>

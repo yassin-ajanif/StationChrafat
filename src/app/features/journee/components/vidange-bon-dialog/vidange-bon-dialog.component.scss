@@ -1,0 +1,27 @@
+@reference '../../../../../tailwind.css';
+
+.vidange-bon-dialog {
+  &__label {
+    @apply mb-2 block font-display text-sm font-semibold uppercase text-on-surface-variant;
+  }
+
+  &__input {
+    @apply min-h-[var(--spacing-touch)] w-full rounded-[var(--radius-card)] border border-outline px-4 text-base;
+  }
+
+  &__cell-input {
+    @apply min-h-9 rounded border border-outline bg-surface-container-lowest px-2 py-1 text-sm;
+  }
+
+  &__cell-input--block {
+    @apply block w-full;
+  }
+
+  &__table tbody tr:hover {
+    @apply bg-primary/5;
+  }
+
+  &__recap {
+    @apply shadow-sm;
+  }
+}

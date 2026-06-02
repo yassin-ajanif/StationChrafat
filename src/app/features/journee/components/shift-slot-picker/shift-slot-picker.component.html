@@ -1,0 +1,14 @@
+<div class="shift-slot-picker grid gap-4 sm:grid-cols-3">
+  @for (slot of slots; track slot.value) {
+    <button
+      type="button"
+      class="shift-slot-picker__card"
+      [class.shift-slot-picker__card--selected]="selected() === slot.value"
+      (click)="selectedChange.emit(slot.value)"
+    >
+      <span class="text-2xl" aria-hidden="true">{{ slot.icon }}</span>
+      <p class="mt-2 font-display text-lg font-bold uppercase">{{ slot.label }}</p>
+      <p class="text-sm text-on-surface-variant">{{ slot.hours }}</p>
+    </button>
+  }
+</div>

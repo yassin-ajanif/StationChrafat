@@ -1,0 +1,104 @@
+<div class="journee-list mx-auto max-w-6xl">
+  <div class="journee-list__header mb-8 flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <h1 class="font-display text-3xl font-bold uppercase text-on-surface">
+        Gestion des Journées
+      </h1>
+      <p class="mt-1 text-sm text-on-surface-variant">
+        Suivi des cycles journaliers et ouverture de shift
+      </p>
+    </div>
+    <a routerLink="/journees/nouvelle/configuration-step1">
+      <app-button variant="primary">+ Ouvrir une nouvelle journée</app-button>
+    </a>
+  </div>
+
+  @if (kpis(); as k) {
+    <div class="journee-list__kpis mb-8 grid gap-4 md:grid-cols-3">
+      <article class="journee-list__kpi journee-list__kpi--primary">
+        <p class="journee-list__kpi-label">Journées clôturées</p>
+        <p class="journee-list__kpi-value">{{ k.closedCount }}</p>
+        <p class="text-sm text-on-surface-variant">Ce mois-ci</p>
+      </article>
+      <article class="journee-list__kpi journee-list__kpi--orange">
+        <p class="journee-list__kpi-label">Chiffre d'affaires mensuel</p>
+        <p class="journee-list__kpi-value">
+          {{ k.monthlyRevenue | number: '1.0-0' : 'fr-MA' }} DH
+        </p>
+        <p class="text-sm text-success">+{{ k.monthlyRevenueDeltaPercent }}% vs mois dernier</p>
+      </article>
+      <article class="journee-list__kpi journee-list__kpi--outline">
+        <p class="journee-list__kpi-label">Écarts de caisse (moy.)</p>
+        <p class="journee-list__kpi-value">
+          {{ k.avgCashDiscrepancy | number: '1.0-0' : 'fr-MA' }} DH
+        </p>
+        <p class="text-sm text-on-surface-variant">
+          Seuil de vigilance : {{ k.cashDiscrepancyThreshold }} DH
+        </p>
+      </article>
+    </div>
+  } @else if (kpisLoading()) {
+    <p class="mb-8 text-sm text-on-surface-variant">Chargement des indicateurs…</p>
+  }
+
+  <section class="journee-list__table-section rounded-[var(--radius-card)] bg-surface-container-lowest shadow-sm">
+    <div class="flex flex-wrap gap-4 border-b border-outline-variant p-4">
+      <label class="flex flex-col gap-1 text-sm">
+        <span class="font-semibold uppercase text-on-surface-variant">Période</span>
+        <input type="date" class="journee-list__input" />
+      </label>
+      <label class="flex flex-col gap-1 text-sm">
+        <span class="font-semibold uppercase text-on-surface-variant">Statut</span>
+        <select class="journee-list__input">
+          <option>Tous les statuts</option>
+          <option>En cours</option>
+          <option>Clôturée</option>
+        </select>
+      </label>
+      <div class="flex items-end">
+        <app-button variant="secondary">Appliquer</app-button>
+      </div>
+    </div>
+
+    @if (listError(); as err) {
+      <p class="p-4 text-primary">{{ err }}</p>
+    } @else if (listLoading()) {
+      <p class="p-8 text-center text-on-surface-variant">Chargement…</p>
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="journee-list__table w-full min-w-[640px] text-left text-sm">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Statut</th>
+              <th>CA Total (DH)</th>
+              <th>Chef de piste</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (j of journees(); track j.id) {
+              <tr>
+                <td class="font-medium">{{ j.dateLabel }}</td>
+                <td>
+                  <span [class]="statusClass(j.status)">{{ statusLabel(j.status) }}</span>
+                </td>
+                <td>
+                  @if (j.caTotal > 0) {
+                    {{ j.caTotal | number: '1.2-2' : 'fr-MA' }}
+                  } @else {
+                    —
+                  }
+                </td>
+                <td>{{ j.chefDePiste.name }}</td>
+                <td>
+                  <app-button variant="ghost">Voir les détails</app-button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>

@@ -1,0 +1,21 @@
+<nav class="wizard-stepper w-full border-b border-outline-variant pb-4" aria-label="Étapes">
+  <div class="wizard-stepper__track mx-auto max-w-6xl">
+    @for (step of steps(); track step.id) {
+      <a
+        [routerLink]="['/journees', 'nouvelle', step.path]"
+        class="wizard-stepper__link"
+        [class.wizard-stepper__link--active]="isActive(step)"
+        [class.wizard-stepper__link--completed]="isCompleted(step)"
+      >
+        <span class="wizard-stepper__badge">
+          @if (isCompleted(step)) {
+            <span aria-hidden="true">✓</span>
+          } @else {
+            {{ formatOrder(step) }}
+          }
+        </span>
+        <span class="wizard-stepper__label">{{ step.label }}</span>
+      </a>
+    }
+  </div>
+</nav>

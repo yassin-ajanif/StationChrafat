@@ -1,0 +1,152 @@
+<div class="validation-step7 mx-auto flex w-full max-w-5xl flex-col">
+  <header class="mb-8 text-center">
+    <h1 class="font-display text-3xl font-bold uppercase text-on-surface">
+      Ouverture de journée
+    </h1>
+    <p class="mt-2 text-base text-on-surface-variant">
+      Validation finale avant transmission des données.
+    </p>
+  </header>
+
+  @if (loadError(); as err) {
+    <p class="mb-4 text-center text-sm text-primary" role="alert">{{ err }}</p>
+  }
+  @if (submitError(); as err) {
+    <p class="mb-4 text-center text-sm text-primary" role="alert">{{ err }}</p>
+  }
+
+  @if (loading()) {
+    <p class="py-16 text-center text-on-surface-variant">Calcul du récapitulatif…</p>
+  } @else if (summary(); as s) {
+    <div class="mb-6 grid gap-6 lg:grid-cols-2">
+      <section class="validation-step7__card" aria-label="Chiffre d'affaires">
+        <h2 class="validation-step7__card-title">
+          <span class="text-primary" aria-hidden="true">📄</span>
+          Chiffre d'affaires
+        </h2>
+        <div class="validation-step7__row">
+          <span class="validation-step7__row-label">Ventes Carburants</span>
+          <span class="validation-step7__row-value">
+            {{ s.revenue.fuelSales | number: '1.2-2' }} DH
+          </span>
+        </div>
+        <div class="validation-step7__row">
+          <span class="validation-step7__row-label">Boutique &amp; Produits</span>
+          <span class="validation-step7__row-value">
+            {{ s.revenue.shopProducts | number: '1.2-2' }} DH
+          </span>
+        </div>
+        <div class="validation-step7__row">
+          <span class="validation-step7__row-label">Services (Lavage/Graissage)</span>
+          <span class="validation-step7__row-value">
+            {{ s.revenue.services | number: '1.2-2' }} DH
+          </span>
+        </div>
+        <div class="validation-step7__gross-total">
+          <span class="font-display text-sm font-bold uppercase text-on-surface">Total brut</span>
+          <span class="validation-step7__gross-total-value">
+            {{ s.revenue.grossTotal | number: '1.2-2' }} DH
+          </span>
+        </div>
+      </section>
+
+      <section class="validation-step7__card" aria-label="Mouvements de caisse">
+        <h2 class="validation-step7__card-title">
+          <span class="text-primary" aria-hidden="true">👛</span>
+          Mouvements de caisse
+        </h2>
+        <div class="validation-step7__row">
+          <span class="validation-step7__row-label">Encaissements Non-Espèces</span>
+          <span class="validation-step7__row-value validation-step7__row-value--negative">
+            -{{ s.cashMovements.nonCashCollections | number: '1.2-2' }} DH
+          </span>
+        </div>
+        <div class="validation-step7__row">
+          <span class="validation-step7__row-label">Dépenses Autorisées</span>
+          <span class="validation-step7__row-value validation-step7__row-value--negative">
+            -{{ s.cashMovements.authorizedExpenses | number: '1.2-2' }} DH
+          </span>
+        </div>
+        <div class="validation-step7__row">
+          <span class="validation-step7__row-label">Règlements Dettes (+)</span>
+          <span class="validation-step7__row-value validation-step7__row-value--positive">
+            +{{ s.cashMovements.debtSettlements | number: '1.2-2' }} DH
+          </span>
+        </div>
+        <div class="validation-step7__row">
+          <span class="validation-step7__row-label">Recharges Cartes (+)</span>
+          <span class="validation-step7__row-value validation-step7__row-value--positive">
+            +{{ s.cashMovements.cardRecharges | number: '1.2-2' }} DH
+          </span>
+        </div>
+      </section>
+    </div>
+
+    <section class="validation-step7__remittance mb-8 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wide text-white/80">
+          Montant net à verser
+        </p>
+        <p class="mt-1 font-display text-lg font-bold uppercase text-white">
+          Espèces à remettre par {{ s.remittanceOperatorName }}
+        </p>
+      </div>
+      <p class="validation-step7__remittance-amount">
+        {{ s.netCashToRemit | number: '1.2-2' }} DH
+      </p>
+    </section>
+
+    <section class="validation-step7__card mb-8" aria-label="Détail encaissements non-espèces">
+      <h2 class="validation-step7__card-title">
+        <span class="text-primary" aria-hidden="true">📋</span>
+        Détail encaissements non-espèces
+      </h2>
+      @if (s.nonCashDetails.length === 0) {
+        <p class="text-sm text-on-surface-variant">Aucun encaissement non-espèces déclaré.</p>
+      } @else {
+        <div class="overflow-hidden rounded-[var(--radius-card)] border border-outline-variant">
+          <table class="validation-step7__detail-table w-full border-collapse text-sm">
+            <thead>
+              <tr class="bg-surface-container">
+                <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-on-surface-variant">
+                  Type de paiement
+                </th>
+                <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-on-surface-variant">
+                  Référence / Nb
+                </th>
+                <th class="px-4 py-3 text-right font-display text-xs font-bold uppercase text-on-surface-variant">
+                  Montant
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of s.nonCashDetails; track row.paymentType) {
+                <tr class="border-t border-outline-variant/50">
+                  <td class="px-4 py-3 font-medium text-on-surface">{{ row.paymentType }}</td>
+                  <td class="px-4 py-3 text-on-surface-variant">{{ row.reference }}</td>
+                  <td class="px-4 py-3 text-right font-semibold tabular-nums text-on-surface">
+                    {{ row.amount | number: '1.2-2' }} DH
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
+
+  <footer class="flex flex-wrap justify-between gap-4">
+    <a routerLink="/journees/nouvelle/depenses-step6">
+      <app-button variant="secondary">← Revenir au formulaire</app-button>
+    </a>
+    <app-button
+      variant="primary"
+      [disabled]="loading() || submitting() || summary() == null"
+      [loading]="submitting()"
+      (pressed)="submit()"
+    >
+      Soumettre la journée
+    </app-button>
+  </footer>
+</div>

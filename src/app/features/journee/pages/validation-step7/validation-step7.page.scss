@@ -1,0 +1,56 @@
+@reference '../../../../../tailwind.css';
+
+.validation-step7 {
+  &__card {
+    @apply rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest p-5 shadow-sm;
+  }
+
+  &__card-title {
+    @apply mb-4 flex items-center gap-2 font-display text-sm font-bold uppercase text-on-surface;
+  }
+
+  &__row {
+    @apply flex items-baseline justify-between gap-4 border-b border-outline-variant/40 py-2.5 text-sm last:border-b-0;
+  }
+
+  &__row-label {
+    @apply text-on-surface-variant;
+  }
+
+  &__row-value {
+    @apply font-semibold tabular-nums text-on-surface;
+  }
+
+  &__row-value--negative {
+    @apply text-primary;
+  }
+
+  &__row-value--positive {
+    @apply text-secondary;
+  }
+
+  &__gross-total {
+    @apply mt-4 flex items-baseline justify-between border-t-2 border-outline-variant pt-4;
+  }
+
+  &__gross-total-value {
+    @apply font-display text-2xl font-bold tabular-nums text-secondary;
+  }
+
+  &__remittance {
+    @apply rounded-[var(--radius-card)] bg-success px-6 py-5 text-white shadow-sm;
+  }
+
+  &__remittance-amount {
+    @apply rounded bg-white px-5 py-3 font-display text-3xl font-bold tabular-nums text-success;
+  }
+
+  &__detail-table {
+    table-layout: fixed;
+
+    th,
+    td {
+      @apply break-words;
+    }
+  }
+}
