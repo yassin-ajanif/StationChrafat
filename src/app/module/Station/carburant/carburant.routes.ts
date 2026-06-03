@@ -4,6 +4,7 @@ import { AchatCommandesListPage } from './pages/achat/commandes-list/commandes-l
 import { AchatDevisListPage } from './pages/achat/devis-list/devis-list.page';
 import { AchatFacturesListPage } from './pages/achat/factures-list/factures-list.page';
 import { AchatLivraisonsListPage } from './pages/achat/livraisons-list/livraisons-list.page';
+import { CarburantBonLivraisonCarburantPage } from './pages/bon-livraison-carburant/bon-livraison-carburant.page';
 import { StockOverviewPage } from './pages/stock-overview/stock-overview.page';
 import { VentesAvoirsListPage } from './pages/ventes/avoirs-list/avoirs-list.page';
 import { VentesCommandesListPage } from './pages/ventes/commandes-list/commandes-list.page';
@@ -14,6 +15,7 @@ import { VentesLivraisonsListPage } from './pages/ventes/livraisons-list/livrais
 export const CARBURANT_ROUTES: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'stock' },
   { path: 'stock', component: StockOverviewPage },
+  { path: 'bon-livraison', component: CarburantBonLivraisonCarburantPage },
   { path: 'ventes/devis', component: VentesDevisListPage },
   { path: 'ventes/commandes', component: VentesCommandesListPage },
   { path: 'ventes/livraisons', component: VentesLivraisonsListPage },

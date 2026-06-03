@@ -312,12 +312,14 @@
     <a [routerLink]="config().backLink">
       <app-button variant="secondary">← Retour</app-button>
     </a>
-    <app-button
-      variant="primary"
-      [disabled]="!canProceed() || loading()"
-      (pressed)="next()"
-    >
-      Suivant →
-    </app-button>
+    @if (config().showWizardNext !== false) {
+      <app-button
+        variant="primary"
+        [disabled]="!canProceed() || loading()"
+        (pressed)="next()"
+      >
+        Suivant →
+      </app-button>
+    }
   </footer>
 </div>

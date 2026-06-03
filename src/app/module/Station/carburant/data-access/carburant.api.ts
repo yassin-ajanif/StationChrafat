@@ -2,10 +2,32 @@ import { Injectable } from '@angular/core';
 import { delay, Observable, of } from 'rxjs';
 import {
   AvoirFournisseur,
+  AvoirFournisseurDraft,
   CommandeAchat,
+  CommandeAchatDraft,
   DevisAchat,
+  DevisAchatDraft,
   FactureFournisseur,
+  FactureFournisseurDraft,
   Reception,
+  ReceptionDraft,
+  assignAvoirFournisseurLineIds,
+  assignCommandeAchatLineIds,
+  assignDevisAchatLineIds,
+  assignFactureFournisseurLineIds,
+  assignReceptionLineIds,
+  computeAvoirFournisseurMontant,
+  computeCommandeAchatMontant,
+  computeDevisAchatEffectiveTva,
+  computeDevisAchatMontantHT,
+  computeDevisAchatMontantTTC,
+  computeFactureFournisseurMontantTTC,
+  computeReceptionMontant,
+  nextAvoirFournisseurNumber,
+  nextCommandeAchatNumber,
+  nextDevisAchatNumber,
+  nextFactureFournisseurNumber,
+  nextReceptionNumber,
 } from '../models/achat';
 import {
   CanopyFuelType,
@@ -141,7 +163,21 @@ const demoDevisAchat: DevisAchat[] = [
     statut: 'accepte',
     dateCreation: '2026-05-20',
     dateValidite: '2026-06-20',
-    notes: 'Approvisionnement gazoil 40 000 L',
+    notes: 'Approvisionnement gazoil 40 000 L — cuve n°1',
+    serviceLines: [],
+    productLines: [
+      {
+        id: 1,
+        reference: 'GO-10',
+        designation: 'Gazoil 10 ppm',
+        quantity: 40_000,
+        unit: 'L',
+        unitPriceHT: 9.5,
+        discountPercent: 0,
+        vatPercent: 20,
+      },
+    ],
+    payments: { cash: 0, tpe: 0, bons: 0 },
   },
   {
     id: 2,
@@ -153,7 +189,21 @@ const demoDevisAchat: DevisAchat[] = [
     statut: 'envoye',
     dateCreation: '2026-06-01',
     dateValidite: '2026-07-01',
-    notes: 'Devis SP-95',
+    notes: 'Devis SP-95 — 15 000 L',
+    serviceLines: [],
+    productLines: [
+      {
+        id: 2,
+        reference: 'SP95',
+        designation: 'Essence SP-95',
+        quantity: 15_000,
+        unit: 'L',
+        unitPriceHT: 8.33,
+        discountPercent: 0,
+        vatPercent: 20,
+      },
+    ],
+    payments: { cash: 0, tpe: 0, bons: 0 },
   },
 ];
 
@@ -165,7 +215,21 @@ const demoCommandesAchat: CommandeAchat[] = [
     montant: 456_000,
     statut: 'confirmee',
     dateCreation: '2026-05-22',
-    description: 'BC gazoil juin',
+    description: 'BC gazoil juin — cuve n°1',
+    serviceLines: [],
+    productLines: [
+      {
+        id: 1,
+        reference: 'GO-10',
+        designation: 'Gazoil 10 ppm',
+        quantity: 40_000,
+        unit: 'L',
+        unitPriceHT: 9.5,
+        discountPercent: 0,
+        vatPercent: 20,
+      },
+    ],
+    payments: { cash: 0, tpe: 0, bons: 0 },
   },
   {
     id: 2,
@@ -174,7 +238,21 @@ const demoCommandesAchat: CommandeAchat[] = [
     montant: 89_500,
     statut: 'en_attente',
     dateCreation: '2026-06-02',
-    description: 'BC excellium',
+    description: 'BC excellium — 10 000 L',
+    serviceLines: [],
+    productLines: [
+      {
+        id: 2,
+        reference: 'EXCL',
+        designation: 'Excellium',
+        quantity: 10_000,
+        unit: 'L',
+        unitPriceHT: 8.95,
+        discountPercent: 0,
+        vatPercent: 20,
+      },
+    ],
+    payments: { cash: 0, tpe: 0, bons: 0 },
   },
 ];
 
@@ -187,6 +265,21 @@ const demoReceptions: Reception[] = [
     statut: 'planifiee',
     reference: 'BL-TE-88421',
     description: 'Réception citerne gazoil',
+    montant: 456_000,
+    serviceLines: [],
+    productLines: [
+      {
+        id: 1,
+        reference: 'GO-10',
+        designation: 'Gazoil 10 ppm',
+        quantity: 40_000,
+        unit: 'L',
+        unitPriceHT: 9.5,
+        discountPercent: 0,
+        vatPercent: 20,
+      },
+    ],
+    payments: { cash: 0, tpe: 0, bons: 0 },
   },
   {
     id: 2,
@@ -196,6 +289,21 @@ const demoReceptions: Reception[] = [
     statut: 'recue',
     reference: 'BL-AF-12005',
     description: 'Réception SP-95 confirmée',
+    montant: 150_000,
+    serviceLines: [],
+    productLines: [
+      {
+        id: 2,
+        reference: 'SP95',
+        designation: 'Essence SP-95',
+        quantity: 15_000,
+        unit: 'L',
+        unitPriceHT: 8.33,
+        discountPercent: 0,
+        vatPercent: 20,
+      },
+    ],
+    payments: { cash: 0, tpe: 0, bons: 0 },
   },
 ];
 
@@ -208,6 +316,20 @@ const demoFacturesFournisseur: FactureFournisseur[] = [
     statut: 'recue',
     dateReception: '2026-06-10',
     dateEcheance: '2026-07-10',
+    serviceLines: [],
+    productLines: [
+      {
+        id: 1,
+        reference: 'GO-10',
+        designation: 'Gazoil 10 ppm',
+        quantity: 40_000,
+        unit: 'L',
+        unitPriceHT: 9.5,
+        discountPercent: 0,
+        vatPercent: 20,
+      },
+    ],
+    payments: { cash: 0, tpe: 0, bons: 0 },
   },
   {
     id: 2,
@@ -217,6 +339,20 @@ const demoFacturesFournisseur: FactureFournisseur[] = [
     statut: 'payee',
     dateReception: '2026-05-28',
     dateEcheance: '2026-06-28',
+    serviceLines: [],
+    productLines: [
+      {
+        id: 2,
+        reference: 'EXCL',
+        designation: 'Excellium',
+        quantity: 10_000,
+        unit: 'L',
+        unitPriceHT: 8.95,
+        discountPercent: 0,
+        vatPercent: 20,
+      },
+    ],
+    payments: { cash: 0, tpe: 0, bons: 0 },
   },
 ];
 
@@ -229,6 +365,20 @@ const demoAvoirsFournisseur: AvoirFournisseur[] = [
     montant: 2_400,
     statut: 'recu',
     dateReception: '2026-06-12',
+    serviceLines: [],
+    productLines: [
+      {
+        id: 1,
+        reference: 'GO-10',
+        designation: 'Écart livraison gazoil',
+        quantity: 200,
+        unit: 'L',
+        unitPriceHT: 10,
+        discountPercent: 0,
+        vatPercent: 20,
+      },
+    ],
+    payments: { cash: 0, tpe: 0, bons: 0 },
   },
 ];
 
@@ -330,19 +480,314 @@ export class CarburantApi {
     return of([...demoDevisAchat]).pipe(delay(randomDelay()));
   }
 
+  addDevisAchat(draft: DevisAchatDraft): Observable<DevisAchat> {
+    const serviceLines = assignDevisAchatLineIds(draft.serviceLines, 1);
+    const productLines = assignDevisAchatLineIds(
+      draft.productLines,
+      serviceLines.length > 0 ? Math.max(...serviceLines.map((l) => l.id)) + 1 : 1,
+    );
+    const totals = { serviceLines, productLines };
+    const montantHT = computeDevisAchatMontantHT(totals);
+    const montantTTC = computeDevisAchatMontantTTC(totals);
+    const devisAchat: DevisAchat = {
+      id: Math.max(...demoDevisAchat.map((d) => d.id), 0) + 1,
+      numero: nextDevisAchatNumber(demoDevisAchat),
+      fournisseur: draft.fournisseur,
+      montantHT,
+      tva: computeDevisAchatEffectiveTva(montantHT, montantTTC),
+      montantTTC,
+      statut: draft.statut,
+      dateCreation: new Date().toISOString().split('T')[0],
+      dateValidite: draft.dateValidite,
+      notes: draft.notes,
+      serviceLines,
+      productLines,
+      payments: { ...draft.payments },
+    };
+    demoDevisAchat.push(devisAchat);
+    return of(devisAchat).pipe(delay(randomDelay()));
+  }
+
+  updateDevisAchat(id: number, draft: DevisAchatDraft): Observable<DevisAchat> {
+    const idx = demoDevisAchat.findIndex((d) => d.id === id);
+    if (idx === -1) {
+      throw new Error('Devis achat introuvable');
+    }
+    const serviceLines = assignDevisAchatLineIds(draft.serviceLines, 1);
+    const productLines = assignDevisAchatLineIds(
+      draft.productLines,
+      serviceLines.length > 0 ? Math.max(...serviceLines.map((l) => l.id)) + 1 : 1,
+    );
+    const totals = { serviceLines, productLines };
+    const montantHT = computeDevisAchatMontantHT(totals);
+    const montantTTC = computeDevisAchatMontantTTC(totals);
+    const updated: DevisAchat = {
+      ...demoDevisAchat[idx],
+      fournisseur: draft.fournisseur,
+      montantHT,
+      tva: computeDevisAchatEffectiveTva(montantHT, montantTTC),
+      montantTTC,
+      statut: draft.statut,
+      dateValidite: draft.dateValidite,
+      notes: draft.notes,
+      serviceLines,
+      productLines,
+      payments: { ...draft.payments },
+    };
+    demoDevisAchat[idx] = updated;
+    return of(updated).pipe(delay(randomDelay()));
+  }
+
+  removeDevisAchat(id: number): Observable<boolean> {
+    const idx = demoDevisAchat.findIndex((d) => d.id === id);
+    if (idx !== -1) {
+      demoDevisAchat.splice(idx, 1);
+    }
+    return of(true).pipe(delay(randomDelay()));
+  }
+
   getCommandesAchat(): Observable<CommandeAchat[]> {
     return of([...demoCommandesAchat]).pipe(delay(randomDelay()));
+  }
+
+  addCommandeAchat(draft: CommandeAchatDraft): Observable<CommandeAchat> {
+    const serviceLines = assignCommandeAchatLineIds(draft.serviceLines, 1);
+    const productLines = assignCommandeAchatLineIds(
+      draft.productLines,
+      serviceLines.length > 0 ? Math.max(...serviceLines.map((l) => l.id)) + 1 : 1,
+    );
+    const totals = { serviceLines, productLines };
+    const commandeAchat: CommandeAchat = {
+      id: Math.max(...demoCommandesAchat.map((c) => c.id), 0) + 1,
+      numero: nextCommandeAchatNumber(demoCommandesAchat),
+      fournisseur: draft.fournisseur,
+      montant: computeCommandeAchatMontant(totals),
+      statut: draft.statut,
+      dateCreation: new Date().toISOString().split('T')[0],
+      description: draft.description,
+      serviceLines,
+      productLines,
+      payments: { ...draft.payments },
+    };
+    demoCommandesAchat.push(commandeAchat);
+    return of(commandeAchat).pipe(delay(randomDelay()));
+  }
+
+  updateCommandeAchat(id: number, draft: CommandeAchatDraft): Observable<CommandeAchat> {
+    const idx = demoCommandesAchat.findIndex((c) => c.id === id);
+    if (idx === -1) {
+      throw new Error('Commande achat introuvable');
+    }
+    const serviceLines = assignCommandeAchatLineIds(draft.serviceLines, 1);
+    const productLines = assignCommandeAchatLineIds(
+      draft.productLines,
+      serviceLines.length > 0 ? Math.max(...serviceLines.map((l) => l.id)) + 1 : 1,
+    );
+    const totals = { serviceLines, productLines };
+    const updated: CommandeAchat = {
+      ...demoCommandesAchat[idx],
+      fournisseur: draft.fournisseur,
+      montant: computeCommandeAchatMontant(totals),
+      statut: draft.statut,
+      description: draft.description,
+      serviceLines,
+      productLines,
+      payments: { ...draft.payments },
+    };
+    demoCommandesAchat[idx] = updated;
+    return of(updated).pipe(delay(randomDelay()));
+  }
+
+  removeCommandeAchat(id: number): Observable<boolean> {
+    const idx = demoCommandesAchat.findIndex((c) => c.id === id);
+    if (idx !== -1) {
+      demoCommandesAchat.splice(idx, 1);
+    }
+    return of(true).pipe(delay(randomDelay()));
   }
 
   getReceptions(): Observable<Reception[]> {
     return of([...demoReceptions]).pipe(delay(randomDelay()));
   }
 
+  addReception(draft: ReceptionDraft): Observable<Reception> {
+    const serviceLines = assignReceptionLineIds(draft.serviceLines, 1);
+    const productLines = assignReceptionLineIds(
+      draft.productLines,
+      serviceLines.length > 0 ? Math.max(...serviceLines.map((l) => l.id)) + 1 : 1,
+    );
+    const totals = { serviceLines, productLines };
+    const reception: Reception = {
+      id: Math.max(...demoReceptions.map((r) => r.id), 0) + 1,
+      numero: nextReceptionNumber(demoReceptions),
+      fournisseur: draft.fournisseur,
+      dateReception: draft.dateReception || new Date().toISOString().split('T')[0],
+      statut: draft.statut,
+      reference: draft.reference,
+      description: draft.description,
+      montant: computeReceptionMontant(totals),
+      serviceLines,
+      productLines,
+      payments: { ...draft.payments },
+    };
+    demoReceptions.push(reception);
+    return of(reception).pipe(delay(randomDelay()));
+  }
+
+  updateReception(id: number, draft: ReceptionDraft): Observable<Reception> {
+    const idx = demoReceptions.findIndex((r) => r.id === id);
+    if (idx === -1) {
+      throw new Error('Réception introuvable');
+    }
+    const serviceLines = assignReceptionLineIds(draft.serviceLines, 1);
+    const productLines = assignReceptionLineIds(
+      draft.productLines,
+      serviceLines.length > 0 ? Math.max(...serviceLines.map((l) => l.id)) + 1 : 1,
+    );
+    const totals = { serviceLines, productLines };
+    const updated: Reception = {
+      ...demoReceptions[idx],
+      fournisseur: draft.fournisseur,
+      dateReception: draft.dateReception,
+      statut: draft.statut,
+      reference: draft.reference,
+      description: draft.description,
+      montant: computeReceptionMontant(totals),
+      serviceLines,
+      productLines,
+      payments: { ...draft.payments },
+    };
+    demoReceptions[idx] = updated;
+    return of(updated).pipe(delay(randomDelay()));
+  }
+
+  removeReception(id: number): Observable<boolean> {
+    const idx = demoReceptions.findIndex((r) => r.id === id);
+    if (idx !== -1) {
+      demoReceptions.splice(idx, 1);
+    }
+    return of(true).pipe(delay(randomDelay()));
+  }
+
   getFacturesFournisseur(): Observable<FactureFournisseur[]> {
     return of([...demoFacturesFournisseur]).pipe(delay(randomDelay()));
   }
 
+  addFactureFournisseur(draft: FactureFournisseurDraft): Observable<FactureFournisseur> {
+    const serviceLines = assignFactureFournisseurLineIds(draft.serviceLines, 1);
+    const productLines = assignFactureFournisseurLineIds(
+      draft.productLines,
+      serviceLines.length > 0 ? Math.max(...serviceLines.map((l) => l.id)) + 1 : 1,
+    );
+    const totals = { serviceLines, productLines };
+    const factureFournisseur: FactureFournisseur = {
+      id: Math.max(...demoFacturesFournisseur.map((f) => f.id), 0) + 1,
+      numero: nextFactureFournisseurNumber(demoFacturesFournisseur),
+      fournisseur: draft.fournisseur,
+      montantTTC: computeFactureFournisseurMontantTTC(totals),
+      statut: draft.statut,
+      dateReception: draft.dateReception || new Date().toISOString().split('T')[0],
+      dateEcheance: draft.dateEcheance,
+      serviceLines,
+      productLines,
+      payments: { ...draft.payments },
+    };
+    demoFacturesFournisseur.push(factureFournisseur);
+    return of(factureFournisseur).pipe(delay(randomDelay()));
+  }
+
+  updateFactureFournisseur(id: number, draft: FactureFournisseurDraft): Observable<FactureFournisseur> {
+    const idx = demoFacturesFournisseur.findIndex((f) => f.id === id);
+    if (idx === -1) {
+      throw new Error('Facture fournisseur introuvable');
+    }
+    const serviceLines = assignFactureFournisseurLineIds(draft.serviceLines, 1);
+    const productLines = assignFactureFournisseurLineIds(
+      draft.productLines,
+      serviceLines.length > 0 ? Math.max(...serviceLines.map((l) => l.id)) + 1 : 1,
+    );
+    const totals = { serviceLines, productLines };
+    const updated: FactureFournisseur = {
+      ...demoFacturesFournisseur[idx],
+      fournisseur: draft.fournisseur,
+      montantTTC: computeFactureFournisseurMontantTTC(totals),
+      statut: draft.statut,
+      dateReception: draft.dateReception,
+      dateEcheance: draft.dateEcheance,
+      serviceLines,
+      productLines,
+      payments: { ...draft.payments },
+    };
+    demoFacturesFournisseur[idx] = updated;
+    return of(updated).pipe(delay(randomDelay()));
+  }
+
+  removeFactureFournisseur(id: number): Observable<boolean> {
+    const idx = demoFacturesFournisseur.findIndex((f) => f.id === id);
+    if (idx !== -1) {
+      demoFacturesFournisseur.splice(idx, 1);
+    }
+    return of(true).pipe(delay(randomDelay()));
+  }
+
   getAvoirsFournisseur(): Observable<AvoirFournisseur[]> {
     return of([...demoAvoirsFournisseur]).pipe(delay(randomDelay()));
+  }
+
+  addAvoirFournisseur(draft: AvoirFournisseurDraft): Observable<AvoirFournisseur> {
+    const serviceLines = assignAvoirFournisseurLineIds(draft.serviceLines, 1);
+    const productLines = assignAvoirFournisseurLineIds(
+      draft.productLines,
+      serviceLines.length > 0 ? Math.max(...serviceLines.map((l) => l.id)) + 1 : 1,
+    );
+    const totals = { serviceLines, productLines };
+    const avoirFournisseur: AvoirFournisseur = {
+      id: Math.max(...demoAvoirsFournisseur.map((a) => a.id), 0) + 1,
+      numero: nextAvoirFournisseurNumber(demoAvoirsFournisseur),
+      factureLiee: draft.factureLiee,
+      fournisseur: draft.fournisseur,
+      montant: computeAvoirFournisseurMontant(totals),
+      statut: draft.statut,
+      dateReception: draft.dateReception || new Date().toISOString().split('T')[0],
+      serviceLines,
+      productLines,
+      payments: { ...draft.payments },
+    };
+    demoAvoirsFournisseur.push(avoirFournisseur);
+    return of(avoirFournisseur).pipe(delay(randomDelay()));
+  }
+
+  updateAvoirFournisseur(id: number, draft: AvoirFournisseurDraft): Observable<AvoirFournisseur> {
+    const idx = demoAvoirsFournisseur.findIndex((a) => a.id === id);
+    if (idx === -1) {
+      throw new Error('Avoir fournisseur introuvable');
+    }
+    const serviceLines = assignAvoirFournisseurLineIds(draft.serviceLines, 1);
+    const productLines = assignAvoirFournisseurLineIds(
+      draft.productLines,
+      serviceLines.length > 0 ? Math.max(...serviceLines.map((l) => l.id)) + 1 : 1,
+    );
+    const totals = { serviceLines, productLines };
+    const updated: AvoirFournisseur = {
+      ...demoAvoirsFournisseur[idx],
+      factureLiee: draft.factureLiee,
+      fournisseur: draft.fournisseur,
+      montant: computeAvoirFournisseurMontant(totals),
+      statut: draft.statut,
+      dateReception: draft.dateReception,
+      serviceLines,
+      productLines,
+      payments: { ...draft.payments },
+    };
+    demoAvoirsFournisseur[idx] = updated;
+    return of(updated).pipe(delay(randomDelay()));
+  }
+
+  removeAvoirFournisseur(id: number): Observable<boolean> {
+    const idx = demoAvoirsFournisseur.findIndex((a) => a.id === id);
+    if (idx !== -1) {
+      demoAvoirsFournisseur.splice(idx, 1);
+    }
+    return of(true).pipe(delay(randomDelay()));
   }
 }

@@ -149,7 +149,27 @@ export class AppShellComponent {
           baseRoute: '/station/carburant',
           children: [
             { label: 'Stock', route: '/station/carburant/stock' },
-            ...activityVentesAchatChildren('/station/carburant', 'station-carburant'),
+            {
+              id: 'station-carburant-ventes',
+              label: 'Ventes',
+              baseRoute: '/station/carburant/ventes',
+              children: [
+                { label: 'Devis', route: '/station/carburant/ventes/devis' },
+                { label: 'Bon de commande', route: '/station/carburant/ventes/commandes' },
+                { label: 'Bon de livraison', route: '/station/carburant/bon-livraison' },
+                { label: 'Factures', route: '/station/carburant/ventes/factures' },
+                { label: 'Avoirs', route: '/station/carburant/ventes/avoirs' },
+              ],
+            },
+            {
+              id: 'station-carburant-achat',
+              label: 'Achat',
+              baseRoute: '/station/carburant/achat',
+              children: ACHAT_DOCUMENT_CHILDREN.map((item) => ({
+                ...item,
+                route: `/station/carburant/achat${item.route}`,
+              })),
+            },
           ],
         },
         { label: 'Journée', route: '/journees' },

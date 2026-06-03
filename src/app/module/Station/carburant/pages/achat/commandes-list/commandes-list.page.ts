@@ -1,8 +1,11 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
 import {
   COMMANDE_ACHAT_STATUT_LABELS,
+  CommandeAchat,
+  CommandeAchatDraft,
   CommandeAchatStatut,
 } from '../../../models/achat';
 import { CarburantActions } from '../../../state/carburant.actions';
@@ -10,12 +13,14 @@ import {
   selectCommandesAchat,
   selectCommandesAchatError,
   selectCommandesAchatLoading,
+  selectCommandesAchatSaving,
 } from '../../../state/carburant.selectors';
+import { CommandeAchatFormDialogComponent } from './dialogs/commande-achat-form-dialog/commande-achat-form-dialog.component';
 
 @Component({
   selector: 'app-carburant-achat-commandes-list-page',
   standalone: true,
-  imports: [DatePipe, DecimalPipe],
+  imports: [ButtonComponent, CommandeAchatFormDialogComponent, DatePipe, DecimalPipe],
   templateUrl: './commandes-list.page.html',
   styleUrl: './commandes-list.page.scss',
 })
@@ -25,10 +30,46 @@ export class AchatCommandesListPage implements OnInit {
   readonly commandes = this.store.selectSignal(selectCommandesAchat);
   readonly loading = this.store.selectSignal(selectCommandesAchatLoading);
   readonly error = this.store.selectSignal(selectCommandesAchatError);
+  readonly saving = this.store.selectSignal(selectCommandesAchatSaving);
+
   readonly statutLabels = COMMANDE_ACHAT_STATUT_LABELS;
+  readonly showDialog = signal(false);
+  readonly editingCommande = signal<CommandeAchat | null>(null);
 
   ngOnInit(): void {
     this.store.dispatch(CarburantActions.loadCommandesAchat());
+  }
+
+  openNew(): void {
+    this.editingCommande.set(null);
+    this.showDialog.set(true);
+  }
+
+  openEdit(commande: CommandeAchat): void {
+    this.editingCommande.set(commande);
+    this.showDialog.set(true);
+  }
+
+  onSaved(draft: CommandeAchatDraft): void {
+    const editing = this.editingCommande();
+    if (editing) {
+      this.store.dispatch(CarburantActions.updateCommandeAchat({ id: editing.id, draft }));
+    } else {
+      this.store.dispatch(CarburantActions.addCommandeAchat({ draft }));
+    }
+    this.showDialog.set(false);
+    this.editingCommande.set(null);
+  }
+
+  closeDialog(): void {
+    this.showDialog.set(false);
+    this.editingCommande.set(null);
+  }
+
+  removeCommande(id: number): void {
+    if (confirm('Supprimer cette commande fournisseur ?')) {
+      this.store.dispatch(CarburantActions.removeCommandeAchat({ id }));
+    }
   }
 
   statutClass(statut: CommandeAchatStatut): string {

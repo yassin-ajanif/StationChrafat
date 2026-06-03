@@ -27,18 +27,23 @@ export interface CarburantState {
   devisAchat: DevisAchat[];
   devisAchatLoading: boolean;
   devisAchatError: string | null;
+  devisAchatSaving: boolean;
   commandesAchat: CommandeAchat[];
   commandesAchatLoading: boolean;
   commandesAchatError: string | null;
+  commandesAchatSaving: boolean;
   receptions: Reception[];
   receptionsLoading: boolean;
   receptionsError: string | null;
+  receptionsSaving: boolean;
   facturesFournisseur: FactureFournisseur[];
   facturesFournisseurLoading: boolean;
   facturesFournisseurError: string | null;
+  facturesFournisseurSaving: boolean;
   avoirsFournisseur: AvoirFournisseur[];
   avoirsFournisseurLoading: boolean;
   avoirsFournisseurError: string | null;
+  avoirsFournisseurSaving: boolean;
 }
 
 export const initialCarburantState: CarburantState = {
@@ -64,18 +69,23 @@ export const initialCarburantState: CarburantState = {
   devisAchat: [],
   devisAchatLoading: false,
   devisAchatError: null,
+  devisAchatSaving: false,
   commandesAchat: [],
   commandesAchatLoading: false,
   commandesAchatError: null,
+  commandesAchatSaving: false,
   receptions: [],
   receptionsLoading: false,
   receptionsError: null,
+  receptionsSaving: false,
   facturesFournisseur: [],
   facturesFournisseurLoading: false,
   facturesFournisseurError: null,
+  facturesFournisseurSaving: false,
   avoirsFournisseur: [],
   avoirsFournisseurLoading: false,
   avoirsFournisseurError: null,
+  avoirsFournisseurSaving: false,
 };
 
 export const carburantFeature = createFeature({
@@ -224,6 +234,35 @@ export const carburantFeature = createFeature({
       devisAchatError: error,
     })),
 
+    on(CarburantActions.addDevisAchat, CarburantActions.updateDevisAchat, CarburantActions.removeDevisAchat, (state) => ({
+      ...state,
+      devisAchatSaving: true,
+    })),
+    on(CarburantActions.addDevisAchatSuccess, (state, { devisAchat }) => ({
+      ...state,
+      devisAchatSaving: false,
+      devisAchat: [...state.devisAchat, devisAchat],
+    })),
+    on(CarburantActions.updateDevisAchatSuccess, (state, { devisAchat }) => ({
+      ...state,
+      devisAchatSaving: false,
+      devisAchat: state.devisAchat.map((d) => (d.id === devisAchat.id ? devisAchat : d)),
+    })),
+    on(CarburantActions.removeDevisAchatSuccess, (state, { id }) => ({
+      ...state,
+      devisAchatSaving: false,
+      devisAchat: state.devisAchat.filter((d) => d.id !== id),
+    })),
+    on(
+      CarburantActions.addDevisAchatFailure,
+      CarburantActions.updateDevisAchatFailure,
+      CarburantActions.removeDevisAchatFailure,
+      (state) => ({
+        ...state,
+        devisAchatSaving: false,
+      }),
+    ),
+
     on(CarburantActions.loadCommandesAchat, (state) => ({
       ...state,
       commandesAchatLoading: true,
@@ -239,6 +278,40 @@ export const carburantFeature = createFeature({
       commandesAchatLoading: false,
       commandesAchatError: error,
     })),
+
+    on(
+      CarburantActions.addCommandeAchat,
+      CarburantActions.updateCommandeAchat,
+      CarburantActions.removeCommandeAchat,
+      (state) => ({
+        ...state,
+        commandesAchatSaving: true,
+      }),
+    ),
+    on(CarburantActions.addCommandeAchatSuccess, (state, { commandeAchat }) => ({
+      ...state,
+      commandesAchatSaving: false,
+      commandesAchat: [...state.commandesAchat, commandeAchat],
+    })),
+    on(CarburantActions.updateCommandeAchatSuccess, (state, { commandeAchat }) => ({
+      ...state,
+      commandesAchatSaving: false,
+      commandesAchat: state.commandesAchat.map((c) => (c.id === commandeAchat.id ? commandeAchat : c)),
+    })),
+    on(CarburantActions.removeCommandeAchatSuccess, (state, { id }) => ({
+      ...state,
+      commandesAchatSaving: false,
+      commandesAchat: state.commandesAchat.filter((c) => c.id !== id),
+    })),
+    on(
+      CarburantActions.addCommandeAchatFailure,
+      CarburantActions.updateCommandeAchatFailure,
+      CarburantActions.removeCommandeAchatFailure,
+      (state) => ({
+        ...state,
+        commandesAchatSaving: false,
+      }),
+    ),
 
     on(CarburantActions.loadReceptions, (state) => ({
       ...state,
@@ -256,6 +329,32 @@ export const carburantFeature = createFeature({
       receptionsError: error,
     })),
 
+    on(CarburantActions.addReception, CarburantActions.updateReception, CarburantActions.removeReception, (state) => ({
+      ...state,
+      receptionsSaving: true,
+    })),
+    on(CarburantActions.addReceptionSuccess, (state, { reception }) => ({
+      ...state,
+      receptionsSaving: false,
+      receptions: [...state.receptions, reception],
+    })),
+    on(CarburantActions.updateReceptionSuccess, (state, { reception }) => ({
+      ...state,
+      receptionsSaving: false,
+      receptions: state.receptions.map((r) => (r.id === reception.id ? reception : r)),
+    })),
+    on(CarburantActions.removeReceptionSuccess, (state, { id }) => ({
+      ...state,
+      receptionsSaving: false,
+      receptions: state.receptions.filter((r) => r.id !== id),
+    })),
+    on(
+      CarburantActions.addReceptionFailure,
+      CarburantActions.updateReceptionFailure,
+      CarburantActions.removeReceptionFailure,
+      (state) => ({ ...state, receptionsSaving: false }),
+    ),
+
     on(CarburantActions.loadFacturesFournisseur, (state) => ({
       ...state,
       facturesFournisseurLoading: true,
@@ -272,6 +371,36 @@ export const carburantFeature = createFeature({
       facturesFournisseurError: error,
     })),
 
+    on(
+      CarburantActions.addFactureFournisseur,
+      CarburantActions.updateFactureFournisseur,
+      CarburantActions.removeFactureFournisseur,
+      (state) => ({ ...state, facturesFournisseurSaving: true }),
+    ),
+    on(CarburantActions.addFactureFournisseurSuccess, (state, { factureFournisseur }) => ({
+      ...state,
+      facturesFournisseurSaving: false,
+      facturesFournisseur: [...state.facturesFournisseur, factureFournisseur],
+    })),
+    on(CarburantActions.updateFactureFournisseurSuccess, (state, { factureFournisseur }) => ({
+      ...state,
+      facturesFournisseurSaving: false,
+      facturesFournisseur: state.facturesFournisseur.map((f) =>
+        f.id === factureFournisseur.id ? factureFournisseur : f,
+      ),
+    })),
+    on(CarburantActions.removeFactureFournisseurSuccess, (state, { id }) => ({
+      ...state,
+      facturesFournisseurSaving: false,
+      facturesFournisseur: state.facturesFournisseur.filter((f) => f.id !== id),
+    })),
+    on(
+      CarburantActions.addFactureFournisseurFailure,
+      CarburantActions.updateFactureFournisseurFailure,
+      CarburantActions.removeFactureFournisseurFailure,
+      (state) => ({ ...state, facturesFournisseurSaving: false }),
+    ),
+
     on(CarburantActions.loadAvoirsFournisseur, (state) => ({
       ...state,
       avoirsFournisseurLoading: true,
@@ -287,5 +416,35 @@ export const carburantFeature = createFeature({
       avoirsFournisseurLoading: false,
       avoirsFournisseurError: error,
     })),
+
+    on(
+      CarburantActions.addAvoirFournisseur,
+      CarburantActions.updateAvoirFournisseur,
+      CarburantActions.removeAvoirFournisseur,
+      (state) => ({ ...state, avoirsFournisseurSaving: true }),
+    ),
+    on(CarburantActions.addAvoirFournisseurSuccess, (state, { avoirFournisseur }) => ({
+      ...state,
+      avoirsFournisseurSaving: false,
+      avoirsFournisseur: [...state.avoirsFournisseur, avoirFournisseur],
+    })),
+    on(CarburantActions.updateAvoirFournisseurSuccess, (state, { avoirFournisseur }) => ({
+      ...state,
+      avoirsFournisseurSaving: false,
+      avoirsFournisseur: state.avoirsFournisseur.map((a) =>
+        a.id === avoirFournisseur.id ? avoirFournisseur : a,
+      ),
+    })),
+    on(CarburantActions.removeAvoirFournisseurSuccess, (state, { id }) => ({
+      ...state,
+      avoirsFournisseurSaving: false,
+      avoirsFournisseur: state.avoirsFournisseur.filter((a) => a.id !== id),
+    })),
+    on(
+      CarburantActions.addAvoirFournisseurFailure,
+      CarburantActions.updateAvoirFournisseurFailure,
+      CarburantActions.removeAvoirFournisseurFailure,
+      (state) => ({ ...state, avoirsFournisseurSaving: false }),
+    ),
   ),
 });
