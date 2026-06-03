@@ -1,0 +1,47 @@
+@reference '../../../../../../tailwind.css';
+
+.journee-list {
+  &__kpi {
+    @apply rounded-[var(--radius-card)] bg-surface-container-lowest p-6 shadow-sm border-t-4;
+
+    &--primary {
+      @apply border-primary;
+    }
+
+    &--orange {
+      @apply border-kpi-orange;
+    }
+
+    &--outline {
+      @apply border-outline;
+    }
+  }
+
+  &__kpi-label {
+    @apply font-display text-xs font-semibold uppercase tracking-wider text-on-surface-variant;
+  }
+
+  &__kpi-value {
+    @apply mt-2 font-display text-4xl font-bold text-on-surface;
+  }
+
+  &__input {
+    @apply min-h-[var(--spacing-touch)] rounded-[var(--radius-card)] border border-outline px-3;
+  }
+
+  &__table thead {
+    @apply bg-table-header text-xs font-bold uppercase text-white;
+  }
+
+  &__table th {
+    @apply px-4 py-3;
+  }
+
+  &__table tbody tr {
+    @apply border-b border-outline-variant/40 odd:bg-surface-container/50;
+  }
+
+  &__table td {
+    @apply px-4 py-3;
+  }
+}

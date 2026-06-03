@@ -1,0 +1,323 @@
+<div class="index-pistoles-step2 flex w-full flex-col">
+  <header class="mb-6 flex flex-wrap items-start justify-between gap-4">
+    <div class="flex items-start gap-3">
+      <span
+        class="flex size-10 shrink-0 items-center justify-center rounded bg-primary/10 text-primary"
+        aria-hidden="true"
+      >⛽</span>
+      <div>
+        <h1 class="font-display text-2xl font-bold uppercase text-on-surface">
+          Étape 2 : Saisie des index d'entrée
+        </h1>
+        <p class="mt-1 text-base text-on-surface-variant">
+          Relevez les index de début de shift pour chaque pistolet actif.
+        </p>
+      </div>
+    </div>
+    <div class="no-print flex flex-wrap gap-2">
+      <app-button variant="secondary" (pressed)="exportCsv()" [disabled]="bombisteGroups().length === 0">
+        Exporter CSV
+      </app-button>
+      <app-button variant="secondary" (pressed)="print()" [disabled]="bombisteGroups().length === 0">
+        Imprimer
+      </app-button>
+    </div>
+  </header>
+
+  @if (loadError(); as err) {
+    <p class="mb-4 text-sm text-primary" role="alert">{{ err }}</p>
+  }
+
+  <section
+    class="no-print mb-6 rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest p-5 shadow-sm"
+  >
+    <label class="index-pistoles-step2__label" for="bombiste-select">Ajouter un bombiste</label>
+    <div class="flex flex-wrap items-end gap-3">
+      <select
+        id="bombiste-select"
+        class="index-pistoles-step2__select min-w-[16rem] flex-1"
+        [value]="pendingBombisteId() ?? ''"
+        (change)="onBombisteSelect($event)"
+        [disabled]="loading() || operatorsLoading() || availableBombistes().length === 0"
+      >
+        <option value="">Sélectionner un bombiste…</option>
+        @for (op of availableBombistes(); track op.id) {
+          <option [value]="op.id">{{ op.name }}</option>
+        }
+      </select>
+      <app-button
+        variant="primary"
+        [disabled]="pendingBombisteId() == null || loading()"
+        (pressed)="addBombiste()"
+      >
+        Ajouter
+      </app-button>
+    </div>
+    @if (!loading() && !operatorsLoading() && availableBombistes().length === 0 && bombisteGroups().length === 0) {
+      <p class="mt-3 text-sm text-on-surface-variant">Aucun bombiste disponible pour ce shift.</p>
+    } @else if (!loading() && bombisteGroups().length === 0) {
+      <p class="mt-3 text-sm text-on-surface-variant">
+        Choisissez un bombiste pour afficher le groupe de pistolets qui lui est assigné.
+      </p>
+    }
+  </section>
+
+  @if (loading()) {
+    <section
+      class="w-full overflow-hidden rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest p-12 text-center shadow-sm"
+      aria-busy="true"
+    >
+      <p class="text-base text-on-surface-variant">Chargement des pistolets…</p>
+    </section>
+  } @else {
+    @for (group of bombisteGroups(); track group.bombisteId) {
+      <section
+        class="index-pistoles-step2__group mb-6 w-full overflow-hidden rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest shadow-sm"
+      >
+        <header class="flex flex-wrap items-center justify-between gap-3 border-b border-outline-variant/50 px-5 py-4">
+          <div>
+            <p class="font-display text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+              Bombiste
+            </p>
+            <h2 class="font-display text-xl font-bold uppercase text-on-surface">{{ group.bombisteName }}</h2>
+          </div>
+          <app-button
+            class="no-print"
+            variant="secondary"
+            (pressed)="removeBombiste(group.bombisteId)"
+          >
+            Retirer
+          </app-button>
+        </header>
+
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse text-base">
+            <thead>
+              <tr class="bg-table-header">
+                <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">Ilot</th>
+                <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">Pistolet</th>
+                <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">Carburant</th>
+                <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">Index entrée</th>
+                <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">Index sortie</th>
+                <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">Remise cuve</th>
+                <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">Quantité (L)</th>
+                <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">P.U (DH)</th>
+                <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">Total (DH)</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of group.rows; track row.line.id) {
+                <tr
+                  class="border-t border-outline-variant/50"
+                  [class.bg-surface-container/60]="row.line.status === 'offline'"
+                  [class.opacity-70]="row.line.status === 'offline'"
+                  [class.bg-primary/5]="lineInvalid(row.line)"
+                >
+                  <td class="px-4 py-3.5">{{ row.line.island }}</td>
+                  <td class="px-4 py-3.5 font-semibold">{{ row.line.pumpLabel }}</td>
+                  <td class="px-4 py-3.5">
+                    <span
+                      class="inline-block rounded px-2.5 py-1 text-sm font-semibold text-white"
+                      [style.background-color]="row.line.fuelColor"
+                    >
+                      {{ row.line.fuelLabel }}
+                    </span>
+                  </td>
+                  <td class="px-4 py-3.5">
+                    @if (row.line.status === 'offline') {
+                      <span class="inline-block rounded bg-on-surface-variant/20 px-2.5 py-1 text-sm font-semibold uppercase">
+                        HS
+                      </span>
+                    } @else {
+                      <input
+                        type="number"
+                        class="min-h-[var(--spacing-touch)] w-32 rounded border px-3 text-base text-right"
+                        [class.border-outline]="!lineInvalid(row.line)"
+                        [class.border-primary]="lineInvalid(row.line)"
+                        [class.ring-1]="lineInvalid(row.line)"
+                        [class.ring-primary/30]="lineInvalid(row.line)"
+                        [value]="row.line.indexEntree ?? ''"
+                        (input)="onIndexInput(row.line.id, 'entree', $event)"
+                        min="0"
+                        step="0.01"
+                        inputmode="decimal"
+                        [attr.aria-label]="'Index entrée ' + row.line.pumpLabel"
+                      />
+                    }
+                  </td>
+                  <td class="px-4 py-3.5">
+                    @if (row.line.status === 'offline') {
+                      <span class="text-on-surface-variant">—</span>
+                    } @else {
+                      <input
+                        type="number"
+                        class="min-h-[var(--spacing-touch)] w-32 rounded border px-3 text-base text-right"
+                        [class.border-outline]="!lineInvalid(row.line)"
+                        [class.border-primary]="lineInvalid(row.line)"
+                        [class.ring-1]="lineInvalid(row.line)"
+                        [class.ring-primary/30]="lineInvalid(row.line)"
+                        [value]="row.line.indexSortie ?? ''"
+                        (input)="onIndexInput(row.line.id, 'sortie', $event)"
+                        min="0"
+                        step="0.01"
+                        inputmode="decimal"
+                        [attr.aria-label]="'Index sortie ' + row.line.pumpLabel"
+                      />
+                    }
+                  </td>
+                  <td class="px-4 py-3.5 text-right text-on-surface-variant">
+                    {{ row.line.tankReturn | number: '1.2-2' }}
+                  </td>
+                  <td class="px-4 py-3.5 text-right tabular-nums">{{ row.quantity | number: '1.2-2' }}</td>
+                  <td class="px-4 py-3.5 text-right tabular-nums">{{ row.line.unitPrice | number: '1.2-2' }}</td>
+                  <td class="px-4 py-3.5 text-right font-semibold tabular-nums">{{ row.total | number: '1.2-2' }}</td>
+                </tr>
+              }
+            </tbody>
+            <tfoot>
+              <tr class="border-t-2 border-outline-variant bg-surface-container">
+                <td
+                  colspan="6"
+                  class="px-4 py-4 font-display text-sm font-bold uppercase tracking-wide text-on-surface"
+                >
+                  Sous-total {{ group.bombisteName }}
+                </td>
+                <td class="px-4 py-4 text-right text-base font-bold tabular-nums text-on-surface">
+                  {{ group.totals.liters | number: '1.2-2' }}
+                  <span class="ml-1 font-normal text-on-surface-variant">L</span>
+                </td>
+                <td class="px-4 py-4"></td>
+                <td class="px-4 py-4 text-right font-display text-xl font-bold text-primary tabular-nums">
+                  {{ group.totals.amount | number: '1.2-2' }}
+                  <span class="ml-1 text-sm font-semibold">DH</span>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div class="index-pistoles-step2__remittance border-t-2 border-outline-variant bg-primary/5 px-5 py-5">
+          <p class="font-display text-sm font-bold uppercase tracking-wide text-on-surface">
+            Répartition des encaissements — {{ group.bombisteName }}
+          </p>
+          <div class="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+            <div>
+              <label class="index-pistoles-step2__label" [for]="'cash-' + group.bombisteId">
+                Espèces (DH)
+              </label>
+              <input
+                [id]="'cash-' + group.bombisteId"
+                type="number"
+                class="index-pistoles-step2__input"
+                [value]="group.payments.cash || ''"
+                (input)="onPaymentInput(group.bombisteId, 'cash', $event)"
+                min="0"
+                step="0.01"
+                inputmode="decimal"
+              />
+            </div>
+            <div>
+              <label class="index-pistoles-step2__label" [for]="'tpe-' + group.bombisteId">
+                TPE (DH)
+              </label>
+              <input
+                [id]="'tpe-' + group.bombisteId"
+                type="number"
+                class="index-pistoles-step2__input"
+                [value]="group.payments.tpe || ''"
+                (input)="onPaymentInput(group.bombisteId, 'tpe', $event)"
+                min="0"
+                step="0.01"
+                inputmode="decimal"
+              />
+            </div>
+            <div>
+              <label class="index-pistoles-step2__label" [for]="'bons-' + group.bombisteId">
+                Bons (DH)
+              </label>
+              <input
+                [id]="'bons-' + group.bombisteId"
+                type="number"
+                class="index-pistoles-step2__input"
+                [value]="group.payments.bons || ''"
+                (input)="onPaymentInput(group.bombisteId, 'bons', $event)"
+                min="0"
+                step="0.01"
+                inputmode="decimal"
+              />
+            </div>
+            <div class="flex flex-col justify-end">
+              <p class="index-pistoles-step2__label">Total saisi</p>
+              <p class="font-display text-xl font-bold tabular-nums text-on-surface">
+                {{ group.paymentTotal | number: '1.2-2' }}
+                <span class="text-sm font-semibold">DH</span>
+              </p>
+            </div>
+            <div class="flex flex-col justify-end">
+              <p class="index-pistoles-step2__label">Écart</p>
+              <p
+                class="font-display text-xl font-bold tabular-nums"
+                [class.text-on-surface-variant]="group.paymentDifference === 0"
+                [class.text-secondary]="group.paymentDifference > 0"
+                [class.text-primary]="group.paymentDifference < 0"
+              >
+                @if (group.paymentDifference > 0) {
+                  +{{ group.paymentDifference | number: '1.2-2' }}
+                } @else {
+                  {{ group.paymentDifference | number: '1.2-2' }}
+                }
+                <span class="text-sm font-semibold">DH</span>
+              </p>
+              <p
+                class="mt-1 text-sm font-semibold"
+                [class.text-on-surface-variant]="group.paymentDifference === 0"
+                [class.text-secondary]="group.paymentDifference > 0"
+                [class.text-primary]="group.paymentDifference < 0"
+              >
+                {{ paymentDifferenceLabel(group.paymentDifference) }}
+                <span class="font-normal text-on-surface-variant">
+                  (attendu {{ group.totals.amount | number: '1.2-2' }} DH)
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    }
+
+    @if (bombisteGroups().length > 1) {
+      <section
+        class="mb-6 rounded-[var(--radius-card)] border border-outline-variant bg-surface-container px-5 py-4"
+      >
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <p class="font-display text-sm font-bold uppercase tracking-wide text-on-surface">
+            Totaux de la session
+          </p>
+          <div class="flex flex-wrap items-baseline gap-6">
+            <p class="text-base font-bold tabular-nums text-on-surface">
+              {{ sessionTotals().liters | number: '1.2-2' }}
+              <span class="ml-1 font-normal text-on-surface-variant">L</span>
+            </p>
+            <p class="font-display text-2xl font-bold leading-none text-primary tabular-nums">
+              {{ sessionTotals().amount | number: '1.2-2' }}
+              <span class="ml-1 text-sm font-semibold">DH</span>
+            </p>
+          </div>
+        </div>
+      </section>
+    }
+  }
+
+  <footer class="no-print mt-8 flex flex-wrap justify-between gap-4">
+    <a routerLink="/journees/nouvelle/configuration-step1">
+      <app-button variant="secondary">← Retour</app-button>
+    </a>
+    <app-button
+      variant="primary"
+      [disabled]="!canProceed() || loading()"
+      (pressed)="next()"
+    >
+      Suivant →
+    </app-button>
+  </footer>
+</div>

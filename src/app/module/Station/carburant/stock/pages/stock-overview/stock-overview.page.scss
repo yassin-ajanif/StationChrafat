@@ -1,0 +1,71 @@
+@reference '../../../../../../../tailwind.css';
+
+.stock-overview {
+  &__nozzle-accent {
+    @apply w-1 shrink-0;
+
+    &--libre {
+      @apply bg-success;
+    }
+
+    &--en-cours {
+      @apply bg-secondary;
+    }
+
+    &--attente {
+      @apply bg-warning-text;
+    }
+
+    &--hors-service {
+      @apply bg-primary;
+    }
+  }
+
+  &__nozzle-status {
+    &--libre {
+      @apply text-success;
+    }
+
+    &--en-cours {
+      @apply text-secondary;
+    }
+
+    &--attente {
+      @apply text-warning-text;
+    }
+
+    &--hors-service {
+      @apply text-primary;
+    }
+  }
+
+  &__fuel-label {
+    &--diesel {
+      @apply text-[#b8860b];
+    }
+
+    &--super {
+      @apply text-success;
+    }
+
+    &--super-plus {
+      @apply text-success;
+    }
+
+    &--default {
+      @apply text-on-surface-variant;
+    }
+  }
+
+  &__tank-fill--optimal {
+    @apply bg-success/80;
+  }
+
+  &__tank-fill--alerte {
+    @apply bg-warning-text/80;
+  }
+
+  &__tank-fill--critique {
+    @apply bg-primary/80;
+  }
+}

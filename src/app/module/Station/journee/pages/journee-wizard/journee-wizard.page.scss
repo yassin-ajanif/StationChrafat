@@ -1,0 +1,7 @@
+@reference '../../../../../../tailwind.css';
+
+.journee-wizard {
+  &__outlet {
+    @apply min-h-[320px];
+  }
+}

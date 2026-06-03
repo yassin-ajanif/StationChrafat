@@ -1,0 +1,146 @@
+@if (open()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/50 p-4"
+    data-dialog-backdrop="true"
+    role="presentation"
+    (click)="onBackdropClick($event)"
+  >
+    <div
+      class="w-full max-w-xl rounded-[var(--radius-card)] bg-surface-container-lowest shadow-lg"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="devis-dialog-title"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="flex items-start justify-between border-b border-outline-variant px-6 py-4">
+        <div>
+          <h2 id="devis-dialog-title" class="font-display text-xl font-bold uppercase text-on-surface">
+            @if (isEditMode()) {
+              Modifier le devis
+            } @else {
+              Nouveau devis
+            }
+          </h2>
+          <p class="mt-1 text-sm text-on-surface-variant">
+            @if (isEditMode()) {
+              Modifiez les informations du devis.
+            } @else {
+              Remplissez les informations pour créer un nouveau devis.
+            }
+          </p>
+        </div>
+        <button
+          type="button"
+          class="text-2xl leading-none text-on-surface-variant hover:text-on-surface"
+          aria-label="Fermer"
+          (click)="cancel()"
+        >
+          ×
+        </button>
+      </header>
+
+      <div class="max-h-[70vh] overflow-y-auto px-6 py-5">
+        <div class="mb-5">
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant" for="devis-client">Client *</label>
+          <input
+            id="devis-client"
+            type="text"
+            class="w-full rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary focus:outline-none"
+            placeholder="Nom du client"
+            [value]="client()"
+            (input)="client.set($any($event.target).value)"
+          />
+        </div>
+
+        <div class="mb-5 grid gap-4 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant" for="devis-montant-ht">Montant HT (DH) *</label>
+            <input
+              id="devis-montant-ht"
+              type="number"
+              class="w-full rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest px-3 py-2 text-right text-sm text-on-surface focus:border-primary focus:outline-none"
+              min="0"
+              step="0.01"
+              inputmode="decimal"
+              placeholder="0.00"
+              [value]="montantHT() ?? ''"
+              (input)="onMontantHTInput($event)"
+            />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant" for="devis-tva">TVA (%)</label>
+            <input
+              id="devis-tva"
+              type="number"
+              class="w-full rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest px-3 py-2 text-right text-sm text-on-surface focus:border-primary focus:outline-none"
+              min="0"
+              max="100"
+              step="0.1"
+              inputmode="decimal"
+              [value]="tva()"
+              (input)="onTvaInput($event)"
+            />
+          </div>
+        </div>
+
+        <div class="mb-5 rounded-[var(--radius-card)] border border-outline-variant bg-surface-container px-4 py-3">
+          <div class="flex items-baseline justify-between">
+            <span class="text-sm font-semibold text-on-surface-variant">Montant TTC</span>
+            <span class="font-display text-2xl font-bold tabular-nums text-primary">
+              {{ montantTTC() | number: '1.2-2' }} DH
+            </span>
+          </div>
+        </div>
+
+        <div class="mb-5 grid gap-4 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant" for="devis-statut">Statut</label>
+            <select
+              id="devis-statut"
+              class="w-full rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-surface focus:border-primary focus:outline-none"
+              [value]="statut()"
+              (change)="onStatutChange($event)"
+            >
+              @for (opt of statutOptions; track opt) {
+                <option [value]="opt">{{ statutLabels[opt] }}</option>
+              }
+            </select>
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant" for="devis-date-validite">Date de validité</label>
+            <input
+              id="devis-date-validite"
+              type="date"
+              class="w-full rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-surface focus:border-primary focus:outline-none"
+              [value]="dateValidite()"
+              (input)="dateValidite.set($any($event.target).value)"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant" for="devis-notes">Notes</label>
+          <textarea
+            id="devis-notes"
+            class="w-full rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary focus:outline-none"
+            rows="3"
+            placeholder="Notes ou conditions particulières…"
+            [value]="notes()"
+            (input)="notes.set($any($event.target).value)"
+          ></textarea>
+        </div>
+      </div>
+
+      <footer class="flex flex-wrap items-center justify-end gap-4 border-t border-outline-variant px-6 py-4">
+        <app-button variant="secondary" (pressed)="cancel()">Annuler</app-button>
+        <app-button variant="primary" [disabled]="!canSave()" (pressed)="save()">
+          @if (isEditMode()) {
+            Enregistrer les modifications
+          } @else {
+            Créer le devis
+          }
+        </app-button>
+      </footer>
+    </div>
+  </div>
+}

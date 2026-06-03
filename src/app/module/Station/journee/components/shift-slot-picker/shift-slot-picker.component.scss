@@ -1,0 +1,15 @@
+@reference '../../../../../../tailwind.css';
+
+.shift-slot-picker {
+  &__card {
+    @apply rounded-[var(--radius-card)] border-2 border-outline-variant bg-surface-container-lowest p-6 text-left transition;
+
+    &:hover {
+      @apply border-outline;
+    }
+
+    &--selected {
+      @apply border-primary bg-primary-fixed;
+    }
+  }
+}

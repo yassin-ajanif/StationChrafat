@@ -1,0 +1,362 @@
+<div class="validation-step7 mx-auto flex w-full max-w-5xl flex-col">
+  <header class="mb-8 text-center">
+    <h1 class="font-display text-3xl font-bold uppercase text-on-surface">
+      Ouverture de journée
+    </h1>
+    <p class="mt-2 text-base text-on-surface-variant">
+      Validation finale avant transmission des données.
+    </p>
+  </header>
+
+  @if (loadError(); as err) {
+    <p class="mb-4 text-center text-sm text-primary" role="alert">{{ err }}</p>
+  }
+  @if (submitError(); as err) {
+    <p class="mb-4 text-center text-sm text-primary" role="alert">{{ err }}</p>
+  }
+
+  @if (loading()) {
+    <p class="py-16 text-center text-on-surface-variant">Calcul du récapitulatif…</p>
+  } @else if (summary(); as s) {
+    <div class="mb-6 grid gap-6 lg:grid-cols-2">
+      <section class="validation-step7__card" aria-label="Chiffre d'affaires">
+        <h2 class="validation-step7__card-title">
+          <span class="text-primary" aria-hidden="true">📄</span>
+          Chiffre d'affaires
+        </h2>
+        @if (s.revenue.fuelSalesByBombiste.length > 0) {
+          <div class="validation-step7__row validation-step7__row--expandable">
+            <button
+              type="button"
+              class="validation-step7__row-toggle"
+              [attr.aria-expanded]="fuelDetailsExpanded()"
+              aria-controls="validation-fuel-details"
+              (click)="toggleFuelDetails()"
+            >
+              <span class="validation-step7__row-label validation-step7__row-label--with-chevron">
+                <svg
+                  class="validation-step7__chevron"
+                  [class.validation-step7__chevron--expanded]="fuelDetailsExpanded()"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  aria-hidden="true"
+                >
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+                Ventes Carburants
+              </span>
+              <span class="validation-step7__row-value">
+                {{ s.revenue.fuelSales | number: '1.2-2' }} DH
+              </span>
+            </button>
+          </div>
+          @if (fuelDetailsExpanded()) {
+            <div
+              id="validation-fuel-details"
+              class="mb-2 space-y-3 border-b border-outline-variant/40 pb-3"
+            >
+              @for (detail of s.revenue.fuelSalesByBombiste; track detail.bombisteId) {
+                <div class="rounded-[var(--radius-card)] border border-outline-variant/60 bg-surface-container/50 px-4 py-3">
+                  <div class="flex flex-wrap items-baseline justify-between gap-2 text-sm">
+                    <span class="font-display text-xs font-bold uppercase text-on-surface">
+                      {{ detail.bombisteName }}
+                    </span>
+                    <span class="font-semibold tabular-nums text-on-surface">
+                      {{ detail.salesTotal | number: '1.2-2' }} DH
+                      <span class="ml-1 text-xs font-normal text-on-surface-variant">
+                        ({{ detail.liters | number: '1.2-2' }} L)
+                      </span>
+                    </span>
+                  </div>
+                  <dl class="mt-2 grid gap-1.5 sm:grid-cols-3">
+                    <div class="flex items-baseline justify-between gap-2 text-xs sm:flex-col sm:items-start">
+                      <dt class="font-semibold uppercase text-on-surface-variant">Espèces</dt>
+                      <dd class="font-semibold tabular-nums text-on-surface">
+                        {{ detail.payments.cash | number: '1.2-2' }} DH
+                      </dd>
+                    </div>
+                    <div class="flex items-baseline justify-between gap-2 text-xs sm:flex-col sm:items-start">
+                      <dt class="font-semibold uppercase text-on-surface-variant">TPE</dt>
+                      <dd class="font-semibold tabular-nums text-on-surface">
+                        {{ detail.payments.tpe | number: '1.2-2' }} DH
+                      </dd>
+                    </div>
+                    <div class="flex items-baseline justify-between gap-2 text-xs sm:flex-col sm:items-start">
+                      <dt class="font-semibold uppercase text-on-surface-variant">Bons</dt>
+                      <dd class="font-semibold tabular-nums text-on-surface">
+                        {{ detail.payments.bons | number: '1.2-2' }} DH
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+              }
+            </div>
+          }
+        } @else {
+          <div class="validation-step7__row">
+            <span class="validation-step7__row-label">Ventes Carburants</span>
+            <span class="validation-step7__row-value">
+              {{ s.revenue.fuelSales | number: '1.2-2' }} DH
+            </span>
+          </div>
+        }
+        @if (s.revenue.shopProductsByChef.length > 0) {
+          <div class="validation-step7__row validation-step7__row--expandable">
+            <button
+              type="button"
+              class="validation-step7__row-toggle"
+              [attr.aria-expanded]="shopDetailsExpanded()"
+              aria-controls="validation-shop-details"
+              (click)="toggleShopDetails()"
+            >
+              <span class="validation-step7__row-label validation-step7__row-label--with-chevron">
+                <svg
+                  class="validation-step7__chevron"
+                  [class.validation-step7__chevron--expanded]="shopDetailsExpanded()"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  aria-hidden="true"
+                >
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+                Boutique &amp; Produits
+              </span>
+              <span class="validation-step7__row-value">
+                {{ s.revenue.shopProducts | number: '1.2-2' }} DH
+              </span>
+            </button>
+          </div>
+          @if (shopDetailsExpanded()) {
+            <div
+              id="validation-shop-details"
+              class="mb-2 space-y-3 border-b border-outline-variant/40 pb-3"
+            >
+              @for (detail of s.revenue.shopProductsByChef; track detail.chefId) {
+                <div class="rounded-[var(--radius-card)] border border-outline-variant/60 bg-surface-container/50 px-4 py-3">
+                  <div class="flex flex-wrap items-baseline justify-between gap-2 text-sm">
+                    <span class="font-display text-xs font-bold uppercase text-on-surface">
+                      {{ detail.chefName }}
+                    </span>
+                    <span class="font-semibold tabular-nums text-on-surface">
+                      {{ detail.salesTotal | number: '1.2-2' }} DH
+                    </span>
+                  </div>
+                  <dl class="mt-2 grid gap-1.5 sm:grid-cols-3">
+                    <div class="flex items-baseline justify-between gap-2 text-xs sm:flex-col sm:items-start">
+                      <dt class="font-semibold uppercase text-on-surface-variant">Espèces</dt>
+                      <dd class="font-semibold tabular-nums text-on-surface">
+                        {{ detail.payments.cash | number: '1.2-2' }} DH
+                      </dd>
+                    </div>
+                    <div class="flex items-baseline justify-between gap-2 text-xs sm:flex-col sm:items-start">
+                      <dt class="font-semibold uppercase text-on-surface-variant">TPE</dt>
+                      <dd class="font-semibold tabular-nums text-on-surface">
+                        {{ detail.payments.tpe | number: '1.2-2' }} DH
+                      </dd>
+                    </div>
+                    <div class="flex items-baseline justify-between gap-2 text-xs sm:flex-col sm:items-start">
+                      <dt class="font-semibold uppercase text-on-surface-variant">Bons</dt>
+                      <dd class="font-semibold tabular-nums text-on-surface">
+                        {{ detail.payments.bons | number: '1.2-2' }} DH
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+              }
+            </div>
+          }
+        } @else {
+          <div class="validation-step7__row">
+            <span class="validation-step7__row-label">Boutique &amp; Produits</span>
+            <span class="validation-step7__row-value">
+              {{ s.revenue.shopProducts | number: '1.2-2' }} DH
+            </span>
+          </div>
+        }
+        @if (s.revenue.servicesByChef.length > 0) {
+          <div class="validation-step7__row validation-step7__row--expandable">
+            <button
+              type="button"
+              class="validation-step7__row-toggle"
+              [attr.aria-expanded]="servicesDetailsExpanded()"
+              aria-controls="validation-services-details"
+              (click)="toggleServicesDetails()"
+            >
+              <span class="validation-step7__row-label validation-step7__row-label--with-chevron">
+                <svg
+                  class="validation-step7__chevron"
+                  [class.validation-step7__chevron--expanded]="servicesDetailsExpanded()"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  aria-hidden="true"
+                >
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+                Services (Lavage/Graissage)
+              </span>
+              <span class="validation-step7__row-value">
+                {{ s.revenue.services | number: '1.2-2' }} DH
+              </span>
+            </button>
+          </div>
+          @if (servicesDetailsExpanded()) {
+            <div
+              id="validation-services-details"
+              class="mb-2 space-y-3 border-b border-outline-variant/40 pb-3"
+            >
+              @for (detail of s.revenue.servicesByChef; track detail.chefId) {
+                <div class="rounded-[var(--radius-card)] border border-outline-variant/60 bg-surface-container/50 px-4 py-3">
+                  <div class="flex flex-wrap items-baseline justify-between gap-2 text-sm">
+                    <span class="font-display text-xs font-bold uppercase text-on-surface">
+                      {{ detail.chefName }}
+                    </span>
+                    <span class="font-semibold tabular-nums text-on-surface">
+                      {{ detail.salesTotal | number: '1.2-2' }} DH
+                    </span>
+                  </div>
+                  <dl class="mt-2 grid gap-1.5 sm:grid-cols-3">
+                    <div class="flex items-baseline justify-between gap-2 text-xs sm:flex-col sm:items-start">
+                      <dt class="font-semibold uppercase text-on-surface-variant">Espèces</dt>
+                      <dd class="font-semibold tabular-nums text-on-surface">
+                        {{ detail.payments.cash | number: '1.2-2' }} DH
+                      </dd>
+                    </div>
+                    <div class="flex items-baseline justify-between gap-2 text-xs sm:flex-col sm:items-start">
+                      <dt class="font-semibold uppercase text-on-surface-variant">TPE</dt>
+                      <dd class="font-semibold tabular-nums text-on-surface">
+                        {{ detail.payments.tpe | number: '1.2-2' }} DH
+                      </dd>
+                    </div>
+                    <div class="flex items-baseline justify-between gap-2 text-xs sm:flex-col sm:items-start">
+                      <dt class="font-semibold uppercase text-on-surface-variant">Bons</dt>
+                      <dd class="font-semibold tabular-nums text-on-surface">
+                        {{ detail.payments.bons | number: '1.2-2' }} DH
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+              }
+            </div>
+          }
+        } @else {
+          <div class="validation-step7__row">
+            <span class="validation-step7__row-label">Services (Lavage/Graissage)</span>
+            <span class="validation-step7__row-value">
+              {{ s.revenue.services | number: '1.2-2' }} DH
+            </span>
+          </div>
+        }
+        <div class="validation-step7__gross-total">
+          <span class="font-display text-sm font-bold uppercase text-on-surface">Total brut</span>
+          <span class="validation-step7__gross-total-value">
+            {{ s.revenue.grossTotal | number: '1.2-2' }} DH
+          </span>
+        </div>
+      </section>
+
+      <section class="validation-step7__card" aria-label="Mouvements de caisse">
+        <h2 class="validation-step7__card-title">
+          <span class="text-primary" aria-hidden="true">👛</span>
+          Mouvements de caisse
+        </h2>
+        <div class="validation-step7__row">
+          <span class="validation-step7__row-label">Encaissements Non-Espèces</span>
+          <span class="validation-step7__row-value validation-step7__row-value--negative">
+            -{{ s.cashMovements.nonCashCollections | number: '1.2-2' }} DH
+          </span>
+        </div>
+        <div class="validation-step7__row">
+          <span class="validation-step7__row-label">Dépenses Autorisées</span>
+          <span class="validation-step7__row-value validation-step7__row-value--negative">
+            -{{ s.cashMovements.authorizedExpenses | number: '1.2-2' }} DH
+          </span>
+        </div>
+        <div class="validation-step7__row">
+          <span class="validation-step7__row-label">Règlements Dettes (+)</span>
+          <span class="validation-step7__row-value validation-step7__row-value--positive">
+            +{{ s.cashMovements.debtSettlements | number: '1.2-2' }} DH
+          </span>
+        </div>
+        <div class="validation-step7__row">
+          <span class="validation-step7__row-label">Recharges Cartes (+)</span>
+          <span class="validation-step7__row-value validation-step7__row-value--positive">
+            +{{ s.cashMovements.cardRecharges | number: '1.2-2' }} DH
+          </span>
+        </div>
+      </section>
+    </div>
+
+    <section class="validation-step7__remittance mb-8 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wide text-white/80">
+          Montant net à verser
+        </p>
+        <p class="mt-1 font-display text-lg font-bold uppercase text-white">
+          Espèces à remettre par {{ s.remittanceOperatorName }}
+        </p>
+      </div>
+      <p class="validation-step7__remittance-amount">
+        {{ s.netCashToRemit | number: '1.2-2' }} DH
+      </p>
+    </section>
+
+    <section class="validation-step7__card mb-8" aria-label="Détail encaissements non-espèces">
+      <h2 class="validation-step7__card-title">
+        <span class="text-primary" aria-hidden="true">📋</span>
+        Détail encaissements non-espèces
+      </h2>
+      @if (s.nonCashDetails.length === 0) {
+        <p class="text-sm text-on-surface-variant">Aucun encaissement non-espèces déclaré.</p>
+      } @else {
+        <div class="overflow-hidden rounded-[var(--radius-card)] border border-outline-variant">
+          <table class="validation-step7__detail-table w-full border-collapse text-sm">
+            <thead>
+              <tr class="bg-surface-container">
+                <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-on-surface-variant">
+                  Type de paiement
+                </th>
+                <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-on-surface-variant">
+                  Référence / Nb
+                </th>
+                <th class="px-4 py-3 text-right font-display text-xs font-bold uppercase text-on-surface-variant">
+                  Montant
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of s.nonCashDetails; track row.paymentType) {
+                <tr class="border-t border-outline-variant/50">
+                  <td class="px-4 py-3 font-medium text-on-surface">{{ row.paymentType }}</td>
+                  <td class="px-4 py-3 text-on-surface-variant">{{ row.reference }}</td>
+                  <td class="px-4 py-3 text-right font-semibold tabular-nums text-on-surface">
+                    {{ row.amount | number: '1.2-2' }} DH
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
+
+  <footer class="flex flex-wrap justify-between gap-4">
+    <a routerLink="/journees/nouvelle/depenses-step6">
+      <app-button variant="secondary">← Revenir au formulaire</app-button>
+    </a>
+    <app-button
+      variant="primary"
+      [disabled]="loading() || submitting() || summary() == null"
+      [loading]="submitting()"
+      (pressed)="submit()"
+    >
+      Soumettre la journée
+    </app-button>
+  </footer>
+</div>
