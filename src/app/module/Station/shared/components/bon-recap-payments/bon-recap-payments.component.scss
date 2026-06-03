@@ -1,0 +1,11 @@
+@reference '../../../../../../tailwind.css';
+
+.bon-recap-payments {
+  &__label {
+    @apply mb-2 block font-display text-sm font-semibold uppercase text-on-surface-variant;
+  }
+
+  &__input {
+    @apply min-h-[var(--spacing-touch)] w-full rounded-[var(--radius-card)] border border-outline px-4 text-base;
+  }
+}

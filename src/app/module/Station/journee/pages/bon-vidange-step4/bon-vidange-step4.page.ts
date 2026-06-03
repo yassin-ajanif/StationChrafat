@@ -1,17 +1,10 @@
-import { DecimalPipe } from '@angular/common';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { ButtonComponent } from '../../../../../shared/components/button/button.component';
-import { VidangeBonDialogComponent } from '../../components/vidange-bon-dialog/vidange-bon-dialog.component';
-import {
-  computeBonConsumedQty,
-  computeBonServicesAmount,
-  computeBonTotal,
-  computeVidangeBonsTotal,
-  suggestNextVidangeBonNumber,
-} from '../../models/vidange-bon.model';
-import { VidangeBonDraftInput } from '../../models/vidange-bon.model';
+import { JOURNEE_BON_VIDANGE_CONFIG } from '../../../shared/models/bon-vidange';
+import { VidangeBonDraftInput } from '../../../shared/models/bon-vidange';
+import { BonVidangePage } from '../../../shared/pages/bon-vidange/bon-vidange.page';
+import { computeVidangeBonsTotal, suggestNextVidangeBonNumber } from '../../models/vidange-bon.model';
 import { JourneeActions } from '../../state/journee.actions';
 import {
   selectCanProceedVidangeStep,
@@ -25,16 +18,40 @@ import {
   selectVidangeChefVidangeLavageId,
 } from '../../state/journee.selectors';
 
+/** Journée wizard step 4 — hosts the shared bon de vidange page. */
 @Component({
   selector: 'app-bon-vidange-step4-page',
-  standalone: true,
-  imports: [RouterLink, ButtonComponent, DecimalPipe, VidangeBonDialogComponent],
-  templateUrl: './bon-vidange-step4.page.html',
-  styleUrl: './bon-vidange-step4.page.scss',
+  imports: [BonVidangePage],
+  template: `
+    <app-bon-vidange-page
+      [config]="config"
+      [bons]="bons()"
+      [selectedChefId]="selectedChefId()"
+      [filteredTotal]="filteredTotal()"
+      [loading]="loading()"
+      [loadError]="loadError()"
+      [canProceed]="canProceed()"
+      [operators]="operators()"
+      [operatorsLoading]="operatorsLoading()"
+      [dialogOpen]="dialogOpen()"
+      [suggestedBonNumber]="suggestedBonNumber()"
+      [editingBon]="editingBon()"
+      (chefChangeRequested)="onChefChange($event)"
+      (newBonRequested)="openNewBonDialog()"
+      (editBonRequested)="openEditBonDialog($event)"
+      (removeBonRequested)="removeBon($event)"
+      (bonSaved)="onBonSaved($event)"
+      (dialogClosed)="closeDialog()"
+      (nextRequested)="onNext()"
+    />
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BonVidangeStep4Page implements OnInit {
   private readonly store = inject(Store);
   private readonly router = inject(Router);
+
+  readonly config = JOURNEE_BON_VIDANGE_CONFIG;
 
   readonly draft = this.store.selectSignal(selectDraft);
   readonly allBons = this.store.selectSignal(selectVidangeBons);
@@ -60,17 +77,18 @@ export class BonVidangeStep4Page implements OnInit {
 
   readonly suggestedBonNumber = computed(() => suggestNextVidangeBonNumber(this.allBons()));
 
-  readonly computeBonTotal = computeBonTotal;
-  readonly computeBonServicesAmount = computeBonServicesAmount;
-  readonly computeBonConsumedQty = computeBonConsumedQty;
-
   ngOnInit(): void {
-    if (this.draft().id == null) {
-      void this.router.navigate(['/journees', 'nouvelle', 'configuration-step1']);
+    const redirect = this.config.guardRedirectIfNoDraft;
+    if (this.draft().id == null && redirect) {
+      void this.router.navigate(redirect);
       return;
     }
     this.store.dispatch(JourneeActions.loadVidangeBons());
     this.store.dispatch(JourneeActions.loadOperators());
+  }
+
+  onChefChange(chefVidangeLavageId: number | null): void {
+    this.store.dispatch(JourneeActions.setVidangeChefVidangeLavage({ chefVidangeLavageId }));
   }
 
   openNewBonDialog(): void {
@@ -79,12 +97,6 @@ export class BonVidangeStep4Page implements OnInit {
     }
     this.editingBonId.set(null);
     this.dialogOpen.set(true);
-  }
-
-  onChefChange(event: Event): void {
-    const raw = (event.target as HTMLSelectElement).value;
-    const chefVidangeLavageId = raw === '' ? null : Number(raw);
-    this.store.dispatch(JourneeActions.setVidangeChefVidangeLavage({ chefVidangeLavageId }));
   }
 
   openEditBonDialog(id: number): void {
@@ -116,10 +128,10 @@ export class BonVidangeStep4Page implements OnInit {
     this.store.dispatch(JourneeActions.removeVidangeBon({ id }));
   }
 
-  next(): void {
+  onNext(): void {
     if (!this.canProceed()) {
       return;
     }
-    void this.router.navigate(['/journees', 'nouvelle', 'encaissements-step5']);
+    void this.router.navigate(this.config.nextLink);
   }
 }

@@ -1,0 +1,17 @@
+@reference '../../../../../../tailwind.css';
+
+.document-lines-table {
+  &__cell-input {
+    @apply min-h-9 rounded border border-outline bg-surface-container-lowest px-2 py-1 text-sm tabular-nums text-on-surface;
+  }
+
+  &__grid tbody tr:hover {
+    @apply bg-primary/5;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

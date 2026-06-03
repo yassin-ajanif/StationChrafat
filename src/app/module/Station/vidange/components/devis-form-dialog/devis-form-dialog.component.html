@@ -1,0 +1,109 @@
+@if (open()) {
+  <div
+    class="devis-form-dialog__backdrop fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/50 p-4"
+    data-dialog-backdrop="true"
+    role="presentation"
+    (click)="onBackdropClick($event)"
+  >
+    <div
+      class="devis-form-dialog__panel w-full max-w-lg rounded-[var(--radius-card)] bg-surface-container-lowest shadow-lg"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="devis-form-dialog-title"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="flex items-start justify-between border-b border-outline-variant px-6 py-4">
+        <h2 id="devis-form-dialog-title" class="font-display text-xl font-bold uppercase text-on-surface">
+          {{ editDevis() ? 'Modifier devis' : 'Nouveau devis' }}
+        </h2>
+        <button
+          type="button"
+          class="text-2xl leading-none text-on-surface-variant hover:text-on-surface"
+          aria-label="Fermer"
+          (click)="cancel()"
+        >
+          ×
+        </button>
+      </header>
+
+      <form class="flex flex-col gap-4 px-6 py-5" (ngSubmit)="submit()">
+        <label class="flex flex-col gap-1 text-sm">
+          <span class="font-semibold uppercase text-on-surface-variant">Client</span>
+          <input
+            type="text"
+            class="min-h-[var(--spacing-touch)] rounded-[var(--radius-card)] border border-outline px-3"
+            [value]="client()"
+            (input)="client.set($any($event.target).value)"
+            required
+          />
+        </label>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <label class="flex flex-col gap-1 text-sm">
+            <span class="font-semibold uppercase text-on-surface-variant">Montant HT (DH)</span>
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              class="min-h-[var(--spacing-touch)] rounded-[var(--radius-card)] border border-outline px-3"
+              [value]="montantHT()"
+              (input)="montantHT.set(+$any($event.target).value)"
+            />
+          </label>
+          <label class="flex flex-col gap-1 text-sm">
+            <span class="font-semibold uppercase text-on-surface-variant">TVA (%)</span>
+            <input
+              type="number"
+              min="0"
+              class="min-h-[var(--spacing-touch)] rounded-[var(--radius-card)] border border-outline px-3"
+              [value]="tva()"
+              (input)="tva.set(+$any($event.target).value)"
+            />
+          </label>
+        </div>
+
+        <p class="text-sm font-semibold text-on-surface">
+          Total TTC : {{ montantTTC() | number: '1.2-2' : 'fr-MA' }} DH
+        </p>
+
+        <label class="flex flex-col gap-1 text-sm">
+          <span class="font-semibold uppercase text-on-surface-variant">Statut</span>
+          <select
+            class="min-h-[var(--spacing-touch)] rounded-[var(--radius-card)] border border-outline px-3"
+            [value]="statut()"
+            (change)="statut.set($any($event.target).value)"
+          >
+            @for (s of statutOptions; track s) {
+              <option [value]="s">{{ statutLabels[s] }}</option>
+            }
+          </select>
+        </label>
+
+        <label class="flex flex-col gap-1 text-sm">
+          <span class="font-semibold uppercase text-on-surface-variant">Valide jusqu'au</span>
+          <input
+            type="date"
+            class="min-h-[var(--spacing-touch)] rounded-[var(--radius-card)] border border-outline px-3"
+            [value]="dateValidite()"
+            (input)="dateValidite.set($any($event.target).value)"
+          />
+        </label>
+
+        <label class="flex flex-col gap-1 text-sm">
+          <span class="font-semibold uppercase text-on-surface-variant">Notes</span>
+          <textarea
+            rows="3"
+            class="rounded-[var(--radius-card)] border border-outline px-3 py-2"
+            [value]="notes()"
+            (input)="notes.set($any($event.target).value)"
+          ></textarea>
+        </label>
+
+        <div class="flex justify-end gap-2 border-t border-outline-variant pt-4">
+          <app-button variant="ghost" type="button" (pressed)="cancel()">Annuler</app-button>
+          <app-button variant="primary" type="submit">Enregistrer</app-button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

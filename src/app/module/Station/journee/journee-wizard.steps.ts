@@ -8,9 +8,9 @@ export interface JourneeWizardStep {
 /** Canonical wizard order (image sequence). */
 export const JOURNEE_WIZARD_STEPS: readonly JourneeWizardStep[] = [
   { id: 'configuration-step1', path: 'configuration-step1', label: 'Configuration', order: 1 },
-  { id: 'index-pistoles-step2', path: 'index-pistoles-step2', label: 'Index pistolets', order: 2 },
-  { id: 'bon-lavage-step3', path: 'bon-lavage-step3', label: 'Bons lavage', order: 3 },
-  { id: 'bon-vidange-step4', path: 'bon-vidange-step4', label: 'Bons vidange', order: 4 },
+  { id: 'index-pistoles-step2', path: 'index-pistoles-step2', label: 'Bon livraison carburant', order: 2 },
+  { id: 'bon-lavage-step3', path: 'bon-lavage-step3', label: 'Bon lavage', order: 3 },
+  { id: 'bon-vidange-step4', path: 'bon-vidange-step4', label: 'Bon vidange', order: 4 },
   { id: 'encaissements-step5', path: 'encaissements-step5', label: 'Encaissements', order: 5 },
   { id: 'depenses-step6', path: 'depenses-step6', label: 'Dépenses', order: 6 },
   { id: 'validation-step7', path: 'validation-step7', label: 'Validation', order: 7 },

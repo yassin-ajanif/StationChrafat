@@ -11,13 +11,21 @@
     }
   }
 
+  &__nav-subgroup-toggle {
+    &--active {
+      @apply border-l-4 border-primary bg-white/10 text-inverse-on-surface;
+    }
+  }
+
   &__chevron {
     &--expanded {
       @apply rotate-90;
     }
   }
 
-  &__nav-sublink--active {
+  &__nav-sublink--active,
+  &__nav-nested-link--active,
+  &__nav-deep-link--active {
     @apply border-l-4 border-primary bg-white/10 text-inverse-on-surface;
   }
 }

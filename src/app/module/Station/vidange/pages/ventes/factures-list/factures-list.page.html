@@ -1,0 +1,53 @@
+<div class="flex w-full flex-col gap-6">
+  <header>
+    <h1 class="font-display text-2xl font-bold uppercase text-on-surface">Facture client — Vidange</h1>
+    <p class="mt-0.5 text-sm text-on-surface-variant">
+      Factures clients émises pour les ventes de Vidange.
+    </p>
+  </header>
+
+  @if (loading()) {
+    <p class="py-12 text-center text-on-surface-variant">Chargement des factures…</p>
+  } @else if (error(); as err) {
+    <p class="rounded-[var(--radius-card)] border border-primary bg-primary/10 px-4 py-3 text-sm text-primary" role="alert">{{ err }}</p>
+  } @else {
+    <div class="overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant shadow-sm">
+      <table class="w-full border-collapse text-sm">
+        <thead>
+          <tr class="bg-table-header">
+            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">N° Facture</th>
+            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">Client</th>
+            <th class="px-4 py-3 text-right font-display text-xs font-bold uppercase text-white">Montant TTC</th>
+            <th class="px-4 py-3 text-center font-display text-xs font-bold uppercase text-white">Statut</th>
+            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">Émission</th>
+            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">Échéance</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (f of factures(); track f.id) {
+            <tr class="border-t border-outline-variant/50 bg-surface-container-lowest even:bg-surface-container/40">
+              <td class="px-4 py-3 font-mono text-xs font-semibold text-on-surface">{{ f.numero }}</td>
+              <td class="px-4 py-3 font-semibold text-on-surface">{{ f.client }}</td>
+              <td class="px-4 py-3 text-right font-bold tabular-nums text-on-surface">
+                {{ f.montantTTC | number: '1.2-2' : 'fr-MA' }} DH
+              </td>
+              <td class="px-4 py-3 text-center">
+                <span class="inline-block rounded px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide {{ statutClass(f.statut) }}">
+                  {{ statutLabels[f.statut] }}
+                </span>
+              </td>
+              <td class="px-4 py-3 text-sm text-on-surface-variant">{{ f.dateEmission | date: 'dd/MM/yyyy' }}</td>
+              <td class="px-4 py-3 text-sm text-on-surface-variant">{{ f.dateEcheance | date: 'dd/MM/yyyy' }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="px-4 py-12 text-center text-on-surface-variant">
+                Aucune facture pour le moment.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

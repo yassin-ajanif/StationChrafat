@@ -1,17 +1,8 @@
-import { DecimalPipe } from '@angular/common';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { ButtonComponent } from '../../../../../shared/components/button/button.component';
-import { LavageBonDialogComponent } from '../../components/lavage-bon-dialog/lavage-bon-dialog.component';
-import {
-  computeBonConsumedQty,
-  computeBonServicesAmount,
-  computeBonTotal,
-  computeLavageBonsTotal,
-  suggestNextLavageBonNumber,
-} from '../../models/lavage-bon.model';
-import { LavageBonDraftInput } from '../../models/lavage-bon.model';
+import { JOURNEE_BON_LAVAGE_CONFIG, LavageBonDraftInput } from '../../../shared/models/bon-lavage';
+import { BonLavagePage } from '../../../shared/pages/bon-lavage/bon-lavage.page';
 import { JourneeActions } from '../../state/journee.actions';
 import {
   selectCanProceedLavageStep,
@@ -24,17 +15,42 @@ import {
   selectOperators,
   selectOperatorsLoading,
 } from '../../state/journee.selectors';
+import { computeLavageBonsTotal, suggestNextLavageBonNumber } from '../../models/lavage-bon.model';
 
+/** Journée wizard step 3 — hosts the shared bon de lavage page. */
 @Component({
   selector: 'app-bon-lavage-step3-page',
-  standalone: true,
-  imports: [RouterLink, ButtonComponent, DecimalPipe, LavageBonDialogComponent],
-  templateUrl: './bon-lavage-step3.page.html',
-  styleUrl: './bon-lavage-step3.page.scss',
+  imports: [BonLavagePage],
+  template: `
+    <app-bon-lavage-page
+      [config]="config"
+      [bons]="bons()"
+      [selectedChefId]="selectedChefId()"
+      [filteredTotal]="filteredTotal()"
+      [loading]="loading()"
+      [loadError]="loadError()"
+      [canProceed]="canProceed()"
+      [operators]="operators()"
+      [operatorsLoading]="operatorsLoading()"
+      [dialogOpen]="dialogOpen()"
+      [suggestedBonNumber]="suggestedBonNumber()"
+      [editingBon]="editingBon()"
+      (chefChangeRequested)="onChefChange($event)"
+      (newBonRequested)="openNewBonDialog()"
+      (editBonRequested)="openEditBonDialog($event)"
+      (removeBonRequested)="removeBon($event)"
+      (bonSaved)="onBonSaved($event)"
+      (dialogClosed)="closeDialog()"
+      (nextRequested)="onNext()"
+    />
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BonLavageStep3Page implements OnInit {
   private readonly store = inject(Store);
   private readonly router = inject(Router);
+
+  readonly config = JOURNEE_BON_LAVAGE_CONFIG;
 
   readonly draft = this.store.selectSignal(selectDraft);
   readonly allBons = this.store.selectSignal(selectLavageBons);
@@ -60,17 +76,18 @@ export class BonLavageStep3Page implements OnInit {
 
   readonly suggestedBonNumber = computed(() => suggestNextLavageBonNumber(this.allBons()));
 
-  readonly computeBonTotal = computeBonTotal;
-  readonly computeBonServicesAmount = computeBonServicesAmount;
-  readonly computeBonConsumedQty = computeBonConsumedQty;
-
   ngOnInit(): void {
-    if (this.draft().id == null) {
-      void this.router.navigate(['/journees', 'nouvelle', 'configuration-step1']);
+    const redirect = this.config.guardRedirectIfNoDraft;
+    if (this.draft().id == null && redirect) {
+      void this.router.navigate(redirect);
       return;
     }
     this.store.dispatch(JourneeActions.loadLavageBons());
     this.store.dispatch(JourneeActions.loadOperators());
+  }
+
+  onChefChange(chefVidangeLavageId: number | null): void {
+    this.store.dispatch(JourneeActions.setLavageChefVidangeLavage({ chefVidangeLavageId }));
   }
 
   openNewBonDialog(): void {
@@ -79,12 +96,6 @@ export class BonLavageStep3Page implements OnInit {
     }
     this.editingBonId.set(null);
     this.dialogOpen.set(true);
-  }
-
-  onChefChange(event: Event): void {
-    const raw = (event.target as HTMLSelectElement).value;
-    const chefVidangeLavageId = raw === '' ? null : Number(raw);
-    this.store.dispatch(JourneeActions.setLavageChefVidangeLavage({ chefVidangeLavageId }));
   }
 
   openEditBonDialog(id: number): void {
@@ -116,10 +127,10 @@ export class BonLavageStep3Page implements OnInit {
     this.store.dispatch(JourneeActions.removeLavageBon({ id }));
   }
 
-  next(): void {
+  onNext(): void {
     if (!this.canProceed()) {
       return;
     }
-    void this.router.navigate(['/journees', 'nouvelle', 'bon-vidange-step4']);
+    void this.router.navigate(this.config.nextLink);
   }
 }

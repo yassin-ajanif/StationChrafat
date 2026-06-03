@@ -227,14 +227,25 @@ export const journeeFeature = createFeature({
         state.draft.lavageBons.reduce((max, b) => Math.max(max, b.id), 0) + 1;
       let nextLineId =
         state.draft.lavageBons.reduce(
-          (max, b) => Math.max(max, ...b.lines.map((l) => l.id), 0),
+          (max, b) =>
+            Math.max(
+              max,
+              ...b.serviceLines.map((l) => l.id),
+              ...b.productLines.map((l) => l.id),
+              0,
+            ),
           0,
         ) + 1;
-      const lines = bon.lines.map((line) => ({
+      const mapLine = (line: (typeof bon.serviceLines)[number]) => ({
         id: nextLineId++,
-        washType: line.washType,
-        amount: line.amount,
-      }));
+        reference: line.reference,
+        designation: line.designation,
+        quantity: line.quantity,
+        unit: line.unit,
+        unitPriceHT: line.unitPriceHT,
+        discountPercent: line.discountPercent,
+        vatPercent: line.vatPercent,
+      });
       return {
         ...state,
         draft: {
@@ -246,8 +257,8 @@ export const journeeFeature = createFeature({
               bonNumber: bon.bonNumber.trim(),
               clientRef: bon.clientRef.trim(),
               chefVidangeLavageId: bon.chefVidangeLavageId,
-              lines,
-              consumedProducts: bon.consumedProducts ?? [],
+              serviceLines: bon.serviceLines.map(mapLine),
+              productLines: bon.productLines.map(mapLine),
               payments: bon.payments ?? emptyPaymentSplit(),
             },
           ],
@@ -262,14 +273,29 @@ export const journeeFeature = createFeature({
       }
       let nextLineId =
         state.draft.lavageBons.reduce(
-          (max, b) => Math.max(max, ...b.lines.map((l) => l.id), 0),
+          (max, b) =>
+            Math.max(
+              max,
+              ...b.serviceLines.map((l) => l.id),
+              ...b.productLines.map((l) => l.id),
+              0,
+            ),
           0,
         ) + 1;
-      const lines = bon.lines.map((line, index) => ({
-        id: existing.lines[index]?.id ?? nextLineId++,
-        washType: line.washType,
-        amount: line.amount,
-      }));
+      const mapLine = (
+        line: (typeof bon.serviceLines)[number],
+        index: number,
+        existingLines: typeof existing.serviceLines,
+      ) => ({
+        id: existingLines[index]?.id ?? nextLineId++,
+        reference: line.reference,
+        designation: line.designation,
+        quantity: line.quantity,
+        unit: line.unit,
+        unitPriceHT: line.unitPriceHT,
+        discountPercent: line.discountPercent,
+        vatPercent: line.vatPercent,
+      });
       return {
         ...state,
         draft: {
@@ -281,8 +307,12 @@ export const journeeFeature = createFeature({
                   bonNumber: bon.bonNumber.trim(),
                   clientRef: bon.clientRef.trim(),
                   chefVidangeLavageId: bon.chefVidangeLavageId,
-                  lines,
-                  consumedProducts: bon.consumedProducts ?? [],
+                  serviceLines: bon.serviceLines.map((line, index) =>
+                    mapLine(line, index, existing.serviceLines),
+                  ),
+                  productLines: bon.productLines.map((line, index) =>
+                    mapLine(line, index, existing.productLines),
+                  ),
                   payments: bon.payments ?? emptyPaymentSplit(),
                 }
               : b,
@@ -332,14 +362,25 @@ export const journeeFeature = createFeature({
         state.draft.vidangeBons.reduce((max, b) => Math.max(max, b.id), 0) + 1;
       let nextLineId =
         state.draft.vidangeBons.reduce(
-          (max, b) => Math.max(max, ...b.lines.map((l) => l.id), 0),
+          (max, b) =>
+            Math.max(
+              max,
+              ...b.serviceLines.map((l) => l.id),
+              ...b.productLines.map((l) => l.id),
+              0,
+            ),
           0,
         ) + 1;
-      const lines = bon.lines.map((line) => ({
+      const mapLine = (line: (typeof bon.serviceLines)[number]) => ({
         id: nextLineId++,
-        serviceType: line.serviceType,
-        amount: line.amount,
-      }));
+        reference: line.reference,
+        designation: line.designation,
+        quantity: line.quantity,
+        unit: line.unit,
+        unitPriceHT: line.unitPriceHT,
+        discountPercent: line.discountPercent,
+        vatPercent: line.vatPercent,
+      });
       return {
         ...state,
         draft: {
@@ -351,8 +392,8 @@ export const journeeFeature = createFeature({
               bonNumber: bon.bonNumber.trim(),
               vehicleRef: bon.vehicleRef.trim(),
               chefVidangeLavageId: bon.chefVidangeLavageId,
-              lines,
-              consumedProducts: bon.consumedProducts ?? [],
+              serviceLines: bon.serviceLines.map(mapLine),
+              productLines: bon.productLines.map(mapLine),
               payments: bon.payments ?? emptyPaymentSplit(),
             },
           ],
@@ -367,14 +408,29 @@ export const journeeFeature = createFeature({
       }
       let nextLineId =
         state.draft.vidangeBons.reduce(
-          (max, b) => Math.max(max, ...b.lines.map((l) => l.id), 0),
+          (max, b) =>
+            Math.max(
+              max,
+              ...b.serviceLines.map((l) => l.id),
+              ...b.productLines.map((l) => l.id),
+              0,
+            ),
           0,
         ) + 1;
-      const lines = bon.lines.map((line, index) => ({
-        id: existing.lines[index]?.id ?? nextLineId++,
-        serviceType: line.serviceType,
-        amount: line.amount,
-      }));
+      const mapLine = (
+        line: (typeof bon.serviceLines)[number],
+        index: number,
+        existingLines: typeof existing.serviceLines,
+      ) => ({
+        id: existingLines[index]?.id ?? nextLineId++,
+        reference: line.reference,
+        designation: line.designation,
+        quantity: line.quantity,
+        unit: line.unit,
+        unitPriceHT: line.unitPriceHT,
+        discountPercent: line.discountPercent,
+        vatPercent: line.vatPercent,
+      });
       return {
         ...state,
         draft: {
@@ -386,8 +442,12 @@ export const journeeFeature = createFeature({
                   bonNumber: bon.bonNumber.trim(),
                   vehicleRef: bon.vehicleRef.trim(),
                   chefVidangeLavageId: bon.chefVidangeLavageId,
-                  lines,
-                  consumedProducts: bon.consumedProducts ?? [],
+                  serviceLines: bon.serviceLines.map((line, index) =>
+                    mapLine(line, index, existing.serviceLines),
+                  ),
+                  productLines: bon.productLines.map((line, index) =>
+                    mapLine(line, index, existing.productLines),
+                  ),
                   payments: bon.payments ?? emptyPaymentSplit(),
                 }
               : b,
