@@ -1,8 +1,11 @@
-import { DatePipe } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
 import {
   LIVRAISON_STATUT_LABELS,
+  Livraison,
+  LivraisonDraft,
   LivraisonStatut,
 } from '../../../models/ventes';
 import { LavageActions } from '../../../state/lavage.actions';
@@ -10,12 +13,14 @@ import {
   selectLivraisons,
   selectLivraisonsError,
   selectLivraisonsLoading,
+  selectLivraisonsSaving,
 } from '../../../state/lavage.selectors';
+import { LivraisonFormDialogComponent } from './dialogs/livraison-form-dialog/livraison-form-dialog.component';
 
 @Component({
   selector: 'app-lavage-livraisons-list-page',
   standalone: true,
-  imports: [DatePipe],
+  imports: [ButtonComponent, LivraisonFormDialogComponent, DatePipe, DecimalPipe],
   templateUrl: './livraisons-list.page.html',
   styleUrl: './livraisons-list.page.scss',
 })
@@ -25,10 +30,46 @@ export class LivraisonsListPage implements OnInit {
   readonly livraisons = this.store.selectSignal(selectLivraisons);
   readonly loading = this.store.selectSignal(selectLivraisonsLoading);
   readonly error = this.store.selectSignal(selectLivraisonsError);
+  readonly saving = this.store.selectSignal(selectLivraisonsSaving);
+
   readonly statutLabels = LIVRAISON_STATUT_LABELS;
+  readonly showDialog = signal(false);
+  readonly editingLivraison = signal<Livraison | null>(null);
 
   ngOnInit(): void {
     this.store.dispatch(LavageActions.loadLivraisons());
+  }
+
+  openNew(): void {
+    this.editingLivraison.set(null);
+    this.showDialog.set(true);
+  }
+
+  openEdit(livraison: Livraison): void {
+    this.editingLivraison.set(livraison);
+    this.showDialog.set(true);
+  }
+
+  onSaved(draft: LivraisonDraft): void {
+    const editing = this.editingLivraison();
+    if (editing) {
+      this.store.dispatch(LavageActions.updateLivraison({ id: editing.id, draft }));
+    } else {
+      this.store.dispatch(LavageActions.addLivraison({ draft }));
+    }
+    this.showDialog.set(false);
+    this.editingLivraison.set(null);
+  }
+
+  closeDialog(): void {
+    this.showDialog.set(false);
+    this.editingLivraison.set(null);
+  }
+
+  removeLivraison(id: number): void {
+    if (confirm('Supprimer cette livraison ?')) {
+      this.store.dispatch(LavageActions.removeLivraison({ id }));
+    }
   }
 
   statutClass(statut: LivraisonStatut): string {

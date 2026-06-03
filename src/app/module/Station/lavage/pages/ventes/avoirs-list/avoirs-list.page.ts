@@ -1,18 +1,21 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { AVOIR_STATUT_LABELS, AvoirStatut } from '../../../models/ventes';
+import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
+import { AVOIR_STATUT_LABELS, Avoir, AvoirDraft, AvoirStatut } from '../../../models/ventes';
 import { LavageActions } from '../../../state/lavage.actions';
 import {
   selectAvoirs,
   selectAvoirsError,
   selectAvoirsLoading,
+  selectAvoirsSaving,
 } from '../../../state/lavage.selectors';
+import { AvoirFormDialogComponent } from './dialogs/avoir-form-dialog/avoir-form-dialog.component';
 
 @Component({
   selector: 'app-lavage-avoirs-list-page',
   standalone: true,
-  imports: [DatePipe, DecimalPipe],
+  imports: [ButtonComponent, AvoirFormDialogComponent, DatePipe, DecimalPipe],
   templateUrl: './avoirs-list.page.html',
   styleUrl: './avoirs-list.page.scss',
 })
@@ -22,10 +25,46 @@ export class AvoirsListPage implements OnInit {
   readonly avoirs = this.store.selectSignal(selectAvoirs);
   readonly loading = this.store.selectSignal(selectAvoirsLoading);
   readonly error = this.store.selectSignal(selectAvoirsError);
+  readonly saving = this.store.selectSignal(selectAvoirsSaving);
+
   readonly statutLabels = AVOIR_STATUT_LABELS;
+  readonly showDialog = signal(false);
+  readonly editingAvoir = signal<Avoir | null>(null);
 
   ngOnInit(): void {
     this.store.dispatch(LavageActions.loadAvoirs());
+  }
+
+  openNew(): void {
+    this.editingAvoir.set(null);
+    this.showDialog.set(true);
+  }
+
+  openEdit(avoir: Avoir): void {
+    this.editingAvoir.set(avoir);
+    this.showDialog.set(true);
+  }
+
+  onSaved(draft: AvoirDraft): void {
+    const editing = this.editingAvoir();
+    if (editing) {
+      this.store.dispatch(LavageActions.updateAvoir({ id: editing.id, draft }));
+    } else {
+      this.store.dispatch(LavageActions.addAvoir({ draft }));
+    }
+    this.showDialog.set(false);
+    this.editingAvoir.set(null);
+  }
+
+  closeDialog(): void {
+    this.showDialog.set(false);
+    this.editingAvoir.set(null);
+  }
+
+  removeAvoir(id: number): void {
+    if (confirm('Supprimer cet avoir ?')) {
+      this.store.dispatch(LavageActions.removeAvoir({ id }));
+    }
   }
 
   statutClass(statut: AvoirStatut): string {

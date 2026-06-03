@@ -1,8 +1,11 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
 import {
   COMMANDE_STATUT_LABELS,
+  Commande,
+  CommandeDraft,
   CommandeStatut,
 } from '../../../models/ventes';
 import { LavageActions } from '../../../state/lavage.actions';
@@ -10,12 +13,14 @@ import {
   selectCommandes,
   selectCommandesError,
   selectCommandesLoading,
+  selectCommandesSaving,
 } from '../../../state/lavage.selectors';
+import { CommandeFormDialogComponent } from './dialogs/commande-form-dialog/commande-form-dialog.component';
 
 @Component({
   selector: 'app-lavage-commandes-list-page',
   standalone: true,
-  imports: [DatePipe, DecimalPipe],
+  imports: [ButtonComponent, CommandeFormDialogComponent, DatePipe, DecimalPipe],
   templateUrl: './commandes-list.page.html',
   styleUrl: './commandes-list.page.scss',
 })
@@ -25,10 +30,46 @@ export class CommandesListPage implements OnInit {
   readonly commandes = this.store.selectSignal(selectCommandes);
   readonly loading = this.store.selectSignal(selectCommandesLoading);
   readonly error = this.store.selectSignal(selectCommandesError);
+  readonly saving = this.store.selectSignal(selectCommandesSaving);
+
   readonly statutLabels = COMMANDE_STATUT_LABELS;
+  readonly showDialog = signal(false);
+  readonly editingCommande = signal<Commande | null>(null);
 
   ngOnInit(): void {
     this.store.dispatch(LavageActions.loadCommandes());
+  }
+
+  openNew(): void {
+    this.editingCommande.set(null);
+    this.showDialog.set(true);
+  }
+
+  openEdit(commande: Commande): void {
+    this.editingCommande.set(commande);
+    this.showDialog.set(true);
+  }
+
+  onSaved(draft: CommandeDraft): void {
+    const editing = this.editingCommande();
+    if (editing) {
+      this.store.dispatch(LavageActions.updateCommande({ id: editing.id, draft }));
+    } else {
+      this.store.dispatch(LavageActions.addCommande({ draft }));
+    }
+    this.showDialog.set(false);
+    this.editingCommande.set(null);
+  }
+
+  closeDialog(): void {
+    this.showDialog.set(false);
+    this.editingCommande.set(null);
+  }
+
+  removeCommande(id: number): void {
+    if (confirm('Supprimer cette commande ?')) {
+      this.store.dispatch(LavageActions.removeCommande({ id }));
+    }
   }
 
   statutClass(statut: CommandeStatut): string {

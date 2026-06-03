@@ -1,8 +1,11 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
 import {
   FACTURE_FOURNISSEUR_STATUT_LABELS,
+  FactureFournisseur,
+  FactureFournisseurDraft,
   FactureFournisseurStatut,
 } from '../../../models/achat';
 import { LavageActions } from '../../../state/lavage.actions';
@@ -10,12 +13,14 @@ import {
   selectFacturesFournisseur,
   selectFacturesFournisseurError,
   selectFacturesFournisseurLoading,
+  selectFacturesFournisseurSaving,
 } from '../../../state/lavage.selectors';
+import { FactureFournisseurFormDialogComponent } from './dialogs/facture-fournisseur-form-dialog/facture-fournisseur-form-dialog.component';
 
 @Component({
   selector: 'app-lavage-achat-factures-list-page',
   standalone: true,
-  imports: [DatePipe, DecimalPipe],
+  imports: [ButtonComponent, FactureFournisseurFormDialogComponent, DatePipe, DecimalPipe],
   templateUrl: './factures-list.page.html',
   styleUrl: './factures-list.page.scss',
 })
@@ -25,10 +30,46 @@ export class AchatFacturesListPage implements OnInit {
   readonly factures = this.store.selectSignal(selectFacturesFournisseur);
   readonly loading = this.store.selectSignal(selectFacturesFournisseurLoading);
   readonly error = this.store.selectSignal(selectFacturesFournisseurError);
+  readonly saving = this.store.selectSignal(selectFacturesFournisseurSaving);
+
   readonly statutLabels = FACTURE_FOURNISSEUR_STATUT_LABELS;
+  readonly showDialog = signal(false);
+  readonly editingFacture = signal<FactureFournisseur | null>(null);
 
   ngOnInit(): void {
     this.store.dispatch(LavageActions.loadFacturesFournisseur());
+  }
+
+  openNew(): void {
+    this.editingFacture.set(null);
+    this.showDialog.set(true);
+  }
+
+  openEdit(facture: FactureFournisseur): void {
+    this.editingFacture.set(facture);
+    this.showDialog.set(true);
+  }
+
+  onSaved(draft: FactureFournisseurDraft): void {
+    const editing = this.editingFacture();
+    if (editing) {
+      this.store.dispatch(LavageActions.updateFactureFournisseur({ id: editing.id, draft }));
+    } else {
+      this.store.dispatch(LavageActions.addFactureFournisseur({ draft }));
+    }
+    this.showDialog.set(false);
+    this.editingFacture.set(null);
+  }
+
+  closeDialog(): void {
+    this.showDialog.set(false);
+    this.editingFacture.set(null);
+  }
+
+  removeFacture(id: number): void {
+    if (confirm('Supprimer cette facture fournisseur ?')) {
+      this.store.dispatch(LavageActions.removeFactureFournisseur({ id }));
+    }
   }
 
   statutClass(statut: FactureFournisseurStatut): string {
