@@ -1,0 +1,209 @@
+import { DecimalPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal } from '@angular/core';
+import { ButtonComponent } from '../../../../../../../../shared/components/button/button.component';
+import { BonRecapPaymentsComponent } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
+import { DocumentLinesTableComponent } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
+import { PaymentSplit, isPaymentSplitBalanced } from '../../../../../../shared/models/common/payment-split.model';
+import {
+  COMMANDE_STATUT_LABELS,
+  Commande,
+  CommandeDraft,
+  CommandeLineTableRow,
+  CommandeStatut,
+  buildCommandeLineDrafts,
+  computeDraftCommandeProductsTotal,
+  computeDraftCommandeServicesTotal,
+  computeDraftCommandeTotal,
+  createEmptyDocumentLineTableRow,
+  documentLineToTableRow,
+  emptyPaymentSplit,
+  isCommandeFormValid,
+} from '../../../../../models/ventes';
+
+const DEFAULT_SERVICE_ROWS = 1;
+const DEFAULT_PRODUCT_ROWS = 1;
+
+@Component({
+  selector: 'app-commande-form-dialog',
+  standalone: true,
+  imports: [ButtonComponent, DecimalPipe, BonRecapPaymentsComponent, DocumentLinesTableComponent],
+  templateUrl: './commande-form-dialog.component.html',
+  styleUrl: './commande-form-dialog.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class CommandeFormDialogComponent {
+  readonly open = input(false);
+  readonly editCommande = input<Commande | null>(null);
+  readonly saved = output<CommandeDraft>();
+  readonly closed = output<void>();
+
+  readonly statutLabels = COMMANDE_STATUT_LABELS;
+  readonly statutOptions: CommandeStatut[] = [
+    'en_attente',
+    'confirmee',
+    'en_cours',
+    'livree',
+    'annulee',
+  ];
+
+  readonly isEditMode = computed(() => this.editCommande() != null);
+
+  private serviceSeq = 0;
+  private productSeq = 0;
+
+  readonly client = signal('');
+  readonly statut = signal<CommandeStatut>('en_attente');
+  readonly description = signal('');
+  readonly payments = signal<PaymentSplit>(emptyPaymentSplit());
+  readonly serviceRows = signal<CommandeLineTableRow[]>([]);
+  readonly productRows = signal<CommandeLineTableRow[]>([]);
+
+  readonly serviceTotal = computed(() => computeDraftCommandeServicesTotal(this.serviceRows()));
+  readonly productTotal = computed(() => computeDraftCommandeProductsTotal(this.productRows()));
+  readonly commandeTotal = computed(() =>
+    computeDraftCommandeTotal(this.serviceRows(), this.productRows()),
+  );
+
+  readonly canSave = computed(
+    () =>
+      isCommandeFormValid({
+        client: this.client(),
+        serviceRows: this.serviceRows(),
+        productRows: this.productRows(),
+      }) && isPaymentSplitBalanced(this.payments(), this.commandeTotal()),
+  );
+
+  constructor() {
+    effect(() => {
+      if (!this.open()) {
+        return;
+      }
+      const editing = this.editCommande();
+      if (editing) {
+        this.loadEditForm(editing);
+      } else {
+        this.resetForm();
+      }
+    });
+  }
+
+  private loadEditForm(commande: Commande): void {
+    this.serviceSeq = 0;
+    this.productSeq = 0;
+    this.client.set(commande.client);
+    this.statut.set(commande.statut);
+    this.description.set(commande.description);
+    this.payments.set({ ...(commande.payments ?? emptyPaymentSplit()) });
+    this.serviceRows.set(
+      commande.serviceLines.length > 0
+        ? commande.serviceLines.map((line) => documentLineToTableRow(line, ++this.serviceSeq))
+        : this.createEmptyServiceRows(DEFAULT_SERVICE_ROWS),
+    );
+    this.productRows.set(
+      commande.productLines.length > 0
+        ? commande.productLines.map((line) => documentLineToTableRow(line, ++this.productSeq))
+        : this.createEmptyProductRows(DEFAULT_PRODUCT_ROWS),
+    );
+  }
+
+  private resetForm(): void {
+    this.serviceSeq = 0;
+    this.productSeq = 0;
+    this.client.set('');
+    this.statut.set('en_attente');
+    this.description.set('');
+    this.payments.set(emptyPaymentSplit());
+    this.serviceRows.set(this.createEmptyServiceRows(DEFAULT_SERVICE_ROWS));
+    this.productRows.set(this.createEmptyProductRows(DEFAULT_PRODUCT_ROWS));
+  }
+
+  private createEmptyServiceRows(count: number): CommandeLineTableRow[] {
+    return Array.from({ length: count }, () => this.createEmptyServiceRow());
+  }
+
+  private createEmptyProductRows(count: number): CommandeLineTableRow[] {
+    return Array.from({ length: count }, () => this.createEmptyProductRow());
+  }
+
+  private createEmptyServiceRow(): CommandeLineTableRow {
+    return createEmptyDocumentLineTableRow(++this.serviceSeq);
+  }
+
+  private createEmptyProductRow(): CommandeLineTableRow {
+    return createEmptyDocumentLineTableRow(++this.productSeq);
+  }
+
+  onServiceRowChange(event: {
+    rowId: number;
+    field: keyof CommandeLineTableRow;
+    value: string | number | null;
+  }): void {
+    this.patchRow(this.serviceRows, event);
+  }
+
+  onProductRowChange(event: {
+    rowId: number;
+    field: keyof CommandeLineTableRow;
+    value: string | number | null;
+  }): void {
+    this.patchRow(this.productRows, event);
+  }
+
+  private patchRow(
+    rowsSignal: typeof this.serviceRows,
+    event: { rowId: number; field: keyof CommandeLineTableRow; value: string | number | null },
+  ): void {
+    rowsSignal.update((rows) =>
+      rows.map((row) => (row.rowId === event.rowId ? { ...row, [event.field]: event.value } : row)),
+    );
+  }
+
+  addServiceRow(): void {
+    this.serviceRows.update((rows) => [...rows, this.createEmptyServiceRow()]);
+  }
+
+  addProductRow(): void {
+    this.productRows.update((rows) => [...rows, this.createEmptyProductRow()]);
+  }
+
+  clearServiceRow(rowId: number): void {
+    this.serviceRows.update((rows) =>
+      rows.map((row) =>
+        row.rowId === rowId ? { ...this.createEmptyServiceRow(), rowId: row.rowId } : row,
+      ),
+    );
+  }
+
+  clearProductRow(rowId: number): void {
+    this.productRows.update((rows) =>
+      rows.map((row) =>
+        row.rowId === rowId ? { ...this.createEmptyProductRow(), rowId: row.rowId } : row,
+      ),
+    );
+  }
+
+  onBackdropClick(event: MouseEvent): void {
+    if ((event.target as HTMLElement).dataset['dialogBackdrop'] === 'true') {
+      this.cancel();
+    }
+  }
+
+  cancel(): void {
+    this.closed.emit();
+  }
+
+  save(): void {
+    if (!this.canSave()) {
+      return;
+    }
+    const lines = buildCommandeLineDrafts(this.serviceRows(), this.productRows());
+    this.saved.emit({
+      client: this.client().trim(),
+      statut: this.statut(),
+      description: this.description().trim(),
+      serviceLines: lines.serviceLines,
+      productLines: lines.productLines,
+      payments: this.payments(),
+    });
+  }
+}

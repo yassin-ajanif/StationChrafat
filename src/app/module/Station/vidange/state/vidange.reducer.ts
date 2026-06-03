@@ -15,30 +15,39 @@ export interface VidangeState {
   commandes: Commande[];
   commandesLoading: boolean;
   commandesError: string | null;
+  commandesSaving: boolean;
   livraisons: Livraison[];
   livraisonsLoading: boolean;
   livraisonsError: string | null;
+  livraisonsSaving: boolean;
   factures: Facture[];
   facturesLoading: boolean;
   facturesError: string | null;
+  facturesSaving: boolean;
   avoirs: Avoir[];
   avoirsLoading: boolean;
   avoirsError: string | null;
+  avoirsSaving: boolean;
   devisAchat: DevisAchat[];
   devisAchatLoading: boolean;
   devisAchatError: string | null;
+  devisAchatSaving: boolean;
   commandesAchat: CommandeAchat[];
   commandesAchatLoading: boolean;
   commandesAchatError: string | null;
+  commandesAchatSaving: boolean;
   receptions: Reception[];
   receptionsLoading: boolean;
   receptionsError: string | null;
+  receptionsSaving: boolean;
   facturesFournisseur: FactureFournisseur[];
   facturesFournisseurLoading: boolean;
   facturesFournisseurError: string | null;
+  facturesFournisseurSaving: boolean;
   avoirsFournisseur: AvoirFournisseur[];
   avoirsFournisseurLoading: boolean;
   avoirsFournisseurError: string | null;
+  avoirsFournisseurSaving: boolean;
 }
 
 export const initialVidangeState: VidangeState = {
@@ -52,30 +61,39 @@ export const initialVidangeState: VidangeState = {
   commandes: [],
   commandesLoading: false,
   commandesError: null,
+  commandesSaving: false,
   livraisons: [],
   livraisonsLoading: false,
   livraisonsError: null,
+  livraisonsSaving: false,
   factures: [],
   facturesLoading: false,
   facturesError: null,
+  facturesSaving: false,
   avoirs: [],
   avoirsLoading: false,
   avoirsError: null,
+  avoirsSaving: false,
   devisAchat: [],
   devisAchatLoading: false,
   devisAchatError: null,
+  devisAchatSaving: false,
   commandesAchat: [],
   commandesAchatLoading: false,
   commandesAchatError: null,
+  commandesAchatSaving: false,
   receptions: [],
   receptionsLoading: false,
   receptionsError: null,
+  receptionsSaving: false,
   facturesFournisseur: [],
   facturesFournisseurLoading: false,
   facturesFournisseurError: null,
+  facturesFournisseurSaving: false,
   avoirsFournisseur: [],
   avoirsFournisseurLoading: false,
   avoirsFournisseurError: null,
+  avoirsFournisseurSaving: false,
 };
 
 export const vidangeFeature = createFeature({
@@ -160,6 +178,35 @@ export const vidangeFeature = createFeature({
       commandesError: error,
     })),
 
+    on(VidangeActions.addCommande, VidangeActions.updateCommande, VidangeActions.removeCommande, (state) => ({
+      ...state,
+      commandesSaving: true,
+    })),
+    on(VidangeActions.addCommandeSuccess, (state, { commande }) => ({
+      ...state,
+      commandesSaving: false,
+      commandes: [...state.commandes, commande],
+    })),
+    on(VidangeActions.updateCommandeSuccess, (state, { commande }) => ({
+      ...state,
+      commandesSaving: false,
+      commandes: state.commandes.map((c) => (c.id === commande.id ? commande : c)),
+    })),
+    on(VidangeActions.removeCommandeSuccess, (state, { id }) => ({
+      ...state,
+      commandesSaving: false,
+      commandes: state.commandes.filter((c) => c.id !== id),
+    })),
+    on(
+      VidangeActions.addCommandeFailure,
+      VidangeActions.updateCommandeFailure,
+      VidangeActions.removeCommandeFailure,
+      (state) => ({
+        ...state,
+        commandesSaving: false,
+      }),
+    ),
+
     on(VidangeActions.loadLivraisons, (state) => ({
       ...state,
       livraisonsLoading: true,
@@ -175,6 +222,35 @@ export const vidangeFeature = createFeature({
       livraisonsLoading: false,
       livraisonsError: error,
     })),
+
+    on(VidangeActions.addLivraison, VidangeActions.updateLivraison, VidangeActions.removeLivraison, (state) => ({
+      ...state,
+      livraisonsSaving: true,
+    })),
+    on(VidangeActions.addLivraisonSuccess, (state, { livraison }) => ({
+      ...state,
+      livraisonsSaving: false,
+      livraisons: [...state.livraisons, livraison],
+    })),
+    on(VidangeActions.updateLivraisonSuccess, (state, { livraison }) => ({
+      ...state,
+      livraisonsSaving: false,
+      livraisons: state.livraisons.map((l) => (l.id === livraison.id ? livraison : l)),
+    })),
+    on(VidangeActions.removeLivraisonSuccess, (state, { id }) => ({
+      ...state,
+      livraisonsSaving: false,
+      livraisons: state.livraisons.filter((l) => l.id !== id),
+    })),
+    on(
+      VidangeActions.addLivraisonFailure,
+      VidangeActions.updateLivraisonFailure,
+      VidangeActions.removeLivraisonFailure,
+      (state) => ({
+        ...state,
+        livraisonsSaving: false,
+      }),
+    ),
 
     on(VidangeActions.loadFactures, (state) => ({
       ...state,
@@ -192,6 +268,35 @@ export const vidangeFeature = createFeature({
       facturesError: error,
     })),
 
+    on(VidangeActions.addFacture, VidangeActions.updateFacture, VidangeActions.removeFacture, (state) => ({
+      ...state,
+      facturesSaving: true,
+    })),
+    on(VidangeActions.addFactureSuccess, (state, { facture }) => ({
+      ...state,
+      facturesSaving: false,
+      factures: [...state.factures, facture],
+    })),
+    on(VidangeActions.updateFactureSuccess, (state, { facture }) => ({
+      ...state,
+      facturesSaving: false,
+      factures: state.factures.map((f) => (f.id === facture.id ? facture : f)),
+    })),
+    on(VidangeActions.removeFactureSuccess, (state, { id }) => ({
+      ...state,
+      facturesSaving: false,
+      factures: state.factures.filter((f) => f.id !== id),
+    })),
+    on(
+      VidangeActions.addFactureFailure,
+      VidangeActions.updateFactureFailure,
+      VidangeActions.removeFactureFailure,
+      (state) => ({
+        ...state,
+        facturesSaving: false,
+      }),
+    ),
+
     on(VidangeActions.loadAvoirs, (state) => ({
       ...state,
       avoirsLoading: true,
@@ -207,6 +312,35 @@ export const vidangeFeature = createFeature({
       avoirsLoading: false,
       avoirsError: error,
     })),
+
+    on(VidangeActions.addAvoir, VidangeActions.updateAvoir, VidangeActions.removeAvoir, (state) => ({
+      ...state,
+      avoirsSaving: true,
+    })),
+    on(VidangeActions.addAvoirSuccess, (state, { avoir }) => ({
+      ...state,
+      avoirsSaving: false,
+      avoirs: [...state.avoirs, avoir],
+    })),
+    on(VidangeActions.updateAvoirSuccess, (state, { avoir }) => ({
+      ...state,
+      avoirsSaving: false,
+      avoirs: state.avoirs.map((a) => (a.id === avoir.id ? avoir : a)),
+    })),
+    on(VidangeActions.removeAvoirSuccess, (state, { id }) => ({
+      ...state,
+      avoirsSaving: false,
+      avoirs: state.avoirs.filter((a) => a.id !== id),
+    })),
+    on(
+      VidangeActions.addAvoirFailure,
+      VidangeActions.updateAvoirFailure,
+      VidangeActions.removeAvoirFailure,
+      (state) => ({
+        ...state,
+        avoirsSaving: false,
+      }),
+    ),
 
     on(VidangeActions.loadDevisAchat, (state) => ({
       ...state,
@@ -224,6 +358,35 @@ export const vidangeFeature = createFeature({
       devisAchatError: error,
     })),
 
+    on(VidangeActions.addDevisAchat, VidangeActions.updateDevisAchat, VidangeActions.removeDevisAchat, (state) => ({
+      ...state,
+      devisAchatSaving: true,
+    })),
+    on(VidangeActions.addDevisAchatSuccess, (state, { devisAchat }) => ({
+      ...state,
+      devisAchatSaving: false,
+      devisAchat: [...state.devisAchat, devisAchat],
+    })),
+    on(VidangeActions.updateDevisAchatSuccess, (state, { devisAchat }) => ({
+      ...state,
+      devisAchatSaving: false,
+      devisAchat: state.devisAchat.map((d) => (d.id === devisAchat.id ? devisAchat : d)),
+    })),
+    on(VidangeActions.removeDevisAchatSuccess, (state, { id }) => ({
+      ...state,
+      devisAchatSaving: false,
+      devisAchat: state.devisAchat.filter((d) => d.id !== id),
+    })),
+    on(
+      VidangeActions.addDevisAchatFailure,
+      VidangeActions.updateDevisAchatFailure,
+      VidangeActions.removeDevisAchatFailure,
+      (state) => ({
+        ...state,
+        devisAchatSaving: false,
+      }),
+    ),
+
     on(VidangeActions.loadCommandesAchat, (state) => ({
       ...state,
       commandesAchatLoading: true,
@@ -239,6 +402,42 @@ export const vidangeFeature = createFeature({
       commandesAchatLoading: false,
       commandesAchatError: error,
     })),
+
+    on(
+      VidangeActions.addCommandeAchat,
+      VidangeActions.updateCommandeAchat,
+      VidangeActions.removeCommandeAchat,
+      (state) => ({
+        ...state,
+        commandesAchatSaving: true,
+      }),
+    ),
+    on(VidangeActions.addCommandeAchatSuccess, (state, { commandeAchat }) => ({
+      ...state,
+      commandesAchatSaving: false,
+      commandesAchat: [...state.commandesAchat, commandeAchat],
+    })),
+    on(VidangeActions.updateCommandeAchatSuccess, (state, { commandeAchat }) => ({
+      ...state,
+      commandesAchatSaving: false,
+      commandesAchat: state.commandesAchat.map((c) =>
+        c.id === commandeAchat.id ? commandeAchat : c,
+      ),
+    })),
+    on(VidangeActions.removeCommandeAchatSuccess, (state, { id }) => ({
+      ...state,
+      commandesAchatSaving: false,
+      commandesAchat: state.commandesAchat.filter((c) => c.id !== id),
+    })),
+    on(
+      VidangeActions.addCommandeAchatFailure,
+      VidangeActions.updateCommandeAchatFailure,
+      VidangeActions.removeCommandeAchatFailure,
+      (state) => ({
+        ...state,
+        commandesAchatSaving: false,
+      }),
+    ),
 
     on(VidangeActions.loadReceptions, (state) => ({
       ...state,
@@ -256,6 +455,35 @@ export const vidangeFeature = createFeature({
       receptionsError: error,
     })),
 
+    on(VidangeActions.addReception, VidangeActions.updateReception, VidangeActions.removeReception, (state) => ({
+      ...state,
+      receptionsSaving: true,
+    })),
+    on(VidangeActions.addReceptionSuccess, (state, { reception }) => ({
+      ...state,
+      receptionsSaving: false,
+      receptions: [...state.receptions, reception],
+    })),
+    on(VidangeActions.updateReceptionSuccess, (state, { reception }) => ({
+      ...state,
+      receptionsSaving: false,
+      receptions: state.receptions.map((r) => (r.id === reception.id ? reception : r)),
+    })),
+    on(VidangeActions.removeReceptionSuccess, (state, { id }) => ({
+      ...state,
+      receptionsSaving: false,
+      receptions: state.receptions.filter((r) => r.id !== id),
+    })),
+    on(
+      VidangeActions.addReceptionFailure,
+      VidangeActions.updateReceptionFailure,
+      VidangeActions.removeReceptionFailure,
+      (state) => ({
+        ...state,
+        receptionsSaving: false,
+      }),
+    ),
+
     on(VidangeActions.loadFacturesFournisseur, (state) => ({
       ...state,
       facturesFournisseurLoading: true,
@@ -272,6 +500,42 @@ export const vidangeFeature = createFeature({
       facturesFournisseurError: error,
     })),
 
+    on(
+      VidangeActions.addFactureFournisseur,
+      VidangeActions.updateFactureFournisseur,
+      VidangeActions.removeFactureFournisseur,
+      (state) => ({
+        ...state,
+        facturesFournisseurSaving: true,
+      }),
+    ),
+    on(VidangeActions.addFactureFournisseurSuccess, (state, { factureFournisseur }) => ({
+      ...state,
+      facturesFournisseurSaving: false,
+      facturesFournisseur: [...state.facturesFournisseur, factureFournisseur],
+    })),
+    on(VidangeActions.updateFactureFournisseurSuccess, (state, { factureFournisseur }) => ({
+      ...state,
+      facturesFournisseurSaving: false,
+      facturesFournisseur: state.facturesFournisseur.map((f) =>
+        f.id === factureFournisseur.id ? factureFournisseur : f,
+      ),
+    })),
+    on(VidangeActions.removeFactureFournisseurSuccess, (state, { id }) => ({
+      ...state,
+      facturesFournisseurSaving: false,
+      facturesFournisseur: state.facturesFournisseur.filter((f) => f.id !== id),
+    })),
+    on(
+      VidangeActions.addFactureFournisseurFailure,
+      VidangeActions.updateFactureFournisseurFailure,
+      VidangeActions.removeFactureFournisseurFailure,
+      (state) => ({
+        ...state,
+        facturesFournisseurSaving: false,
+      }),
+    ),
+
     on(VidangeActions.loadAvoirsFournisseur, (state) => ({
       ...state,
       avoirsFournisseurLoading: true,
@@ -287,5 +551,41 @@ export const vidangeFeature = createFeature({
       avoirsFournisseurLoading: false,
       avoirsFournisseurError: error,
     })),
+
+    on(
+      VidangeActions.addAvoirFournisseur,
+      VidangeActions.updateAvoirFournisseur,
+      VidangeActions.removeAvoirFournisseur,
+      (state) => ({
+        ...state,
+        avoirsFournisseurSaving: true,
+      }),
+    ),
+    on(VidangeActions.addAvoirFournisseurSuccess, (state, { avoirFournisseur }) => ({
+      ...state,
+      avoirsFournisseurSaving: false,
+      avoirsFournisseur: [...state.avoirsFournisseur, avoirFournisseur],
+    })),
+    on(VidangeActions.updateAvoirFournisseurSuccess, (state, { avoirFournisseur }) => ({
+      ...state,
+      avoirsFournisseurSaving: false,
+      avoirsFournisseur: state.avoirsFournisseur.map((a) =>
+        a.id === avoirFournisseur.id ? avoirFournisseur : a,
+      ),
+    })),
+    on(VidangeActions.removeAvoirFournisseurSuccess, (state, { id }) => ({
+      ...state,
+      avoirsFournisseurSaving: false,
+      avoirsFournisseur: state.avoirsFournisseur.filter((a) => a.id !== id),
+    })),
+    on(
+      VidangeActions.addAvoirFournisseurFailure,
+      VidangeActions.updateAvoirFournisseurFailure,
+      VidangeActions.removeAvoirFournisseurFailure,
+      (state) => ({
+        ...state,
+        avoirsFournisseurSaving: false,
+      }),
+    ),
   ),
 });

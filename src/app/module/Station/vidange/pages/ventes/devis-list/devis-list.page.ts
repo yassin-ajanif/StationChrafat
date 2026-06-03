@@ -2,7 +2,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
-import { DevisFormDialogComponent } from '../../../components/devis-form-dialog/devis-form-dialog.component';
+import { DevisFormDialogComponent } from './dialogs/devis-form-dialog/devis-form-dialog.component';
 import { Devis, DevisDraft, DevisStatut, STATUT_LABELS } from '../../../models/ventes';
 import { VidangeActions } from '../../../state/vidange.actions';
 import {
@@ -13,7 +13,7 @@ import {
 } from '../../../state/vidange.selectors';
 
 @Component({
-  selector: 'app-Vidange-devis-list-page',
+  selector: 'app-vidange-devis-list-page',
   standalone: true,
   imports: [ButtonComponent, DevisFormDialogComponent, DecimalPipe, DatePipe],
   templateUrl: './devis-list.page.html',

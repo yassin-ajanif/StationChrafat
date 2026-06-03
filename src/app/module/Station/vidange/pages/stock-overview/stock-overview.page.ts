@@ -14,7 +14,7 @@ import {
 } from '../../state/vidange.selectors';
 
 @Component({
-  selector: 'app-Vidange-stock-overview-page',
+  selector: 'app-vidange-stock-overview-page',
   standalone: true,
   imports: [DecimalPipe],
   templateUrl: './stock-overview.page.html',
