@@ -55,7 +55,11 @@ type SidebarGroupId = (typeof SIDEBAR_GROUP_IDS)[number];
   styleUrl: './app-shell.component.scss',
 })
 export class AppShellComponent {
+  private static readonly SIDEBAR_COLLAPSED_KEY = 'charafate-sidebar-collapsed';
+
   private readonly router = inject(Router);
+
+  readonly sidebarCollapsed = signal(this.readSidebarCollapsedPreference());
 
   readonly navLinks: NavLeaf[] = [{ label: 'Dashboard', route: '/journees' }];
 
@@ -78,6 +82,7 @@ export class AppShellComponent {
           children: ACHATS_CHILDREN,
         },
         { label: 'Stock', route: '/station/stock' },
+        { label: 'Produits & services', route: '/station/produits-services' },
         { label: 'Journée', route: '/journees' },
       ],
     },
@@ -161,5 +166,31 @@ export class AppShellComponent {
 
   isImplementedRoute(route: string | undefined): boolean {
     return !!route;
+  }
+
+  toggleSidebar(): void {
+    this.sidebarCollapsed.update((collapsed) => {
+      const next = !collapsed;
+      this.persistSidebarCollapsedPreference(next);
+      return next;
+    });
+  }
+
+  sidebarToggleLabel(): string {
+    return this.sidebarCollapsed() ? 'Afficher le menu' : 'Masquer le menu';
+  }
+
+  private readSidebarCollapsedPreference(): boolean {
+    if (typeof localStorage === 'undefined') {
+      return false;
+    }
+    return localStorage.getItem(AppShellComponent.SIDEBAR_COLLAPSED_KEY) === 'true';
+  }
+
+  private persistSidebarCollapsedPreference(collapsed: boolean): void {
+    if (typeof localStorage === 'undefined') {
+      return;
+    }
+    localStorage.setItem(AppShellComponent.SIDEBAR_COLLAPSED_KEY, String(collapsed));
   }
 }

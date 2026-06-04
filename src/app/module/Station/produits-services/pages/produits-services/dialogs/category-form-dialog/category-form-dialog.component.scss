@@ -1,0 +1,15 @@
+@reference '../../../../../../../../tailwind.css';
+
+.category-form-dialog {
+  &__label {
+    @apply mb-1.5 block font-display text-xs font-semibold uppercase tracking-wide text-on-surface-variant;
+  }
+
+  &__input {
+    @apply min-h-[var(--spacing-touch)] rounded-[var(--radius-card)] border border-outline bg-surface-container-lowest px-4 text-base text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary/30;
+
+    &:disabled {
+      @apply cursor-not-allowed bg-surface-container text-on-surface-variant;
+    }
+  }
+}

@@ -1,0 +1,53 @@
+@reference '../../../../../../tailwind.css';
+
+.category-sidebar {
+  @apply flex w-full shrink-0 flex-col gap-4 lg:w-64;
+
+  &__panel {
+    @apply rounded-[var(--radius-card)] border border-outline-variant/80 bg-surface-container p-4 shadow-sm;
+  }
+
+  &__panel-header {
+    @apply mb-3 flex items-center justify-between gap-2;
+  }
+
+  &__panel-title {
+    @apply font-display text-xs font-bold uppercase tracking-wide text-on-surface-variant;
+  }
+
+  &__add-btn {
+    @apply flex size-7 shrink-0 items-center justify-center rounded-[2px] bg-primary font-display text-base font-bold leading-none text-on-primary transition hover:bg-primary-container;
+  }
+
+  &__list {
+    @apply flex flex-col gap-0.5;
+  }
+
+  &__item {
+    @apply flex w-full items-center gap-1 rounded-[var(--radius-card)] border-l-4 border-transparent pr-1 transition;
+
+    &--active {
+      @apply border-l-primary bg-surface-container-lowest;
+    }
+  }
+
+  &__item-main {
+    @apply flex min-h-[var(--spacing-touch)] min-w-0 flex-1 items-center gap-2 px-2 py-2 text-left text-sm font-semibold text-on-surface transition hover:bg-surface-container-lowest/80;
+  }
+
+  &__edit-btn {
+    @apply flex size-9 shrink-0 items-center justify-center rounded text-on-surface-variant transition hover:bg-surface-container hover:text-on-surface;
+
+    svg {
+      @apply size-4;
+    }
+  }
+
+  &__item-icon {
+    @apply flex size-8 shrink-0 items-center justify-center rounded bg-surface-container text-base;
+  }
+
+  &__item-label {
+    @apply min-w-0 flex-1 truncate;
+  }
+}

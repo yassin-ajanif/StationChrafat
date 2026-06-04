@@ -1,6 +1,38 @@
 @reference '../../../../tailwind.css';
 
 .app-shell {
+  --width-sidebar-collapsed: 48px;
+
+  &__sidebar {
+    @apply relative transition-[width] duration-200 ease-out;
+
+    &--collapsed {
+      width: var(--width-sidebar-collapsed);
+      min-width: var(--width-sidebar-collapsed);
+      @apply overflow-hidden;
+    }
+  }
+
+  &__sidebar-edge-toggle {
+    @apply absolute right-0 top-1/2 z-10 flex size-6 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-outline-variant bg-surface-container text-on-surface-variant shadow-sm transition-colors hover:bg-surface hover:text-on-surface;
+
+    svg {
+      @apply size-3.5 transition-transform duration-200;
+    }
+
+    &--collapsed svg {
+      @apply rotate-180;
+    }
+  }
+
+  &__sidebar-toggle {
+    @apply flex size-11 shrink-0 items-center justify-center rounded-[var(--radius-card)] border border-outline-variant bg-surface text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface;
+
+    svg {
+      @apply size-5;
+    }
+  }
+
   &__nav-link--active {
     @apply border-l-4 border-primary bg-white/10 text-inverse-on-surface;
   }

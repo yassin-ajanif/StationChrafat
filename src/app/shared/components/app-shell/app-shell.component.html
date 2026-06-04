@@ -1,5 +1,13 @@
-<div class="app-shell flex min-h-dvh bg-surface">
-  <aside class="app-shell__sidebar flex w-[var(--width-sidebar)] shrink-0 flex-col bg-inverse-surface text-inverse-on-surface">
+<div
+  class="app-shell flex min-h-dvh bg-surface"
+  [class.app-shell--sidebar-collapsed]="sidebarCollapsed()"
+>
+  <aside
+    class="app-shell__sidebar flex w-[var(--width-sidebar)] shrink-0 flex-col bg-inverse-surface text-inverse-on-surface"
+    [class.app-shell__sidebar--collapsed]="sidebarCollapsed()"
+    id="app-shell-sidebar"
+    [attr.aria-hidden]="sidebarCollapsed()"
+  >
     <div class="app-shell__brand border-b border-white/10 px-4 py-5">
       <p class="font-display text-xl font-bold uppercase tracking-wide text-primary-container">
         CHARAFATE
@@ -169,13 +177,45 @@
         </div>
       }
     </nav>
+
+    <button
+      type="button"
+      class="app-shell__sidebar-edge-toggle"
+      [class.app-shell__sidebar-edge-toggle--collapsed]="sidebarCollapsed()"
+      [attr.aria-label]="sidebarToggleLabel()"
+      (click)="toggleSidebar()"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+        <path d="M15 18l-6-6 6-6" />
+      </svg>
+    </button>
   </aside>
 
   <div class="app-shell__main flex min-w-0 flex-1 flex-col">
     <header class="app-shell__header flex min-h-16 items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-6">
-      <p class="font-display text-sm font-bold uppercase text-on-surface-variant">
-        Station CHARAFATE
-      </p>
+      <div class="flex min-w-0 items-center gap-3">
+        <button
+          type="button"
+          class="app-shell__sidebar-toggle"
+          [attr.aria-label]="sidebarToggleLabel()"
+          [attr.aria-expanded]="!sidebarCollapsed()"
+          aria-controls="app-shell-sidebar"
+          (click)="toggleSidebar()"
+        >
+          @if (sidebarCollapsed()) {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" />
+            </svg>
+          } @else {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
+            </svg>
+          }
+        </button>
+        <p class="font-display text-sm font-bold uppercase text-on-surface-variant">
+          Station CHARAFATE
+        </p>
+      </div>
       <div class="flex items-center gap-4 text-sm text-on-surface-variant">
         <span class="hidden md:inline">Admin Station</span>
         <span class="app-shell__avatar flex size-9 items-center justify-center rounded-full bg-primary text-xs font-bold text-on-primary">AB</span>

@@ -1,44 +1,36 @@
 @reference '../../../../../../tailwind.css';
 
 .validation-step6 {
+  &__title {
+    @apply text-3xl font-bold tracking-wide md:text-4xl;
+  }
+
+  &__subtitle {
+    @apply mt-2 text-base md:text-lg;
+  }
+
+  &__summary-grid {
+    @apply items-stretch;
+  }
+
   &__card {
-    @apply rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest p-5 shadow-sm;
+    @apply flex h-full flex-col rounded-[var(--radius-card)] border border-outline-variant/80 bg-surface-container-lowest p-6 shadow-sm;
   }
 
   &__card-title {
-    @apply mb-4 flex items-center gap-2 font-display text-sm font-bold uppercase text-on-surface;
+    @apply mb-5 font-display text-sm font-bold uppercase tracking-wider text-on-surface;
   }
 
   &__row {
-    @apply flex items-baseline justify-between gap-4 border-b border-outline-variant/40 py-2.5 text-sm last:border-b-0;
-  }
-
-  &__row--expandable {
-    @apply p-0;
-  }
-
-  &__row-toggle {
-    @apply flex w-full min-h-[var(--spacing-touch)] cursor-pointer items-baseline justify-between gap-4 py-2.5 text-left text-sm transition hover:bg-surface-container/40;
+    @apply flex items-baseline justify-between gap-4 border-b border-outline-variant/25 py-3.5 text-sm last:border-b-0;
   }
 
   &__row-label {
-    @apply text-on-surface-variant;
-  }
-
-  &__row-label--with-chevron {
-    @apply flex items-center gap-2 text-on-surface-variant;
-  }
-
-  &__chevron {
-    @apply size-4 shrink-0 text-on-surface-variant transition-transform duration-200;
-
-    &--expanded {
-      @apply rotate-90;
-    }
+    @apply pr-2 text-on-surface-variant;
   }
 
   &__row-value {
-    @apply font-semibold tabular-nums text-on-surface;
+    @apply shrink-0 text-right font-semibold tabular-nums text-on-surface;
   }
 
   &__row-value--negative {
@@ -50,19 +42,37 @@
   }
 
   &__gross-total {
-    @apply mt-4 flex items-baseline justify-between border-t-2 border-outline-variant pt-4;
+    @apply mt-4 flex items-baseline justify-between border-t-2 border-outline-variant pt-5;
+  }
+
+  &__gross-total-label {
+    @apply font-display text-sm font-bold uppercase text-on-surface;
   }
 
   &__gross-total-value {
-    @apply font-display text-2xl font-bold tabular-nums text-secondary;
+    @apply font-display text-2xl font-bold tabular-nums text-secondary md:text-[1.75rem];
   }
 
   &__remittance {
-    @apply rounded-[var(--radius-card)] bg-success px-6 py-5 text-white shadow-sm;
+    @apply flex flex-wrap items-center justify-between gap-6 rounded-[var(--radius-card)] px-6 py-6 text-white shadow-md;
+    background-color: #1b5e20;
+  }
+
+  &__remittance-kicker {
+    @apply font-display text-xs font-bold uppercase tracking-widest text-white/70;
+  }
+
+  &__remittance-label {
+    @apply mt-2 font-display text-lg font-bold uppercase leading-tight text-white md:text-xl;
   }
 
   &__remittance-amount {
-    @apply rounded bg-white px-5 py-3 font-display text-3xl font-bold tabular-nums text-success;
+    @apply min-w-[12rem] rounded-[var(--radius-card)] px-6 py-4 text-center font-display text-2xl font-bold tabular-nums text-white md:text-3xl;
+    background-color: #0d3d12;
+  }
+
+  &__detail-title {
+    @apply mb-4 font-display text-sm font-bold uppercase tracking-wider text-on-surface;
   }
 
   &__detail-table {
@@ -73,4 +83,16 @@
       @apply break-words;
     }
   }
+
+  &__footer-back {
+    @apply inline-flex min-h-[var(--spacing-touch)] items-center justify-center gap-2 rounded-[var(--radius-button)] border-2 border-on-surface bg-surface-container-lowest px-6 font-display text-sm font-bold uppercase tracking-wide text-on-surface no-underline transition hover:bg-surface-container;
+  }
+
+  &__footer-back svg {
+    @apply size-5 shrink-0;
+  }
+}
+
+:host ::ng-deep .validation-step6__footer-submit.app-button {
+  @apply min-h-[var(--spacing-touch)] min-w-[16rem] gap-2 px-8 uppercase;
 }

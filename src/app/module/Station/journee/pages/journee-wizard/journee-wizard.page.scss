@@ -3,5 +3,9 @@
 .journee-wizard {
   &__outlet {
     @apply min-h-[320px];
+
+    &--validation {
+      @apply mt-2;
+    }
   }
 }

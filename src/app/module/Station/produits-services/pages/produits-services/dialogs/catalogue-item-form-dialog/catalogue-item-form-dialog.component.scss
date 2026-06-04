@@ -1,0 +1,27 @@
+@reference '../../../../../../../../tailwind.css';
+
+.catalogue-item-form-dialog {
+  &__icon {
+    @apply flex size-10 shrink-0 items-center justify-center rounded-[2px] bg-primary font-display text-2xl font-bold leading-none text-on-primary;
+  }
+
+  &__title {
+    @apply text-lg font-bold tracking-wide;
+  }
+
+  &__label {
+    @apply mb-1.5 block font-display text-xs font-semibold uppercase tracking-wide text-on-surface-variant;
+  }
+
+  &__input {
+    @apply min-h-[var(--spacing-touch)] w-full rounded-[var(--radius-card)] border border-outline bg-surface-container-lowest px-4 text-base text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary/30;
+
+    &--price {
+      @apply rounded-r-none border-r-0;
+    }
+  }
+
+  &__currency {
+    @apply flex min-h-[var(--spacing-touch)] shrink-0 items-center rounded-r-[var(--radius-card)] border border-l-0 border-outline bg-surface-container px-3 text-sm font-semibold uppercase text-on-surface-variant;
+  }
+}

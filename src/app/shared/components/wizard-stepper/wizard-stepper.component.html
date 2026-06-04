@@ -1,5 +1,9 @@
-<nav class="wizard-stepper w-full border-b border-outline-variant pb-4" aria-label="Étapes">
-  <div class="wizard-stepper__track mx-auto max-w-6xl">
+<nav
+  class="wizard-stepper w-full pb-6"
+  [class.wizard-stepper--compact]="compact()"
+  aria-label="Étapes"
+>
+  <div class="wizard-stepper__track mx-auto max-w-5xl">
     @for (step of steps(); track step.id) {
       <a
         [routerLink]="['/journees', 'nouvelle', step.path]"
@@ -14,7 +18,9 @@
             {{ formatOrder(step) }}
           }
         </span>
-        <span class="wizard-stepper__label">{{ step.label }}</span>
+        @if (!compact()) {
+          <span class="wizard-stepper__label">{{ step.label }}</span>
+        }
       </a>
     }
   </div>

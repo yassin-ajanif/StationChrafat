@@ -1,0 +1,66 @@
+@reference '../../../../../../tailwind.css';
+
+.catalogue-item-table {
+  @apply rounded-[var(--radius-card)] border border-outline-variant/80 bg-surface-container-lowest p-6 shadow-sm;
+
+  &__header {
+    @apply mb-5 flex flex-wrap items-center justify-between gap-4;
+  }
+
+  &__title {
+    @apply font-display text-lg font-bold uppercase tracking-wide text-on-surface;
+  }
+
+  &__search-wrap {
+    @apply relative flex min-w-[12rem] flex-1 items-center sm:max-w-xs;
+  }
+
+  &__search-icon {
+    @apply pointer-events-none absolute left-3 size-4 text-on-surface-variant;
+  }
+
+  &__search {
+    @apply min-h-[var(--spacing-touch)] w-full rounded-[var(--radius-card)] border border-outline bg-surface-container-lowest py-2 pl-10 pr-4 text-sm text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary/30;
+  }
+
+  &__empty {
+    @apply py-8 text-center text-sm;
+  }
+
+  &__table {
+    table-layout: fixed;
+
+    th,
+    td {
+      @apply break-words;
+    }
+  }
+
+  &__type-badge {
+    @apply inline-block rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide;
+
+    &--produit {
+      @apply bg-primary/10 text-primary;
+    }
+
+    &--service {
+      @apply bg-secondary/15 text-secondary;
+    }
+  }
+
+  &__actions {
+    @apply flex items-center justify-center gap-1;
+  }
+
+  &__action {
+    @apply flex size-9 items-center justify-center rounded text-on-surface-variant transition hover:bg-surface-container hover:text-on-surface;
+
+    svg {
+      @apply size-4;
+    }
+
+    &--delete {
+      @apply hover:bg-primary/10 hover:text-primary;
+    }
+  }
+}

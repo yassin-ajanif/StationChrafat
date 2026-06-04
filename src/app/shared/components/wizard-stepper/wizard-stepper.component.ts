@@ -12,6 +12,8 @@ import { JourneeWizardStep } from '../../../module/Station/journee/journee-wizar
 export class WizardStepperComponent {
   readonly steps = input.required<readonly JourneeWizardStep[]>();
   readonly currentPath = input.required<string>();
+  /** Hide step labels (validation recap layout). */
+  readonly compact = input(false);
 
   isActive(step: JourneeWizardStep): boolean {
     return step.path === this.currentPath();

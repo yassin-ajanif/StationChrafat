@@ -1,0 +1,98 @@
+<section class="catalogue-item-table" aria-label="Liste du catalogue">
+  <header class="catalogue-item-table__header">
+    <h2 class="catalogue-item-table__title">Liste du catalogue</h2>
+    <label class="catalogue-item-table__search-wrap">
+      <span class="sr-only">Rechercher</span>
+      <svg
+        class="catalogue-item-table__search-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        aria-hidden="true"
+      >
+        <circle cx="11" cy="11" r="7" />
+        <path d="M20 20l-3-3" stroke-linecap="round" />
+      </svg>
+      <input
+        type="search"
+        class="catalogue-item-table__search"
+        placeholder="Rechercher…"
+        [value]="searchQuery()"
+        (input)="onSearchInput($event)"
+      />
+    </label>
+  </header>
+
+  @if (items().length === 0) {
+    <p class="catalogue-item-table__empty text-on-surface-variant">Aucun article trouvé.</p>
+  } @else {
+    <div class="catalogue-item-table__wrap overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant">
+      <table class="catalogue-item-table__table w-full border-collapse text-sm">
+        <thead>
+          <tr class="bg-table-header">
+            <th class="px-4 py-3.5 text-left font-display text-xs font-bold uppercase tracking-wide text-white">
+              Article
+            </th>
+            <th class="px-4 py-3.5 text-left font-display text-xs font-bold uppercase tracking-wide text-white">
+              Type
+            </th>
+            <th class="px-4 py-3.5 text-left font-display text-xs font-bold uppercase tracking-wide text-white">
+              Catégorie
+            </th>
+            <th class="px-4 py-3.5 text-right font-display text-xs font-bold uppercase tracking-wide text-white">
+              Prix
+            </th>
+            <th class="px-4 py-3.5 text-center font-display text-xs font-bold uppercase tracking-wide text-white">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items(); track item.id) {
+            <tr class="border-t border-outline-variant/40 bg-surface-container-lowest">
+              <td class="px-4 py-3.5 font-semibold text-on-surface">{{ item.name }}</td>
+              <td class="px-4 py-3.5">
+                <span class="catalogue-item-table__type-badge" [class]="typeBadgeClass(item.type)">
+                  {{ typeLabel(item.type) }}
+                </span>
+              </td>
+              <td class="px-4 py-3.5 text-on-surface-variant">{{ categoryLabel(item.categoryId) }}</td>
+              <td class="px-4 py-3.5 text-right font-bold tabular-nums text-primary">
+                {{ item.unitPrice | number: '1.2-2' : 'fr-MA' }} MAD
+              </td>
+              <td class="px-4 py-3.5">
+                <div class="catalogue-item-table__actions">
+                  <button
+                    type="button"
+                    class="catalogue-item-table__action"
+                    title="Modifier"
+                    (click)="edit.emit(item)"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path
+                        d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="catalogue-item-table__action catalogue-item-table__action--delete"
+                    title="Supprimer"
+                    (click)="remove.emit(item.id)"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M4 7h16M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M6 7l1 12a1 1 0 001 1h8a1 1 0 001-1l1-12" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

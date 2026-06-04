@@ -1,0 +1,67 @@
+<div class="produits-services">
+  <header class="produits-services__header flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <h1 class="produits-services__title font-display uppercase text-primary">
+        Paramètres du catalogue
+      </h1>
+      <p class="produits-services__subtitle text-on-surface-variant">
+        Gérez les produits et services vendus à la station (carburant, boutique, lavage, vidange…).
+      </p>
+    </div>
+    <app-button variant="primary" (pressed)="openNewItem()">+ Ajouter un article</app-button>
+  </header>
+
+  @if (loading()) {
+    <p class="produits-services__status text-on-surface-variant">Chargement du catalogue…</p>
+  } @else {
+    @if (error(); as err) {
+      <p class="produits-services__alert" role="alert">{{ err }}</p>
+    }
+
+    <div class="produits-services__body">
+      <app-category-sidebar
+        [serviceCategories]="serviceCategories()"
+        [productCategories]="productCategories()"
+        [selectedCategoryId]="selectedCategoryId()"
+        (categorySelect)="onCategorySelect($event)"
+        (addCategoryRequested)="openNewCategory($event)"
+        (editCategoryRequested)="openEditCategory($event)"
+      />
+
+      <div class="produits-services__main">
+        <app-catalogue-item-table
+          [items]="filteredItems()"
+          [categories]="allCategories()"
+          [searchQuery]="searchQuery()"
+          (edit)="openEditItem($event)"
+          (remove)="onRemoveItem($event)"
+          (searchChange)="onSearchChange($event)"
+        />
+      </div>
+    </div>
+
+    @if (saving()) {
+      <p class="produits-services__saving text-sm text-on-surface-variant">Enregistrement…</p>
+    }
+  }
+</div>
+
+<app-catalogue-item-form-dialog
+  [open]="itemDialogOpen()"
+  [editItem]="editingItem()"
+  [serviceCategories]="serviceCategories()"
+  [productCategories]="productCategories()"
+  [presetCategoryId]="selectedCategoryId()"
+  [saving]="saving()"
+  (saved)="onItemSaved($event)"
+  (closed)="closeItemDialog()"
+/>
+
+<app-category-form-dialog
+  [open]="categoryDialogOpen()"
+  [editCategory]="editingCategory()"
+  [presetKind]="categoryDialogKind()"
+  [saving]="saving()"
+  (saved)="onCategorySaved($event)"
+  (closed)="closeCategoryDialog()"
+/>

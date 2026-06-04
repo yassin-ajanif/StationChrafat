@@ -1,0 +1,97 @@
+<aside class="category-sidebar" aria-label="Catégories du catalogue">
+  <section class="category-sidebar__panel">
+    <div class="category-sidebar__panel-header">
+      <h2 class="category-sidebar__panel-title">Catégories de services</h2>
+      <button
+        type="button"
+        class="category-sidebar__add-btn"
+        aria-label="Ajouter une catégorie service"
+        (click)="addCategoryRequested.emit('service')"
+      >
+        +
+      </button>
+    </div>
+    <ul class="category-sidebar__list">
+      @for (cat of serviceCategories(); track cat.id) {
+        <li>
+          <div
+            class="category-sidebar__item"
+            [class.category-sidebar__item--active]="selectedCategoryId() === cat.id"
+          >
+            <button
+              type="button"
+              class="category-sidebar__item-main"
+              (click)="categorySelect.emit(cat.id)"
+            >
+              <span class="category-sidebar__item-icon" aria-hidden="true">{{ categoryIcon(cat.label) }}</span>
+              <span class="category-sidebar__item-label">{{ cat.label }}</span>
+            </button>
+            <button
+              type="button"
+              class="category-sidebar__edit-btn"
+              title="Modifier la catégorie"
+              aria-label="Modifier {{ cat.label }}"
+              (click)="editCategoryRequested.emit(cat)"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path
+                  d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <section class="category-sidebar__panel">
+    <div class="category-sidebar__panel-header">
+      <h2 class="category-sidebar__panel-title">Catégories de produits</h2>
+      <button
+        type="button"
+        class="category-sidebar__add-btn"
+        aria-label="Ajouter une catégorie produit"
+        (click)="addCategoryRequested.emit('product')"
+      >
+        +
+      </button>
+    </div>
+    <ul class="category-sidebar__list">
+      @for (cat of productCategories(); track cat.id) {
+        <li>
+          <div
+            class="category-sidebar__item"
+            [class.category-sidebar__item--active]="selectedCategoryId() === cat.id"
+          >
+            <button
+              type="button"
+              class="category-sidebar__item-main"
+              (click)="categorySelect.emit(cat.id)"
+            >
+              <span class="category-sidebar__item-icon" aria-hidden="true">{{ categoryIcon(cat.label) }}</span>
+              <span class="category-sidebar__item-label">{{ cat.label }}</span>
+            </button>
+            <button
+              type="button"
+              class="category-sidebar__edit-btn"
+              title="Modifier la catégorie"
+              aria-label="Modifier {{ cat.label }}"
+              (click)="editCategoryRequested.emit(cat)"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path
+                  d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
+        </li>
+      }
+    </ul>
+  </section>
+</aside>
