@@ -1,13 +1,32 @@
 @reference '../../../../tailwind.css';
 
+// Shell grid uses dir="ltr" so column placement is not flipped by html[dir=rtl].
 .app-shell {
   --width-sidebar-collapsed: 56px;
 
+  @apply grid min-h-dvh;
+  grid-template-columns: var(--width-sidebar) minmax(0, 1fr);
+  grid-template-areas: 'sidebar main';
+
+  &--sidebar-collapsed {
+    grid-template-columns: var(--width-sidebar-collapsed) minmax(0, 1fr);
+  }
+
   &--rtl {
-    @apply flex-row-reverse;
+    grid-template-columns: minmax(0, 1fr) var(--width-sidebar);
+    grid-template-areas: 'main sidebar';
+  }
+
+  &--rtl#{&}--sidebar-collapsed {
+    grid-template-columns: minmax(0, 1fr) var(--width-sidebar-collapsed);
+  }
+
+  &__main {
+    grid-area: main;
   }
 
   &__sidebar {
+    grid-area: sidebar;
     @apply relative transition-[width] duration-200 ease-out;
 
     &--collapsed {
