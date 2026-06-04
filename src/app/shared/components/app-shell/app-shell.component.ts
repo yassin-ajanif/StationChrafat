@@ -84,7 +84,7 @@ export class AppShellComponent {
   ];
 
   readonly expandedGroups = signal<Set<string>>(
-    new Set(['station', 'station-ventes']),
+    new Set(['station']),
   );
 
   private readonly navigationUrl = toSignal(
@@ -129,6 +129,8 @@ export class AppShellComponent {
       if (next.has(id)) {
         next.delete(id);
       } else {
+        if (id === 'station-ventes') next.delete('station-achats');
+        if (id === 'station-achats') next.delete('station-ventes');
         next.add(id);
       }
       return next;
@@ -139,6 +141,8 @@ export class AppShellComponent {
     this.expandedGroups.update((current) => {
       const next = new Set(current);
       next.add('station');
+      next.delete('station-ventes');
+      next.delete('station-achats');
 
       if (url.includes('/ventes')) {
         next.add('station-ventes');

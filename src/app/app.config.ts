@@ -11,10 +11,14 @@ import { provideStore } from '@ngrx/store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 
 import { routes } from './app.routes';
-import { ErpEffects } from './module/Station/erp/state/erp.effects';
-import { erpFeature } from './module/Station/erp/state/erp.reducer';
+import { AchatEffects } from './module/Station/achat/state/achat.effects';
+import { achatFeature } from './module/Station/achat/state/achat.reducer';
 import { JourneeEffects } from './module/Station/journee/state/journee.effects';
 import { journeeFeature } from './module/Station/journee/state/journee.reducer';
+import { StockEffects } from './module/Station/stock/state/stock.effects';
+import { stockFeature } from './module/Station/stock/state/stock.reducer';
+import { VentesEffects } from './module/Station/ventes/state/ventes.effects';
+import { ventesFeature } from './module/Station/ventes/state/ventes.reducer';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -24,8 +28,10 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideStore(),
     provideState(journeeFeature),
-    provideState(erpFeature),
-    provideEffects(JourneeEffects, ErpEffects),
+    provideState(ventesFeature),
+    provideState(achatFeature),
+    provideState(stockFeature),
+    provideEffects(JourneeEffects, VentesEffects, AchatEffects, StockEffects),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
   ],
 };

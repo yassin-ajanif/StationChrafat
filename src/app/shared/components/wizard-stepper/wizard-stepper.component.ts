@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { JourneeWizardStep } from '../../../module/journee/journee-wizard.steps';
+import { JourneeWizardStep } from '../../../module/Station/journee/journee-wizard.steps';
 
 @Component({
   selector: 'app-wizard-stepper',

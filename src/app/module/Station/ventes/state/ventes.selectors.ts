@@ -1,0 +1,28 @@
+import { ventesFeature } from './ventes.reducer';
+
+export const {
+  selectDevis,
+  selectDevisLoading,
+  selectDevisError,
+  selectDevisSaving,
+  selectCommandes,
+  selectCommandesLoading,
+  selectCommandesError,
+  selectCommandesSaving,
+  selectLivraisons,
+  selectLivraisonsLoading,
+  selectLivraisonsError,
+  selectLivraisonsSaving,
+  selectFactures,
+  selectFacturesLoading,
+  selectFacturesError,
+  selectFacturesSaving,
+  selectAvoirs,
+  selectAvoirsLoading,
+  selectAvoirsError,
+  selectAvoirsSaving,
+  selectRetours,
+  selectRetoursLoading,
+  selectRetoursError,
+  selectRetoursSaving,
+} = ventesFeature;

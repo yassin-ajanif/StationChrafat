@@ -1,0 +1,28 @@
+import { achatFeature } from './achat.reducer';
+
+export const {
+  selectDevisAchat,
+  selectDevisAchatLoading,
+  selectDevisAchatError,
+  selectDevisAchatSaving,
+  selectCommandesAchat,
+  selectCommandesAchatLoading,
+  selectCommandesAchatError,
+  selectCommandesAchatSaving,
+  selectReceptions,
+  selectReceptionsLoading,
+  selectReceptionsError,
+  selectReceptionsSaving,
+  selectFacturesFournisseur,
+  selectFacturesFournisseurLoading,
+  selectFacturesFournisseurError,
+  selectFacturesFournisseurSaving,
+  selectAvoirsFournisseur,
+  selectAvoirsFournisseurLoading,
+  selectAvoirsFournisseurError,
+  selectAvoirsFournisseurSaving,
+  selectRetoursFournisseur,
+  selectRetoursFournisseurLoading,
+  selectRetoursFournisseurError,
+  selectRetoursFournisseurSaving,
+} = achatFeature;
