@@ -1,5 +1,5 @@
-import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
+import { LocaleNumberPipe, TranslatePipe } from '../../../../../core/i18n';
 import {
   DOCUMENT_LINE_COLUMNS,
   DocumentLineColumnKey,
@@ -15,14 +15,14 @@ import {
 
 @Component({
   selector: 'app-document-lines-table',
-  imports: [DecimalPipe],
+  imports: [LocaleNumberPipe, TranslatePipe],
   templateUrl: './document-lines-table.component.html',
   styleUrl: './document-lines-table.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DocumentLinesTableComponent {
-  readonly title = input<string>('Lignes');
-  readonly addRowLabel = input<string>('+ Ajouter une ligne');
+  readonly titleKey = input<string>('common.documentLines.services');
+  readonly addRowLabelKey = input<string>('common.documentLines.addService');
   readonly rows = input.required<DocumentLineTableRow[]>();
 
   readonly rowChange = output<{ rowId: number; field: keyof DocumentLineTableRow; value: string | number | null }>();

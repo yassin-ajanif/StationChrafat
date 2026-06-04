@@ -1,5 +1,5 @@
-import { DecimalPipe } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
+import { LocaleCurrencyPipe, TranslatePipe } from '../../../../../core/i18n'
 import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
@@ -16,7 +16,7 @@ import {
 @Component({
   selector: 'app-validation-step6-page',
   standalone: true,
-  imports: [RouterLink, ButtonComponent, DecimalPipe],
+  imports: [RouterLink, ButtonComponent, LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './validation-step6.page.html',
   styleUrl: './validation-step6.page.scss',
 })

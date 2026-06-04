@@ -1,9 +1,11 @@
 import { Component, input, output } from '@angular/core';
+import { TranslatePipe } from '../../../../../core/i18n'
 import { CatalogueCategory } from '../../models/category.model';
 
 @Component({
   selector: 'app-category-sidebar',
   standalone: true,
+  imports: [TranslatePipe],
   templateUrl: './category-sidebar.component.html',
   styleUrl: './category-sidebar.component.scss',
 })

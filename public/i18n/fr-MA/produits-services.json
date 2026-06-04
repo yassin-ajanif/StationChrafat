@@ -1,0 +1,56 @@
+{
+  "page": {
+    "title": "Paramètres du catalogue",
+    "subtitle": "Gérez les produits et services vendus à la station (carburant, boutique, lavage, vidange…).",
+    "cta": "+ Ajouter un article",
+    "loading": "Chargement du catalogue…",
+    "saving": "Enregistrement…"
+  },
+  "sidebar": {
+    "aria": "Catégories du catalogue",
+    "servicesTitle": "Catégories de services",
+    "productsTitle": "Catégories de produits",
+    "addService": "Ajouter une catégorie service",
+    "addProduct": "Ajouter une catégorie produit",
+    "editCategory": "Modifier la catégorie",
+    "editCategoryNamed": "Modifier {{name}}"
+  },
+  "table": {
+    "title": "Liste du catalogue",
+    "search": "Rechercher…",
+    "empty": "Aucun article trouvé.",
+    "colArticle": "Article",
+    "colType": "Type",
+    "colCategory": "Catégorie",
+    "colPrice": "Prix",
+    "typeService": "SERVICE",
+    "typeProduit": "PRODUIT"
+  },
+  "categoryDialog": {
+    "edit": "Modifier la catégorie",
+    "create": "Nouvelle catégorie",
+    "serviceHint": "Catégorie de services (lavage, vidange…)",
+    "productHint": "Catégorie de produits (carburant, boutique…)",
+    "type": "Type",
+    "typeService": "Service",
+    "typeProduct": "Produit",
+    "name": "Nom de la catégorie",
+    "namePlaceholder": "Ex: Nettoyage",
+    "createBtn": "Créer la catégorie"
+  },
+  "itemDialog": {
+    "edit": "Modifier l'article",
+    "create": "Ajouter un article",
+    "subtitle": "Enregistrer un nouveau produit ou service dans votre catalogue de vente.",
+    "name": "Nom de l'article",
+    "namePlaceholder": "Ex: Gazole Excellium",
+    "type": "Type",
+    "typeProduit": "Produit",
+    "typeService": "Service",
+    "category": "Catégorie",
+    "categoryPlaceholder": "Sélectionner…",
+    "unitPrice": "Prix unitaire (TTC)",
+    "pricePlaceholder": "0.00",
+    "save": "Enregistrer l'article"
+  }
+}

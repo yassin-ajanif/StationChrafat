@@ -1,0 +1,18 @@
+<div class="locale-switcher" role="group" [attr.aria-label]="'shell.locale.switchAria' | translate">
+  <button
+    type="button"
+    class="locale-switcher__btn"
+    [class.locale-switcher__btn--active]="isActive('fr-MA')"
+    (click)="setLocale('fr-MA')"
+  >
+    FR
+  </button>
+  <button
+    type="button"
+    class="locale-switcher__btn"
+    [class.locale-switcher__btn--active]="isActive('ar-MA')"
+    (click)="setLocale('ar-MA')"
+  >
+    ع
+  </button>
+</div>

@@ -51,11 +51,11 @@ export interface DevisDraft {
 
 export const DEFAULT_TVA = 20;
 
-export const STATUT_LABELS: Record<DevisStatut, string> = {
-  brouillon: 'Brouillon',
-  envoye: 'Envoyé',
-  accepte: 'Accepté',
-  refuse: 'Refusé',
+export const STATUT_KEYS: Record<DevisStatut, string> = {
+  brouillon: 'ventes.devis.statusBrouillon',
+  envoye: 'ventes.devis.statusEnvoye',
+  accepte: 'ventes.devis.statusAccepte',
+  refuse: 'ventes.devis.statusRefuse',
 };
 
 export function computeTTC(montantHT: number, tva: number): number {

@@ -1,11 +1,11 @@
-import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal } from '@angular/core';
+import { LocaleCurrencyPipe, TranslatePipe } from '../../../../../../../../core/i18n'
 import { ButtonComponent } from '../../../../../../../../shared/components/button/button.component';
 import { BonRecapPaymentsComponent } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import { DocumentLinesTableComponent } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
 import { PaymentSplit, isPaymentSplitBalanced } from '../../../../../../shared/models/common/payment-split.model';
 import {
-  RETOUR_STATUT_LABELS,
+  RETOUR_STATUT_KEYS,
   Retour,
   RetourDraft,
   RetourLineTableRow,
@@ -26,7 +26,7 @@ const DEFAULT_PRODUCT_ROWS = 1;
 @Component({
   selector: 'app-retour-form-dialog',
   standalone: true,
-  imports: [ButtonComponent, DecimalPipe, BonRecapPaymentsComponent, DocumentLinesTableComponent],
+  imports: [ButtonComponent, BonRecapPaymentsComponent, DocumentLinesTableComponent, LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './retour-form-dialog.component.html',
   styleUrl: './retour-form-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,7 +37,7 @@ export class RetourFormDialogComponent {
   readonly saved = output<RetourDraft>();
   readonly closed = output<void>();
 
-  readonly statutLabels = RETOUR_STATUT_LABELS;
+  readonly statutKeys = RETOUR_STATUT_KEYS;
   readonly statutOptions: RetourStatut[] = ['en_attente', 'recu', 'traite', 'refuse'];
 
   readonly isEditMode = computed(() => this.editRetour() != null);

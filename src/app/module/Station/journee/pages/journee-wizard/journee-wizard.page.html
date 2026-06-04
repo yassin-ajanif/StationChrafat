@@ -2,9 +2,9 @@
   @if (currentPath() !== 'validation-step6') {
     <div class="journee-wizard__intro mb-6">
       <p class="font-display text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
-        Journée › Ouverture de journée
+        {{ 'journee.wizard.breadcrumb' | translate }}
       </p>
-      <h1 class="font-display text-2xl font-bold uppercase text-on-surface">Ouverture de journée</h1>
+      <h1 class="font-display text-2xl font-bold uppercase text-on-surface">{{ 'journee.wizard.title' | translate }}</h1>
     </div>
   }
   <app-wizard-stepper

@@ -1,8 +1,9 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
+import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../../../../core/i18n'
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
-import { RETOUR_STATUT_LABELS, Retour, RetourDraft, RetourStatut } from '../../../models/ventes';
+import { RETOUR_STATUT_KEYS, Retour, RetourDraft, RetourStatut } from '../../../models/ventes';
 import { VentesActions } from '../../../state/ventes.actions';
 import {
   selectRetours,
@@ -15,19 +16,20 @@ import { RetourFormDialogComponent } from './dialogs/retour-form-dialog/retour-f
 @Component({
   selector: 'app-erp-retours-list-page',
   standalone: true,
-  imports: [ButtonComponent, RetourFormDialogComponent, DatePipe, DecimalPipe],
+  imports: [ButtonComponent, RetourFormDialogComponent, DatePipe, LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './retours-list.page.html',
   styleUrl: './retours-list.page.scss',
 })
 export class RetoursListPage implements OnInit {
   private readonly store = inject(Store);
+  private readonly translate = inject(TranslateService);
 
   readonly retours = this.store.selectSignal(selectRetours);
   readonly loading = this.store.selectSignal(selectRetoursLoading);
   readonly error = this.store.selectSignal(selectRetoursError);
   readonly saving = this.store.selectSignal(selectRetoursSaving);
 
-  readonly statutLabels = RETOUR_STATUT_LABELS;
+  readonly statutKeys = RETOUR_STATUT_KEYS;
   readonly showDialog = signal(false);
   readonly editingRetour = signal<Retour | null>(null);
 
@@ -62,7 +64,7 @@ export class RetoursListPage implements OnInit {
   }
 
   removeRetour(id: number): void {
-    if (confirm('Supprimer ce bon de retour ?')) {
+    if (confirm(this.translate.instant('common.confirm.deleteRetour'))) {
       this.store.dispatch(VentesActions.removeRetour({ id }));
     }
   }

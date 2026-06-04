@@ -1,7 +1,7 @@
 <nav
   class="wizard-stepper w-full pb-6"
   [class.wizard-stepper--compact]="compact()"
-  aria-label="Étapes"
+  [attr.aria-label]="'journee.wizard.title' | translate"
 >
   <div class="wizard-stepper__track mx-auto max-w-5xl">
     @for (step of steps(); track step.id) {
@@ -19,7 +19,7 @@
           }
         </span>
         @if (!compact()) {
-          <span class="wizard-stepper__label">{{ step.label }}</span>
+          <span class="wizard-stepper__label">{{ step.labelKey | translate }}</span>
         }
       </a>
     }

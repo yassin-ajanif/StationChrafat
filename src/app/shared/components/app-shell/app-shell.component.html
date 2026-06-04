@@ -1,6 +1,7 @@
 <div
   class="app-shell flex min-h-dvh bg-surface"
   [class.app-shell--sidebar-collapsed]="sidebarCollapsed()"
+  [class.app-shell--rtl]="locale.isRtl()"
 >
   <aside
     class="app-shell__sidebar flex w-[var(--width-sidebar)] shrink-0 flex-col bg-inverse-surface text-inverse-on-surface"
@@ -10,10 +11,12 @@
     <div class="app-shell__brand border-b border-white/10 px-3 py-3">
       <div class="app-shell__brand-row flex items-center gap-2">
         <div class="app-shell__brand-text min-w-0 flex-1">
-          <p class="font-display text-xl font-bold uppercase tracking-wide text-primary-container">
-            CHARAFATE
-          </p>
-          <p class="app-shell__brand-subtitle text-sm text-inverse-on-surface/70">Management Portal</p>
+      <p class="font-display text-xl font-bold uppercase tracking-wide text-primary-container">
+        {{ 'shell.brand.name' | translate }}
+      </p>
+      <p class="app-shell__brand-subtitle text-sm text-inverse-on-surface/70">
+        {{ 'shell.brand.subtitle' | translate }}
+      </p>
         </div>
         <button
           type="button"
@@ -33,27 +36,27 @@
 
     <nav class="app-shell__nav flex flex-1 flex-col gap-1 overflow-y-auto p-2">
       @if (sidebarCollapsed()) {
-        @for (item of navLinks; track item.route + item.label) {
+        @for (item of navLinks; track item.route + item.labelKey) {
           <a
             [routerLink]="item.route!"
             routerLinkActive="app-shell__nav-icon-btn--active"
             class="app-shell__nav-icon-btn"
-            [attr.title]="item.label"
-            [attr.aria-label]="item.label"
+            [attr.title]="navLabel(item.labelKey)"
+            [attr.aria-label]="navLabel(item.labelKey)"
           >
             <app-sidebar-nav-icon [icon]="item.icon ?? 'dashboard'" />
           </a>
         }
 
         @for (menu of principalMenus; track menu.id) {
-          @for (entry of menu.entries; track isBranch(entry) ? entry.id : entry.label) {
+          @for (entry of menu.entries; track isBranch(entry) ? entry.id : entry.labelKey) {
             @if (isBranch(entry)) {
               <button
                 type="button"
                 class="app-shell__nav-icon-btn"
                 [class.app-shell__nav-icon-btn--active]="isBranchActive(entry)"
-                [attr.title]="entry.label"
-                [attr.aria-label]="entry.label"
+                [attr.title]="navLabel(entry.labelKey)"
+                [attr.aria-label]="navLabel(entry.labelKey)"
                 (click)="onBranchClick(entry)"
               >
                 <app-sidebar-nav-icon [icon]="entryIcon(entry)" />
@@ -64,8 +67,8 @@
                   [routerLink]="entry.route!"
                   routerLinkActive="app-shell__nav-icon-btn--active"
                   class="app-shell__nav-icon-btn"
-                  [attr.title]="entry.label"
-                  [attr.aria-label]="entry.label"
+                  [attr.title]="entry.labelKey | translate"
+                  [attr.aria-label]="entry.labelKey | translate"
                 >
                   <app-sidebar-nav-icon [icon]="entryIcon(entry)" />
                 </a>
@@ -74,16 +77,16 @@
           }
         }
       } @else {
-        @for (item of navLinks; track item.route + item.label) {
+        @for (item of navLinks; track item.route + item.labelKey) {
           <a
             [routerLink]="item.route!"
             routerLinkActive="app-shell__nav-link--active"
             [routerLinkActiveOptions]="{ exact: true }"
             class="app-shell__nav-link"
-            [attr.title]="item.label"
+            [attr.title]="navLabel(item.labelKey)"
           >
             <app-sidebar-nav-icon [icon]="item.icon ?? 'dashboard'" />
-            <span class="app-shell__nav-label">{{ item.label }}</span>
+            <span class="app-shell__nav-label">{{ item.labelKey | translate }}</span>
           </a>
         }
 
@@ -94,11 +97,11 @@
               class="app-shell__nav-group-toggle"
               [class.app-shell__nav-group-toggle--active]="isPrincipalActive(menu)"
               [attr.aria-expanded]="isExpanded(menu.id)"
-              [attr.title]="menu.label"
+              [attr.title]="navLabel(menu.labelKey)"
               (click)="toggleGroup(menu.id)"
             >
               <app-sidebar-nav-icon [icon]="menu.icon" />
-              <span class="app-shell__nav-label min-w-0 flex-1 text-left">{{ menu.label }}</span>
+              <span class="app-shell__nav-label min-w-0 flex-1 text-start">{{ menu.labelKey | translate }}</span>
               <svg
                 class="app-shell__chevron size-4 shrink-0 transition-transform duration-200"
                 [class.app-shell__chevron--expanded]="isExpanded(menu.id)"
@@ -114,7 +117,7 @@
 
             @if (isExpanded(menu.id)) {
               <div class="app-shell__nav-sublist">
-                @for (entry of menu.entries; track isBranch(entry) ? entry.id : entry.label) {
+                @for (entry of menu.entries; track isBranch(entry) ? entry.id : entry.labelKey) {
                   @if (isBranch(entry)) {
                     <div class="app-shell__nav-subgroup">
                       <button
@@ -122,11 +125,11 @@
                         class="app-shell__nav-subgroup-toggle"
                         [class.app-shell__nav-subgroup-toggle--active]="isBranchActive(entry)"
                         [attr.aria-expanded]="isExpanded(entry.id)"
-                        [attr.title]="entry.label"
+                        [attr.title]="navLabel(entry.labelKey)"
                         (click)="onBranchClick(entry)"
                       >
                         <app-sidebar-nav-icon [icon]="entryIcon(entry)" />
-                        <span class="app-shell__nav-label min-w-0 flex-1 text-left">{{ entry.label }}</span>
+                        <span class="app-shell__nav-label min-w-0 flex-1 text-start">{{ entry.labelKey | translate }}</span>
                         <svg
                           class="app-shell__chevron size-3.5 shrink-0 transition-transform duration-200"
                           [class.app-shell__chevron--expanded]="isExpanded(entry.id)"
@@ -141,15 +144,15 @@
                       </button>
                       @if (isExpanded(entry.id)) {
                         <div class="app-shell__nav-nested">
-                          @for (child of entry.children; track child.label) {
+                          @for (child of entry.children; track child.labelKey) {
                             @if (isImplementedRoute(child.route)) {
                               <a
                                 [routerLink]="child.route!"
                                 routerLinkActive="app-shell__nav-nested-link--active"
                                 class="app-shell__nav-nested-link"
-                                [attr.title]="child.label"
+                                [attr.title]="navLabel(child.labelKey)"
                               >
-                                <span class="app-shell__nav-label">{{ child.label }}</span>
+                                <span class="app-shell__nav-label">{{ child.labelKey | translate }}</span>
                               </a>
                             }
                           }
@@ -162,10 +165,10 @@
                         [routerLink]="entry.route!"
                         routerLinkActive="app-shell__nav-sublink--active"
                         class="app-shell__nav-sublink"
-                        [attr.title]="entry.label"
+                        [attr.title]="navLabel(entry.labelKey)"
                       >
                         <app-sidebar-nav-icon [icon]="entryIcon(entry)" />
-                        <span class="app-shell__nav-label">{{ entry.label }}</span>
+                        <span class="app-shell__nav-label">{{ entry.labelKey | translate }}</span>
                       </a>
                     }
                   }
@@ -182,11 +185,12 @@
     <header class="app-shell__header flex min-h-16 items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-6">
       <div class="flex min-w-0 items-center gap-3">
         <p class="font-display text-sm font-bold uppercase text-on-surface-variant">
-          Station CHARAFATE
+          {{ 'shell.header.stationTitle' | translate }}
         </p>
       </div>
       <div class="flex items-center gap-4 text-sm text-on-surface-variant">
-        <span class="hidden md:inline">Admin Station</span>
+        <app-locale-switcher />
+        <span class="hidden md:inline">{{ 'shell.header.userRole' | translate }}</span>
         <span class="app-shell__avatar flex size-9 items-center justify-center rounded-full bg-primary text-xs font-bold text-on-primary">AB</span>
       </div>
     </header>

@@ -7,6 +7,7 @@ import {
   output,
   signal,
 } from '@angular/core';
+import { TranslatePipe } from '../../../../../../../core/i18n';
 import { ButtonComponent } from '../../../../../../../shared/components/button/button.component';
 import {
   CatalogueCategory,
@@ -18,7 +19,7 @@ import {
 @Component({
   selector: 'app-catalogue-item-form-dialog',
   standalone: true,
-  imports: [ButtonComponent],
+  imports: [ButtonComponent, TranslatePipe],
   templateUrl: './catalogue-item-form-dialog.component.html',
   styleUrl: './catalogue-item-form-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

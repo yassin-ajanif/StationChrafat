@@ -1,18 +1,18 @@
 <div class="flex w-full flex-col gap-6">
   <header class="flex flex-wrap items-start justify-between gap-4">
     <div>
-      <h1 class="font-display text-2xl font-bold uppercase text-on-surface">Bon de retour fournisseur — Station</h1>
+      <h1 class="font-display text-2xl font-bold uppercase text-on-surface">{{ 'achat.retour.title' | translate }}</h1>
       <p class="mt-0.5 text-sm text-on-surface-variant">
-        Marchandises retournées au fournisseur.
+        {{ 'achat.retour.subtitle' | translate }}
       </p>
     </div>
     <app-button variant="primary" (pressed)="openNew()">
-      + Nouveau bon de retour
+      {{ 'ventes.retour.cta' | translate }}
     </app-button>
   </header>
 
   @if (loading()) {
-    <p class="py-12 text-center text-on-surface-variant">Chargement des retours…</p>
+    <p class="py-12 text-center text-on-surface-variant">{{ 'ventes.retour.loading' | translate }}</p>
   } @else if (error(); as err) {
     <p class="rounded-[var(--radius-card)] border border-primary bg-primary/10 px-4 py-3 text-sm text-primary" role="alert">{{ err }}</p>
   } @else {
@@ -20,14 +20,14 @@
       <table class="w-full border-collapse text-sm">
         <thead>
           <tr class="bg-table-header">
-            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">N° Retour</th>
-            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">Fournisseur</th>
-            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">Facture liée</th>
-            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">Motif</th>
-            <th class="px-4 py-3 text-right font-display text-xs font-bold uppercase text-white">Montant</th>
-            <th class="px-4 py-3 text-center font-display text-xs font-bold uppercase text-white">Statut</th>
-            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">Date</th>
-            <th class="px-4 py-3 text-center font-display text-xs font-bold uppercase text-white">Actions</th>
+            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">{{ 'ventes.retour.colNumero' | translate }}</th>
+            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">{{ 'common.table.supplier' | translate }}</th>
+            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">{{ 'ventes.avoir.colFacture' | translate }}</th>
+            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">{{ 'ventes.retour.colMotif' | translate }}</th>
+            <th class="px-4 py-3 text-right font-display text-xs font-bold uppercase text-white">{{ 'common.table.amount' | translate }}</th>
+            <th class="px-4 py-3 text-center font-display text-xs font-bold uppercase text-white">{{ 'common.table.status' | translate }}</th>
+            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">{{ 'common.table.date' | translate }}</th>
+            <th class="px-4 py-3 text-center font-display text-xs font-bold uppercase text-white">{{ 'common.table.actions' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -38,11 +38,11 @@
               <td class="px-4 py-3 font-mono text-xs text-on-surface-variant">{{ r.factureLiee }}</td>
               <td class="px-4 py-3 text-sm text-on-surface-variant max-w-[200px] truncate">{{ r.motif }}</td>
               <td class="px-4 py-3 text-right font-bold tabular-nums text-on-surface">
-                {{ r.montant | number: '1.2-2' : 'fr-MA' }} DH
+                {{ r.montant | localeCurrency }}
               </td>
               <td class="px-4 py-3 text-center">
                 <span class="inline-block rounded px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide {{ statutClass(r.statut) }}">
-                  {{ statutLabels[r.statut] }}
+                  {{ statutKeys[r.statut] | translate }}
                 </span>
               </td>
               <td class="px-4 py-3 text-sm text-on-surface-variant">{{ r.dateCreation | date: 'dd/MM/yyyy' }}</td>
@@ -53,14 +53,14 @@
                     class="rounded px-2 py-1 text-xs font-semibold uppercase text-secondary hover:bg-secondary/10"
                     (click)="openEdit(r)"
                   >
-                    Modifier
+                    {{ 'common.actions.edit' | translate }}
                   </button>
                   <button
                     type="button"
                     class="rounded px-2 py-1 text-xs font-semibold uppercase text-primary hover:bg-primary/10"
                     (click)="removeRetour(r.id)"
                   >
-                    Supprimer
+                    {{ 'common.actions.delete' | translate }}
                   </button>
                 </div>
               </td>
@@ -68,7 +68,7 @@
           } @empty {
             <tr>
               <td colspan="8" class="px-4 py-12 text-center text-on-surface-variant">
-                Aucun retour pour le moment.
+                {{ 'ventes.retour.empty' | translate }}
               </td>
             </tr>
           }
@@ -77,7 +77,7 @@
     </div>
 
     @if (saving()) {
-      <p class="text-sm text-on-surface-variant">Enregistrement en cours…</p>
+      <p class="text-sm text-on-surface-variant">{{ 'ventes.devis.saving' | translate }}</p>
     }
   }
 </div>

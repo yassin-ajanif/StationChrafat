@@ -11,21 +11,21 @@ export type DocumentLineColumnKey =
 
 export interface DocumentLineColumnDef {
   key: DocumentLineColumnKey;
-  label: string;
+  labelKey: string;
   editable: boolean;
   align: 'left' | 'right';
 }
 
 export const DOCUMENT_LINE_COLUMNS: DocumentLineColumnDef[] = [
-  { key: 'reference', label: 'Réf.', editable: true, align: 'left' },
-  { key: 'designation', label: 'Désignation', editable: true, align: 'left' },
-  { key: 'quantity', label: 'Qté', editable: true, align: 'right' },
-  { key: 'unit', label: 'Unité', editable: true, align: 'left' },
-  { key: 'unitPriceHT', label: 'P.U. HT', editable: true, align: 'right' },
-  { key: 'discountPercent', label: 'Rem. %', editable: true, align: 'right' },
-  { key: 'vatPercent', label: 'TVA %', editable: true, align: 'right' },
-  { key: 'amountHT', label: 'Montant HT', editable: false, align: 'right' },
-  { key: 'amountTTC', label: 'Montant TTC', editable: false, align: 'right' },
+  { key: 'reference', labelKey: 'common.documentLines.reference', editable: true, align: 'left' },
+  { key: 'designation', labelKey: 'common.documentLines.designation', editable: true, align: 'left' },
+  { key: 'quantity', labelKey: 'common.documentLines.quantity', editable: true, align: 'right' },
+  { key: 'unit', labelKey: 'common.documentLines.unit', editable: true, align: 'left' },
+  { key: 'unitPriceHT', labelKey: 'common.documentLines.unitPriceHt', editable: true, align: 'right' },
+  { key: 'discountPercent', labelKey: 'common.documentLines.discount', editable: true, align: 'right' },
+  { key: 'vatPercent', labelKey: 'common.documentLines.vat', editable: true, align: 'right' },
+  { key: 'amountHT', labelKey: 'common.documentLines.amountHt', editable: false, align: 'right' },
+  { key: 'amountTTC', labelKey: 'common.documentLines.amountTtc', editable: false, align: 'right' },
 ];
 
 export const DEFAULT_DOCUMENT_LINE_VAT = 20;

@@ -7,15 +7,15 @@
       >💳</span>
       <div>
         <h1 class="font-display text-2xl font-bold uppercase text-on-surface">
-          Étape 4 : Déclaration des encaissements non-espèces
+          {{ 'journee.step4.title' | translate }}
         </h1>
         <p class="mt-1 text-base text-on-surface-variant">
-          Veuillez saisir les montants par mode de paiement et par client si applicable.
+          {{ 'journee.step4.subtitle' | translate }}
         </p>
       </div>
     </div>
     <app-button variant="primary" (pressed)="addLine()">
-      + Ajouter une ligne
+      {{ 'journee.step4.addLine' | translate }}
     </app-button>
   </header>
 
@@ -52,7 +52,7 @@
             Note (facultative)
           </th>
           <th class="encaissements-step4__col-actions px-2 py-3.5 text-center font-display text-sm font-bold uppercase tracking-wide text-white">
-            <span class="sr-only">Actions</span>
+            <span class="sr-only">{{ 'common.table.actions' | translate }}</span>
           </th>
         </tr>
       </thead>
@@ -60,13 +60,13 @@
         @if (loading() || clientsLoading()) {
           <tr>
             <td colspan="7" class="py-12 text-center text-on-surface-variant">
-              Chargement des encaissements…
+              {{ 'journee.step4.loading' | translate }}
             </td>
           </tr>
         } @else if (lines().length === 0) {
           <tr>
             <td colspan="7" class="py-12 text-center text-on-surface-variant">
-              Aucune ligne. Cliquez sur « + Ajouter une ligne » pour commencer.
+              {{ 'journee.step4.empty' | translate }}
             </td>
           </tr>
         } @else {
@@ -93,7 +93,7 @@
                   <span
                     class="encaissements-step4__balance encaissements-step4__balance--debt block"
                   >
-                    {{ balance | number: '1.2-2' }}
+                    {{ balance | localeNumber:'1.2-2' }}
                   </span>
                 } @else {
                   <span class="encaissements-step4__balance block">—</span>
@@ -106,7 +106,7 @@
                   (change)="updatePaymentMode(line.id, $event)"
                   [attr.aria-label]="'Mode de paiement ligne ' + (i + 1)"
                 >
-                  <option value="">Sélec…</option>
+                  <option value="">{{ 'journee.step4.modePlaceholder' | translate }}</option>
                   @for (mode of paymentModes; track mode) {
                     <option [value]="mode">{{ mode }}</option>
                   }
@@ -139,7 +139,7 @@
                   <button
                     type="button"
                     class="encaissements-step4__icon-action group"
-                    aria-label="Supprimer la ligne"
+                    [attr.aria-label]="'journee.step4.deleteLine' | translate"
                     (click)="removeLine(line.id)"
                   >
                     <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -147,7 +147,7 @@
                       <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
                       <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                     </svg>
-                    <span class="encaissements-step4__icon-action-tooltip" role="tooltip">Supprimer</span>
+                    <span class="encaissements-step4__icon-action-tooltip" role="tooltip">{{ 'common.actions.delete' | translate }}</span>
                   </button>
                 } @else {
                   <span
@@ -176,11 +176,11 @@
               colspan="4"
               class="px-4 py-5 font-display text-sm font-bold uppercase tracking-wide text-on-surface"
             >
-              Total encaissements non-espèces
+              {{ 'journee.step4.total' | translate }}
             </td>
             <td class="px-4 py-5 text-right">
               <p class="font-display text-2xl font-bold leading-none text-primary tabular-nums md:text-3xl">
-                {{ total() | number: '1.2-2' }}
+                {{ total() | localeNumber:'1.2-2' }}
               </p>
               <p class="mt-1 text-sm font-semibold text-primary">DH</p>
             </td>

@@ -1,4 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
+import { TranslatePipe } from '../../../../../core/i18n';
 import { Store } from '@ngrx/store';
 import { StockGestionKpiCardsComponent } from '../../components/stock-gestion-kpi-cards/stock-gestion-kpi-cards.component';
 import { StockGestionTabsComponent } from '../../components/stock-gestion-tabs/stock-gestion-tabs.component';
@@ -10,9 +11,10 @@ import {
   selectActiveTab,
   selectCurrentPage,
   selectError,
+  selectFilteredProducts,
   selectLoading,
+  selectPageSize,
   selectPaginatedProducts,
-  selectPaginationLabel,
   selectSearchQuery,
   selectSummaries,
   selectTotalPages,
@@ -22,12 +24,7 @@ import {
 @Component({
   selector: 'app-stock-gestion-page',
   standalone: true,
-  imports: [
-    StockGestionKpiCardsComponent,
-    StockGestionTabsComponent,
-    StockGestionToolbarComponent,
-    StockProductTableComponent,
-  ],
+  imports: [StockGestionKpiCardsComponent, StockGestionTabsComponent, StockGestionToolbarComponent, StockProductTableComponent, TranslatePipe],
   templateUrl: './stock-gestion.page.html',
   styleUrl: './stock-gestion.page.scss',
 })
@@ -39,11 +36,24 @@ export class StockGestionPage implements OnInit {
   readonly summaries = this.store.selectSignal(selectSummaries);
   readonly activeTab = this.store.selectSignal(selectActiveTab);
   readonly searchQuery = this.store.selectSignal(selectSearchQuery);
+  readonly filteredProducts = this.store.selectSignal(selectFilteredProducts);
+  readonly pageSize = this.store.selectSignal(selectPageSize);
   readonly paginatedProducts = this.store.selectSignal(selectPaginatedProducts);
-  readonly paginationLabel = this.store.selectSignal(selectPaginationLabel);
   readonly currentPage = this.store.selectSignal(selectCurrentPage);
   readonly totalPages = this.store.selectSignal(selectTotalPages);
   readonly visiblePages = this.store.selectSignal(selectVisiblePages);
+
+  readonly paginationRange = computed(() => {
+    const total = this.filteredProducts().length;
+    const page = this.currentPage();
+    const size = this.pageSize();
+    if (total === 0) {
+      return null;
+    }
+    const start = (page - 1) * size + 1;
+    const end = Math.min(page * size, total);
+    return { start, end, total };
+  });
 
   ngOnInit(): void {
     this.store.dispatch(StockGestionActions.loadPage());

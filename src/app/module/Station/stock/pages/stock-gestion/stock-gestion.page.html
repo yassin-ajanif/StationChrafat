@@ -1,15 +1,15 @@
 <div class="stock-gestion flex flex-col gap-6">
   <header class="stock-gestion__header">
     <h1 class="stock-gestion__title font-display text-2xl font-bold uppercase text-primary">
-      Gestion des stocks
+      {{ 'stock.gestion.title' | translate }}
     </h1>
     <p class="stock-gestion__subtitle mt-1 text-sm text-on-surface-variant">
-      Suivi des niveaux de stock par famille (carburant, vidange, lavage).
+      {{ 'stock.gestion.subtitle' | translate }}
     </p>
   </header>
 
   @if (loading()) {
-    <p class="stock-gestion__status py-16 text-center text-on-surface-variant">Chargement des stocks…</p>
+    <p class="stock-gestion__status py-16 text-center text-on-surface-variant">{{ 'stock.gestion.loading' | translate }}</p>
   } @else {
     @if (error(); as err) {
       <p class="stock-gestion__alert rounded-[var(--radius-card)] border border-primary bg-primary/10 px-4 py-3 text-sm text-primary" role="alert">
@@ -34,14 +34,20 @@
         <app-stock-product-table [products]="paginatedProducts()" />
 
         <footer class="stock-gestion__pagination mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-outline-variant/60 pt-4">
-          <p class="text-sm text-on-surface-variant">{{ paginationLabel() }}</p>
-          <nav class="stock-gestion__pagination-nav flex items-center gap-1" aria-label="Pagination">
+          <p class="text-sm text-on-surface-variant">
+            @if (paginationRange(); as range) {
+              {{ 'stock.gestion.paginationRange' | translate: range }}
+            } @else {
+              {{ 'stock.gestion.paginationNone' | translate }}
+            }
+          </p>
+          <nav class="stock-gestion__pagination-nav flex items-center gap-1" [attr.aria-label]="'stock.gestion.paginationAria' | translate">
             <button
               type="button"
               class="stock-gestion__page-btn"
               [disabled]="currentPage() <= 1"
               (click)="onPageChange(currentPage() - 1)"
-              aria-label="Page précédente"
+              [attr.aria-label]="'stock.gestion.paginationPrev' | translate"
             >
               &#8249;
             </button>
@@ -60,7 +66,7 @@
               class="stock-gestion__page-btn"
               [disabled]="currentPage() >= totalPages()"
               (click)="onPageChange(currentPage() + 1)"
-              aria-label="Page suivante"
+              [attr.aria-label]="'stock.gestion.paginationNext' | translate"
             >
               &#8250;
             </button>

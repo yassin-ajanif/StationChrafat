@@ -44,12 +44,12 @@ export interface CommandeDraft {
   payments: PaymentSplit;
 }
 
-export const COMMANDE_STATUT_LABELS: Record<CommandeStatut, string> = {
-  en_attente: 'En attente',
-  confirmee: 'Confirmée',
-  en_cours: 'En cours',
-  livree: 'Livrée',
-  annulee: 'Annulée',
+export const COMMANDE_STATUT_KEYS: Record<CommandeStatut, string> = {
+  en_attente: 'ventes.commande.statusEnAttente',
+  confirmee: 'ventes.commande.statusConfirmee',
+  en_cours: 'ventes.commande.statusEnCours',
+  livree: 'ventes.commande.statusLivree',
+  annulee: 'ventes.commande.statusAnnulee',
 };
 
 export function computeCommandeMontant(

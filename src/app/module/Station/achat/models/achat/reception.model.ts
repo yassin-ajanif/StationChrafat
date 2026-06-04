@@ -47,11 +47,11 @@ export interface ReceptionDraft {
   payments: PaymentSplit;
 }
 
-export const RECEPTION_STATUT_LABELS: Record<ReceptionStatut, string> = {
-  planifiee: 'Planifiée',
-  en_cours: 'En cours',
-  recue: 'Reçue',
-  annulee: 'Annulée',
+export const RECEPTION_STATUT_KEYS: Record<ReceptionStatut, string> = {
+  planifiee: 'ventes.livraison.statusPlanifiee',
+  en_cours: 'ventes.livraison.statusEnCours',
+  recue: 'achat.reception.statusRecue',
+  annulee: 'ventes.livraison.statusAnnulee',
 };
 
 export function computeReceptionMontant(

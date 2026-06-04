@@ -1,4 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { TranslatePipe, TranslateService } from '../../../../../core/i18n';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
 import { CategorySidebarComponent } from '../../components/category-sidebar/category-sidebar.component';
@@ -27,18 +28,13 @@ import { CategoryFormDialogComponent } from './dialogs/category-form-dialog/cate
 @Component({
   selector: 'app-produits-services',
   standalone: true,
-  imports: [
-    ButtonComponent,
-    CategorySidebarComponent,
-    CatalogueItemTableComponent,
-    CatalogueItemFormDialogComponent,
-    CategoryFormDialogComponent,
-  ],
+  imports: [ButtonComponent, CategorySidebarComponent, CatalogueItemTableComponent, CatalogueItemFormDialogComponent, CategoryFormDialogComponent, TranslatePipe],
   templateUrl: './produits-services.page.html',
   styleUrl: './produits-services.page.scss',
 })
 export class ProduitsServicesPage implements OnInit {
   private readonly store = inject(Store);
+  private readonly translate = inject(TranslateService);
 
   readonly serviceCategories = this.store.selectSignal(selectServiceCategories);
   readonly productCategories = this.store.selectSignal(selectProductCategories);
@@ -100,7 +96,7 @@ export class ProduitsServicesPage implements OnInit {
   }
 
   onRemoveItem(id: number): void {
-    if (confirm('Supprimer cet article du catalogue ?')) {
+    if (confirm(this.translate.instant('common.confirm.deleteArticle'))) {
       this.store.dispatch(ProduitsServicesActions.removeItem({ id }));
     }
   }

@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal } from '@angular/core';
+import { TranslatePipe } from '../../../../../../../core/i18n'
 import { ButtonComponent } from '../../../../../../../shared/components/button/button.component';
 import { CatalogueCategory, CategoryDraft, CategoryKind } from '../../../../models';
 
 @Component({
   selector: 'app-category-form-dialog',
   standalone: true,
-  imports: [ButtonComponent],
+  imports: [ButtonComponent, TranslatePipe],
   templateUrl: './category-form-dialog.component.html',
   styleUrl: './category-form-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

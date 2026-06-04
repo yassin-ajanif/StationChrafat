@@ -1,10 +1,10 @@
 <div class="validation-step6 mx-auto flex w-full max-w-5xl flex-col">
   <header class="validation-step6__hero mb-8 text-center">
     <h1 class="validation-step6__title font-display uppercase text-on-surface">
-      Ouverture de journée
+      {{ 'journee.validation.title' | translate }}
     </h1>
     <p class="validation-step6__subtitle text-on-surface-variant">
-      Validation finale avant transmission des données.
+      {{ 'journee.validation.subtitle' | translate }}
     </p>
   </header>
 
@@ -16,92 +16,92 @@
   }
 
   @if (loading()) {
-    <p class="py-16 text-center text-on-surface-variant">Calcul du récapitulatif…</p>
+    <p class="py-16 text-center text-on-surface-variant">{{ 'journee.validation.loading' | translate }}</p>
   } @else if (summary(); as s) {
     <div class="validation-step6__summary-grid mb-6 grid gap-6 md:grid-cols-2">
-      <section class="validation-step6__card" aria-label="Chiffre d'affaires">
-        <h2 class="validation-step6__card-title">Chiffre d'affaires</h2>
+      <section class="validation-step6__card" aria-label="{{ 'journee.validation.revenueTitle' | translate }}">
+        <h2 class="validation-step6__card-title">{{ 'journee.validation.revenueTitle' | translate }}</h2>
         <div class="validation-step6__row">
-          <span class="validation-step6__row-label">Ventes Carburants</span>
+          <span class="validation-step6__row-label">{{ 'journee.validation.fuel' | translate }}</span>
           <span class="validation-step6__row-value">
-            {{ s.revenue.fuelSales | number: '1.2-2' : 'fr-MA' }} DH
+            {{ s.revenue.fuelSales | localeCurrency }}
           </span>
         </div>
         <div class="validation-step6__row">
-          <span class="validation-step6__row-label">Boutique &amp; Produits</span>
+          <span class="validation-step6__row-label">{{ 'journee.validation.shop' | translate }}</span>
           <span class="validation-step6__row-value">
-            {{ s.revenue.shopProducts | number: '1.2-2' : 'fr-MA' }} DH
+            {{ s.revenue.shopProducts | localeCurrency }}
           </span>
         </div>
         <div class="validation-step6__row">
-          <span class="validation-step6__row-label">Services (Lavage/Graissage)</span>
+          <span class="validation-step6__row-label">{{ 'journee.validation.services' | translate }}</span>
           <span class="validation-step6__row-value">
-            {{ s.revenue.services | number: '1.2-2' : 'fr-MA' }} DH
+            {{ s.revenue.services | localeCurrency }}
           </span>
         </div>
         <div class="validation-step6__gross-total">
-          <span class="validation-step6__gross-total-label">Total brut</span>
+          <span class="validation-step6__gross-total-label">{{ 'journee.validation.gross' | translate }}</span>
           <span class="validation-step6__gross-total-value">
-            {{ s.revenue.grossTotal | number: '1.2-2' : 'fr-MA' }} DH
+            {{ s.revenue.grossTotal | localeCurrency }}
           </span>
         </div>
       </section>
 
-      <section class="validation-step6__card" aria-label="Mouvements de caisse">
-        <h2 class="validation-step6__card-title">Mouvements de caisse</h2>
+      <section class="validation-step6__card" aria-label="{{ 'journee.validation.cashTitle' | translate }}">
+        <h2 class="validation-step6__card-title">{{ 'journee.validation.cashTitle' | translate }}</h2>
         <div class="validation-step6__row">
-          <span class="validation-step6__row-label">Encaissements Non-Espèces</span>
+          <span class="validation-step6__row-label">{{ 'journee.validation.nonCash' | translate }}</span>
           <span class="validation-step6__row-value validation-step6__row-value--negative">
-            -{{ s.cashMovements.nonCashCollections | number: '1.2-2' : 'fr-MA' }} DH
+            -{{ s.cashMovements.nonCashCollections | localeCurrency }}
           </span>
         </div>
         <div class="validation-step6__row">
-          <span class="validation-step6__row-label">Dépenses Autorisées</span>
+          <span class="validation-step6__row-label">{{ 'journee.validation.expenses' | translate }}</span>
           <span class="validation-step6__row-value validation-step6__row-value--negative">
-            -{{ s.cashMovements.authorizedExpenses | number: '1.2-2' : 'fr-MA' }} DH
+            -{{ s.cashMovements.authorizedExpenses | localeCurrency }}
           </span>
         </div>
         <div class="validation-step6__row">
-          <span class="validation-step6__row-label">Règlements Dettes (+)</span>
+          <span class="validation-step6__row-label">{{ 'journee.validation.debtSettlements' | translate }}</span>
           <span class="validation-step6__row-value validation-step6__row-value--positive">
-            +{{ s.cashMovements.debtSettlements | number: '1.2-2' : 'fr-MA' }} DH
+            +{{ s.cashMovements.debtSettlements | localeCurrency }}
           </span>
         </div>
         <div class="validation-step6__row">
-          <span class="validation-step6__row-label">Recharges Cartes (+)</span>
+          <span class="validation-step6__row-label">{{ 'journee.validation.cardRecharges' | translate }}</span>
           <span class="validation-step6__row-value validation-step6__row-value--positive">
-            +{{ s.cashMovements.cardRecharges | number: '1.2-2' : 'fr-MA' }} DH
+            +{{ s.cashMovements.cardRecharges | localeCurrency }}
           </span>
         </div>
       </section>
     </div>
 
-    <section class="validation-step6__remittance mb-8" aria-label="Montant net à verser">
+    <section class="validation-step6__remittance mb-8" [attr.aria-label]="'journee.validation.remittanceKicker' | translate">
       <div class="validation-step6__remittance-copy">
-        <p class="validation-step6__remittance-kicker">Montant net à verser</p>
+        <p class="validation-step6__remittance-kicker">{{ 'journee.validation.remittanceKicker' | translate }}</p>
         <p class="validation-step6__remittance-label">
-          Espèces à remettre par {{ s.remittanceOperatorName }}
+          {{ 'journee.validation.remittanceLabel' | translate: { operatorName: s.remittanceOperatorName } }}
         </p>
       </div>
       <p class="validation-step6__remittance-amount">
-        {{ s.netCashToRemit | number: '1.2-2' : 'fr-MA' }} DH
+        {{ s.netCashToRemit | localeCurrency }}
       </p>
     </section>
 
-    <section class="validation-step6__detail mb-8" aria-label="Détail encaissements non-espèces">
-      <h2 class="validation-step6__detail-title">Détail encaissements non-espèces</h2>
+    <section class="validation-step6__detail mb-8" [attr.aria-label]="'journee.validation.nonCashDetail' | translate">
+      <h2 class="validation-step6__detail-title">{{ 'journee.validation.nonCashDetail' | translate }}</h2>
       @if (s.nonCashDetails.length === 0) {
-        <p class="text-sm text-on-surface-variant">Aucun encaissement non-espèces déclaré.</p>
+        <p class="text-sm text-on-surface-variant">{{ 'journee.validation.nonCashEmpty' | translate }}</p>
       } @else {
         <div class="validation-step6__table-wrap overflow-hidden rounded-[var(--radius-card)] border border-outline-variant shadow-sm">
           <table class="validation-step6__detail-table w-full border-collapse text-sm">
             <thead>
               <tr class="bg-table-header">
                 <th class="px-4 py-3.5 text-left font-display text-xs font-bold uppercase tracking-wide text-white">
-                  Type de paiement
+                  {{ 'journee.validation.paymentType' | translate }}
                 </th>
                 <th class="px-4 py-3.5 text-left font-display text-xs font-bold uppercase tracking-wide text-white">
-                  Référence / Nb
+                  {{ 'journee.validation.reference' | translate }}
                 </th>
                 <th class="px-4 py-3.5 text-right font-display text-xs font-bold uppercase tracking-wide text-white">
                   Montant
@@ -114,7 +114,7 @@
                   <td class="px-4 py-3.5 font-medium text-on-surface">{{ row.paymentType }}</td>
                   <td class="px-4 py-3.5 text-on-surface-variant">{{ row.reference }}</td>
                   <td class="px-4 py-3.5 text-right font-semibold tabular-nums text-on-surface">
-                    {{ row.amount | number: '1.2-2' : 'fr-MA' }} DH
+                    {{ row.amount | localeCurrency }}
                   </td>
                 </tr>
               }
@@ -130,7 +130,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <path d="M19 12H5M12 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
-      Revenir au formulaire
+      {{ 'journee.validation.back' | translate }}
     </a>
     <app-button
       variant="primary"
@@ -142,7 +142,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
         <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
-      Soumettre la journée
+      {{ 'journee.validation.submit' | translate }}
     </app-button>
   </footer>
 </div>

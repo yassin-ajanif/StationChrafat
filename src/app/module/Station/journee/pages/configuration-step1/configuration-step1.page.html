@@ -4,7 +4,7 @@
       class="configuration-step1__icon flex size-10 items-center justify-center rounded bg-primary/10 text-primary"
       aria-hidden="true"
     >⚙</span>
-    <h1 class="font-display text-2xl font-bold uppercase">Étape 1 : Configuration du shift</h1>
+    <h1 class="font-display text-2xl font-bold uppercase">{{ 'journee.step1.title' | translate }}</h1>
   </header>
 
   <div
@@ -12,7 +12,7 @@
   >
     <div class="grid gap-6 md:grid-cols-1">
       <div>
-        <label class="configuration-step1__label" for="chef-de-piste">Chef de piste (opérateur)</label>
+        <label class="configuration-step1__label" for="chef-de-piste">{{ 'journee.step1.chefLabel' | translate }}</label>
         <select
           id="chef-de-piste"
           class="configuration-step1__select"
@@ -20,17 +20,17 @@
           (change)="onChefChange($event)"
           [disabled]="operatorsLoading()"
         >
-          <option value="">Sélectionner le chef de piste…</option>
+          <option value="">{{ 'journee.step1.chefPlaceholder' | translate }}</option>
           @for (op of operators(); track op.id) {
             <option [value]="op.id">{{ op.name }}</option>
           }
         </select>
-        <p class="configuration-step1__hint">Responsable de la clôture de ce shift.</p>
+        <p class="configuration-step1__hint">{{ 'journee.step1.chefHint' | translate }}</p>
       </div>
     </div>
 
     <div>
-      <label class="configuration-step1__label">Heure d'ouverture système</label>
+      <label class="configuration-step1__label">{{ 'journee.step1.openedAt' | translate }}</label>
       <div class="configuration-step1__readonly">
         <span aria-hidden="true">🕐</span>
         {{ openedAt() | date: 'HH:mm:ss' }}
@@ -38,7 +38,7 @@
     </div>
 
     <div>
-      <p class="configuration-step1__label mb-3">Plage horaire (shift)</p>
+      <p class="configuration-step1__label mb-3">{{ 'journee.step1.shiftSlot' | translate }}</p>
       <app-shift-slot-picker [selected]="shiftSlot()" (selectedChange)="onSlotChange($event)" />
     </div>
 
@@ -49,7 +49,7 @@
 
   <footer class="configuration-step1__footer mt-8 flex flex-wrap justify-between gap-4">
     <a routerLink="/journees">
-      <app-button variant="secondary">Annuler</app-button>
+      <app-button variant="secondary">{{ 'common.actions.cancel' | translate }}</app-button>
     </a>
     <app-button
       variant="primary"
@@ -57,7 +57,7 @@
       [loading]="startingJournee()"
       (pressed)="start()"
     >
-      Démarrer la journée →
+      {{ 'journee.step1.start' | translate }}
     </app-button>
   </footer>
 </div>

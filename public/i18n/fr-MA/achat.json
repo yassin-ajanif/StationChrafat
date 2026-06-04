@@ -1,0 +1,77 @@
+{
+  "devis": {
+    "title": "Devis fournisseur — Station",
+    "subtitle": "Devis reçus des fournisseurs avant bon de commande.",
+    "cta": "+ Nouveau devis",
+    "loading": "Chargement des devis…",
+    "empty": "Aucun devis fournisseur pour le moment.",
+    "dialogNew": "Nouveau devis fournisseur",
+    "dialogEdit": "Modifier devis fournisseur",
+    "save": "Enregistrer le devis"
+  },
+  "commande": {
+    "title": "Bon de commande fournisseur — Station",
+    "subtitle": "Bons de commande fournisseur pour l'approvisionnement en Station.",
+    "cta": "+ Nouvelle commande",
+    "empty": "Aucune commande fournisseur pour le moment.",
+    "colNumero": "N° BC",
+    "dialogNew": "Nouveau bon de commande fournisseur",
+    "dialogEdit": "Modifier bon de commande fournisseur",
+    "total": "Montant commande =",
+    "save": "Enregistrer la commande",
+    "statusRecue": "Reçue"
+  },
+  "reception": {
+    "title": "Bon de réception — Station",
+    "subtitle": "Bons de réception fournisseur (livraisons en cuve).",
+    "cta": "+ Nouvelle réception",
+    "loading": "Chargement des réceptions…",
+    "empty": "Aucune réception pour le moment.",
+    "colNumero": "N° Réception",
+    "colRefBl": "Réf. BL",
+    "dialogNew": "Nouveau bon de réception",
+    "dialogEdit": "Modifier bon de réception",
+    "date": "Date réception",
+    "reference": "Référence BL",
+    "referencePlaceholder": "BL-...",
+    "total": "Montant réception =",
+    "save": "Enregistrer la réception",
+    "statusRecue": "Reçue"
+  },
+  "facture": {
+    "title": "Facture fournisseur — Station",
+    "subtitle": "Factures reçues des fournisseurs  de Station.",
+    "cta": "+ Nouvelle facture",
+    "empty": "Aucune facture fournisseur pour le moment.",
+    "colReception": "Réception",
+    "dialogNew": "Nouvelle facture fournisseur",
+    "dialogEdit": "Modifier facture fournisseur",
+    "dateReception": "Date réception",
+    "dateEcheance": "Date échéance",
+    "total": "Montant facture =",
+    "save": "Enregistrer la facture"
+  },
+  "avoir": {
+    "title": "Avoir fournisseur — Station",
+    "subtitle": "Avoirs reçus des fournisseurs (retours, remises).",
+    "cta": "+ Nouvel avoir",
+    "empty": "Aucun avoir fournisseur pour le moment.",
+    "dialogNew": "Nouvel avoir fournisseur",
+    "dialogEdit": "Modifier avoir fournisseur",
+    "total": "Montant avoir =",
+    "save": "Enregistrer l'avoir",
+    "statusRecu": "Reçu",
+    "statusApplique": "Appliqué"
+  },
+  "retour": {
+    "title": "Bon de retour fournisseur — Station",
+    "subtitle": "Marchandises retournées au fournisseur.",
+    "cta": "+ Nouveau bon de retour",
+    "empty": "Aucun retour fournisseur pour le moment.",
+    "dialogNew": "Nouveau bon de retour",
+    "dialogEdit": "Modifier bon de retour",
+    "fournisseurPlaceholder": "Nom du fournisseur",
+    "motifPlaceholder": "Raison du retour",
+    "statusEnvoye": "Envoyé"
+  }
+}

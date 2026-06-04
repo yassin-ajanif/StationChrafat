@@ -1,11 +1,11 @@
-﻿import { DecimalPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal } from '@angular/core';
 import { ButtonComponent } from '../../../../../../../../shared/components/button/button.component';
+import { LocaleCurrencyPipe, TranslatePipe } from '../../../../../../../../core/i18n'
 import { BonRecapPaymentsComponent } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import { DocumentLinesTableComponent } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
 import { PaymentSplit, isPaymentSplitBalanced } from '../../../../../../shared/models/common/payment-split.model';
 import {
-  RECEPTION_STATUT_LABELS,
+  RECEPTION_STATUT_KEYS,
   Reception,
   ReceptionDraft,
   ReceptionLineTableRow,
@@ -26,7 +26,7 @@ const DEFAULT_PRODUCT_ROWS = 1;
 @Component({
   selector: 'app-reception-form-dialog',
   standalone: true,
-  imports: [ButtonComponent, DecimalPipe, BonRecapPaymentsComponent, DocumentLinesTableComponent],
+  imports: [ButtonComponent, BonRecapPaymentsComponent, DocumentLinesTableComponent, LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './reception-form-dialog.component.html',
   styleUrl: './reception-form-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,7 +37,7 @@ export class ReceptionFormDialogComponent {
   readonly saved = output<ReceptionDraft>();
   readonly closed = output<void>();
 
-  readonly statutLabels = RECEPTION_STATUT_LABELS;
+  readonly statutKeys = RECEPTION_STATUT_KEYS;
   readonly statutOptions: ReceptionStatut[] = ['planifiee', 'en_cours', 'recue', 'annulee'];
 
   readonly isEditMode = computed(() => this.editReception() != null);

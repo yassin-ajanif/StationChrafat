@@ -1,11 +1,11 @@
-﻿import { DecimalPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal } from '@angular/core';
 import { ButtonComponent } from '../../../../../../../../shared/components/button/button.component';
+import { LocaleCurrencyPipe, TranslatePipe } from '../../../../../../../../core/i18n'
 import { BonRecapPaymentsComponent } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import { DocumentLinesTableComponent } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
 import { PaymentSplit, isPaymentSplitBalanced } from '../../../../../../shared/models/common/payment-split.model';
 import {
-  FACTURE_FOURNISSEUR_STATUT_LABELS,
+  FACTURE_FOURNISSEUR_STATUT_KEYS,
   FactureFournisseur,
   FactureFournisseurDraft,
   FactureFournisseurLineTableRow,
@@ -26,7 +26,7 @@ const DEFAULT_PRODUCT_ROWS = 1;
 @Component({
   selector: 'app-facture-fournisseur-form-dialog',
   standalone: true,
-  imports: [ButtonComponent, DecimalPipe, BonRecapPaymentsComponent, DocumentLinesTableComponent],
+  imports: [ButtonComponent, BonRecapPaymentsComponent, DocumentLinesTableComponent, LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './facture-fournisseur-form-dialog.component.html',
   styleUrl: './facture-fournisseur-form-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,7 +37,7 @@ export class FactureFournisseurFormDialogComponent {
   readonly saved = output<FactureFournisseurDraft>();
   readonly closed = output<void>();
 
-  readonly statutLabels = FACTURE_FOURNISSEUR_STATUT_LABELS;
+  readonly statutKeys = FACTURE_FOURNISSEUR_STATUT_KEYS;
   readonly statutOptions: FactureFournisseurStatut[] = ['brouillon', 'recue', 'payee', 'en_retard'];
 
   readonly isEditMode = computed(() => this.editFactureFournisseur() != null);

@@ -1,9 +1,10 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
+import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../../../../core/i18n'
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
 import { DevisFormDialogComponent } from './dialogs/devis-form-dialog/devis-form-dialog.component';
-import { Devis, DevisDraft, DevisStatut, STATUT_LABELS } from '../../../models/ventes';
+import { Devis, DevisDraft, DevisStatut, STATUT_KEYS } from '../../../models/ventes';
 import { VentesActions } from '../../../state/ventes.actions';
 import {
   selectDevis,
@@ -15,19 +16,20 @@ import {
 @Component({
   selector: 'app-erp-devis-list-page',
   standalone: true,
-  imports: [ButtonComponent, DevisFormDialogComponent, DecimalPipe, DatePipe],
+  imports: [ButtonComponent, DevisFormDialogComponent, DatePipe, LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './devis-list.page.html',
   styleUrl: './devis-list.page.scss',
 })
 export class DevisListPage implements OnInit {
   private readonly store = inject(Store);
+  private readonly translate = inject(TranslateService);
 
   readonly devis = this.store.selectSignal(selectDevis);
   readonly loading = this.store.selectSignal(selectDevisLoading);
   readonly error = this.store.selectSignal(selectDevisError);
   readonly saving = this.store.selectSignal(selectDevisSaving);
 
-  readonly statutLabels = STATUT_LABELS;
+  readonly statutKeys = STATUT_KEYS;
   readonly showDialog = signal(false);
   readonly editingDevis = signal<Devis | null>(null);
 
@@ -62,7 +64,7 @@ export class DevisListPage implements OnInit {
   }
 
   removeDevis(id: number): void {
-    if (confirm('Supprimer ce devis ?')) {
+    if (confirm(this.translate.instant('common.confirm.deleteDevis'))) {
       this.store.dispatch(VentesActions.removeDevis({ id }));
     }
   }

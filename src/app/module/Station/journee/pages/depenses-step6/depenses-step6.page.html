@@ -7,15 +7,15 @@
       >💵</span>
       <div>
         <h1 class="font-display text-2xl font-bold uppercase text-on-surface">
-          Étape 6 : Déclaration des dépenses
+          {{ 'journee.step6.title' | translate }}
         </h1>
         <p class="mt-1 text-base text-on-surface-variant">
-          Saisissez les dépenses autorisées payées depuis la caisse du shift.
+          {{ 'journee.step6.subtitle' | translate }}
         </p>
       </div>
     </div>
     <app-button variant="primary" (pressed)="addLine()">
-      + Ajouter une ligne
+      {{ 'journee.step4.addLine' | translate }}
     </app-button>
   </header>
 
@@ -34,7 +34,7 @@
             N°
           </th>
           <th class="depenses-step6__col-type px-3 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">
-            Type de dépense
+            {{ 'journee.step6.colType' | translate }}
           </th>
           <th class="depenses-step6__col-description px-3 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">
             Description
@@ -49,7 +49,7 @@
             Note (facultative)
           </th>
           <th class="depenses-step6__col-actions px-2 py-3.5 text-center font-display text-sm font-bold uppercase tracking-wide text-white">
-            <span class="sr-only">Actions</span>
+            <span class="sr-only">{{ 'common.table.actions' | translate }}</span>
           </th>
         </tr>
       </thead>
@@ -57,13 +57,13 @@
         @if (loading()) {
           <tr>
             <td colspan="7" class="py-12 text-center text-on-surface-variant">
-              Chargement des dépenses…
+              {{ 'journee.step6.loading' | translate }}
             </td>
           </tr>
         } @else if (lines().length === 0) {
           <tr>
             <td colspan="7" class="py-12 text-center text-on-surface-variant">
-              Aucune ligne. Cliquez sur « + Ajouter une ligne » pour commencer.
+              {{ 'journee.step6.empty' | translate }}
             </td>
           </tr>
         } @else {
@@ -77,9 +77,9 @@
                   class="depenses-step6__cell-input"
                   [value]="line.expenseType"
                   (change)="updateExpenseType(line.id, $event)"
-                  [attr.aria-label]="'Type de dépense ligne ' + (i + 1)"
+                  [attr.aria-label]="('journee.step6.colType' | translate) + ' ' + (i + 1)"
                 >
-                  <option value="">Choisir…</option>
+                  <option value="">{{ 'journee.step6.typePlaceholder' | translate }}</option>
                   @for (type of expenseTypes; track type) {
                     <option [value]="type">{{ type }}</option>
                   }
@@ -89,7 +89,7 @@
                 <input
                   type="text"
                   class="depenses-step6__cell-input"
-                  placeholder="Détails de la dépense…"
+                  [placeholder]="'journee.step6.descriptionPlaceholder' | translate"
                   [value]="line.description"
                   (input)="updateDescription(line.id, $event)"
                   [attr.aria-label]="'Description ligne ' + (i + 1)"
@@ -126,7 +126,7 @@
                 <input
                   type="text"
                   class="depenses-step6__cell-input"
-                  placeholder="Observation"
+                  [placeholder]="'journee.step6.notePlaceholder' | translate"
                   [value]="line.note"
                   (input)="updateNote(line.id, $event)"
                   [attr.aria-label]="'Note ligne ' + (i + 1)"
@@ -137,7 +137,7 @@
                   <button
                     type="button"
                     class="depenses-step6__icon-action group"
-                    aria-label="Supprimer la ligne"
+                    [attr.aria-label]="'journee.step6.deleteLine' | translate"
                     (click)="removeLine(line.id)"
                   >
                     <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -145,7 +145,7 @@
                       <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
                       <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                     </svg>
-                    <span class="depenses-step6__icon-action-tooltip" role="tooltip">Supprimer</span>
+                    <span class="depenses-step6__icon-action-tooltip" role="tooltip">{{ 'common.actions.delete' | translate }}</span>
                   </button>
                 } @else {
                   <span
@@ -174,11 +174,11 @@
               colspan="3"
               class="px-4 py-5 font-display text-sm font-bold uppercase tracking-wide text-on-surface"
             >
-              Total dépenses autorisées
+              {{ 'journee.step6.total' | translate }}
             </td>
             <td class="px-4 py-5 text-right">
               <p class="font-display text-2xl font-bold leading-none text-primary tabular-nums md:text-3xl">
-                {{ total() | number: '1.2-2' }}
+                {{ total() | localeNumber:'1.2-2' }}
               </p>
               <p class="mt-1 text-sm font-semibold text-primary">DH</p>
             </td>

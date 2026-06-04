@@ -1,0 +1,40 @@
+{
+  "brand": {
+    "name": "CHARAFATE",
+    "subtitle": "Management Portal"
+  },
+  "header": {
+    "stationTitle": "Station CHARAFATE",
+    "userRole": "Admin Station"
+  },
+  "sidebar": {
+    "toggleExpand": "Afficher le menu",
+    "toggleCollapse": "Masquer le menu"
+  },
+  "locale": {
+    "fr": "Français",
+    "ar": "العربية",
+    "switchAria": "Changer de langue"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "station": "Station",
+    "ventes": "Ventes",
+    "achats": "Achats",
+    "stock": "Stock",
+    "produitsServices": "Produits & services",
+    "journee": "Journée",
+    "devis": "Devis",
+    "commande": "Bon de commande",
+    "livraison": "Bon de livraison",
+    "factures": "Factures",
+    "retour": "Bon de retour",
+    "avoirs": "Avoirs",
+    "reception": "Bon de réception",
+    "stockGestion": "Gestion des stocks",
+    "stockPistolets": "Pistolets et cuves"
+  },
+  "wizardStepper": {
+    "aria": "Étapes"
+  }
+}

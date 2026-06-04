@@ -44,12 +44,12 @@ export interface CommandeAchatDraft {
   payments: PaymentSplit;
 }
 
-export const COMMANDE_ACHAT_STATUT_LABELS: Record<CommandeAchatStatut, string> = {
-  en_attente: 'En attente',
-  confirmee: 'Confirmée',
-  en_cours: 'En cours',
-  recue: 'Reçue',
-  annulee: 'Annulée',
+export const COMMANDE_ACHAT_STATUT_KEYS: Record<CommandeAchatStatut, string> = {
+  en_attente: 'ventes.commande.statusEnAttente',
+  confirmee: 'ventes.commande.statusConfirmee',
+  en_cours: 'ventes.commande.statusEnCours',
+  recue: 'achat.commande.statusRecue',
+  annulee: 'ventes.commande.statusAnnulee',
 };
 
 export function computeCommandeAchatMontant(

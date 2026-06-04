@@ -1,9 +1,10 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
+import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../../../../core/i18n'
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
 import {
-  COMMANDE_STATUT_LABELS,
+  COMMANDE_STATUT_KEYS,
   Commande,
   CommandeDraft,
   CommandeStatut,
@@ -20,19 +21,20 @@ import { CommandeFormDialogComponent } from './dialogs/commande-form-dialog/comm
 @Component({
   selector: 'app-erp-commandes-list-page',
   standalone: true,
-  imports: [ButtonComponent, CommandeFormDialogComponent, DatePipe, DecimalPipe],
+  imports: [ButtonComponent, CommandeFormDialogComponent, DatePipe, LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './commandes-list.page.html',
   styleUrl: './commandes-list.page.scss',
 })
 export class CommandesListPage implements OnInit {
   private readonly store = inject(Store);
+  private readonly translate = inject(TranslateService);
 
   readonly commandes = this.store.selectSignal(selectCommandes);
   readonly loading = this.store.selectSignal(selectCommandesLoading);
   readonly error = this.store.selectSignal(selectCommandesError);
   readonly saving = this.store.selectSignal(selectCommandesSaving);
 
-  readonly statutLabels = COMMANDE_STATUT_LABELS;
+  readonly statutKeys = COMMANDE_STATUT_KEYS;
   readonly showDialog = signal(false);
   readonly editingCommande = signal<Commande | null>(null);
 
@@ -67,7 +69,7 @@ export class CommandesListPage implements OnInit {
   }
 
   removeCommande(id: number): void {
-    if (confirm('Supprimer cette commande ?')) {
+    if (confirm(this.translate.instant('common.confirm.deleteCommande'))) {
       this.store.dispatch(VentesActions.removeCommande({ id }));
     }
   }

@@ -1,18 +1,18 @@
 <div class="flex w-full flex-col gap-6">
   <header class="flex flex-wrap items-start justify-between gap-4">
     <div>
-      <h1 class="font-display text-2xl font-bold uppercase text-on-surface">Bon de livraison — Station</h1>
+      <h1 class="font-display text-2xl font-bold uppercase text-on-surface">{{ 'ventes.livraison.title' | translate }}</h1>
       <p class="mt-0.5 text-sm text-on-surface-variant">
-        Historique et suivi des livraisons de Station.
+        {{ 'ventes.livraison.subtitle' | translate }}
       </p>
     </div>
     <app-button variant="primary" (pressed)="openNew()">
-      + Nouvelle livraison
+      {{ 'ventes.livraison.cta' | translate }}
     </app-button>
   </header>
 
   @if (loading()) {
-    <p class="py-12 text-center text-on-surface-variant">Chargement des livraisons…</p>
+    <p class="py-12 text-center text-on-surface-variant">{{ 'ventes.livraison.loading' | translate }}</p>
   } @else if (error(); as err) {
     <p class="rounded-[var(--radius-card)] border border-primary bg-primary/10 px-4 py-3 text-sm text-primary" role="alert">{{ err }}</p>
   } @else {
@@ -20,13 +20,13 @@
       <table class="w-full border-collapse text-sm">
         <thead>
           <tr class="bg-table-header">
-            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">N° Livraison</th>
-            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">Client</th>
-            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">Adresse</th>
-            <th class="px-4 py-3 text-right font-display text-xs font-bold uppercase text-white">Montant</th>
-            <th class="px-4 py-3 text-center font-display text-xs font-bold uppercase text-white">Statut</th>
-            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">Date livraison</th>
-            <th class="px-4 py-3 text-center font-display text-xs font-bold uppercase text-white">Actions</th>
+            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">{{ 'ventes.livraison.colNumero' | translate }}</th>
+            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">{{ 'common.table.client' | translate }}</th>
+            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">{{ 'ventes.livraison.colAdresse' | translate }}</th>
+            <th class="px-4 py-3 text-right font-display text-xs font-bold uppercase text-white">{{ 'common.table.amount' | translate }}</th>
+            <th class="px-4 py-3 text-center font-display text-xs font-bold uppercase text-white">{{ 'common.table.status' | translate }}</th>
+            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">{{ 'ventes.livraison.colDate' | translate }}</th>
+            <th class="px-4 py-3 text-center font-display text-xs font-bold uppercase text-white">{{ 'common.table.actions' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -36,11 +36,11 @@
               <td class="px-4 py-3 font-semibold text-on-surface">{{ l.client }}</td>
               <td class="px-4 py-3 text-sm text-on-surface-variant">{{ l.adresse }}</td>
               <td class="px-4 py-3 text-right font-bold tabular-nums text-on-surface">
-                {{ l.montant | number: '1.2-2' : 'fr-MA' }} DH
+                {{ l.montant | localeCurrency }}
               </td>
               <td class="px-4 py-3 text-center">
                 <span class="inline-block rounded px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide {{ statutClass(l.statut) }}">
-                  {{ statutLabels[l.statut] }}
+                  {{ statutKeys[l.statut] | translate }}
                 </span>
               </td>
               <td class="px-4 py-3 text-sm text-on-surface-variant">{{ l.dateLivraison | date: 'dd/MM/yyyy' }}</td>
@@ -51,14 +51,14 @@
                     class="rounded px-2 py-1 text-xs font-semibold uppercase text-secondary hover:bg-secondary/10"
                     (click)="openEdit(l)"
                   >
-                    Modifier
+                    {{ 'common.actions.edit' | translate }}
                   </button>
                   <button
                     type="button"
                     class="rounded px-2 py-1 text-xs font-semibold uppercase text-primary hover:bg-primary/10"
                     (click)="removeLivraison(l.id)"
                   >
-                    Supprimer
+                    {{ 'common.actions.delete' | translate }}
                   </button>
                 </div>
               </td>
@@ -66,7 +66,7 @@
           } @empty {
             <tr>
               <td colspan="7" class="px-4 py-12 text-center text-on-surface-variant">
-                Aucune livraison pour le moment.
+                {{ 'ventes.livraison.empty' | translate }}
               </td>
             </tr>
           }
@@ -75,7 +75,7 @@
     </div>
 
     @if (saving()) {
-      <p class="text-sm text-on-surface-variant">Enregistrement en cours…</p>
+      <p class="text-sm text-on-surface-variant">{{ 'ventes.devis.saving' | translate }}</p>
     }
   }
 </div>

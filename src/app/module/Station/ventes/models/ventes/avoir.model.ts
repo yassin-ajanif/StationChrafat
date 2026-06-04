@@ -45,10 +45,10 @@ export interface AvoirDraft {
   payments: PaymentSplit;
 }
 
-export const AVOIR_STATUT_LABELS: Record<AvoirStatut, string> = {
-  brouillon: 'Brouillon',
-  emis: 'Émis',
-  applique: 'Appliqué',
+export const AVOIR_STATUT_KEYS: Record<AvoirStatut, string> = {
+  brouillon: 'ventes.avoir.statusBrouillon',
+  emis: 'ventes.avoir.statusEmis',
+  applique: 'ventes.avoir.statusApplique',
 };
 
 export function computeAvoirMontant(avoir: Pick<Avoir, 'serviceLines' | 'productLines'>): number {

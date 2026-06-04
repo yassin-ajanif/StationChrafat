@@ -1,11 +1,11 @@
-import { DecimalPipe } from '@angular/common';
 import { Component, input, output } from '@angular/core';
+import { LocaleCurrencyPipe, TranslatePipe } from '../../../../../core/i18n'
 import { CatalogueCategory, CatalogueItem } from '../../models';
 
 @Component({
   selector: 'app-catalogue-item-table',
   standalone: true,
-  imports: [DecimalPipe],
+  imports: [LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './catalogue-item-table.component.html',
   styleUrl: './catalogue-item-table.component.scss',
 })

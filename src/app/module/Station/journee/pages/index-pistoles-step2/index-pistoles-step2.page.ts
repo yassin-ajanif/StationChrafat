@@ -1,5 +1,5 @@
-import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { LocaleNumberPipe, LocaleCurrencyPipe, TranslatePipe } from '../../../../../core/i18n'
 import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
@@ -23,7 +23,7 @@ import {
 @Component({
   selector: 'app-index-pistoles-step2-page',
   standalone: true,
-  imports: [RouterLink, ButtonComponent, DecimalPipe],
+  imports: [RouterLink, ButtonComponent, LocaleNumberPipe, LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './index-pistoles-step2.page.html',
   styleUrl: './index-pistoles-step2.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

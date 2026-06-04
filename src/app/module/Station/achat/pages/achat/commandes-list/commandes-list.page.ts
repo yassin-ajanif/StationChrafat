@@ -1,9 +1,10 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
+import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../../../../core/i18n'
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
 import {
-  COMMANDE_ACHAT_STATUT_LABELS,
+  COMMANDE_ACHAT_STATUT_KEYS,
   CommandeAchat,
   CommandeAchatDraft,
   CommandeAchatStatut,
@@ -20,19 +21,20 @@ import { CommandeAchatFormDialogComponent } from './dialogs/commande-achat-form-
 @Component({
   selector: 'app-erp-achat-commandes-list-page',
   standalone: true,
-  imports: [ButtonComponent, CommandeAchatFormDialogComponent, DatePipe, DecimalPipe],
+  imports: [ButtonComponent, CommandeAchatFormDialogComponent, DatePipe, LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './commandes-list.page.html',
   styleUrl: './commandes-list.page.scss',
 })
 export class AchatCommandesListPage implements OnInit {
   private readonly store = inject(Store);
+  private readonly translate = inject(TranslateService);
 
   readonly commandes = this.store.selectSignal(selectCommandesAchat);
   readonly loading = this.store.selectSignal(selectCommandesAchatLoading);
   readonly error = this.store.selectSignal(selectCommandesAchatError);
   readonly saving = this.store.selectSignal(selectCommandesAchatSaving);
 
-  readonly statutLabels = COMMANDE_ACHAT_STATUT_LABELS;
+  readonly statutKeys = COMMANDE_ACHAT_STATUT_KEYS;
   readonly showDialog = signal(false);
   readonly editingCommande = signal<CommandeAchat | null>(null);
 
@@ -67,7 +69,7 @@ export class AchatCommandesListPage implements OnInit {
   }
 
   removeCommande(id: number): void {
-    if (confirm('Supprimer cette commande fournisseur ?')) {
+    if (confirm(this.translate.instant('common.confirm.deleteCommandeAchat'))) {
       this.store.dispatch(AchatActions.removeCommandeAchat({ id }));
     }
   }

@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { TranslatePipe } from '../../../../../core/i18n';
 import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { WizardStepperComponent } from '../../../../../shared/components/wizard-stepper/wizard-stepper.component';
@@ -7,7 +8,7 @@ import { JOURNEE_WIZARD_STEPS } from '../../journee-wizard.steps';
 @Component({
   selector: 'app-journee-wizard-page',
   standalone: true,
-  imports: [RouterOutlet, WizardStepperComponent],
+  imports: [RouterOutlet, WizardStepperComponent, TranslatePipe],
   templateUrl: './journee-wizard.page.html',
   styleUrl: './journee-wizard.page.scss',
 })

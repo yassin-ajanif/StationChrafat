@@ -1,5 +1,5 @@
-import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { LocaleNumberPipe, LocaleCurrencyPipe, TranslatePipe } from '../../../../../core/i18n'
 import { RouterLink } from '@angular/router';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
 import { BonDialogComponent } from '../../components/bon-dialog/bon-dialog.component';
@@ -20,7 +20,7 @@ export interface BonOperatorOption {
 
 @Component({
   selector: 'app-bon-page',
-  imports: [RouterLink, ButtonComponent, DecimalPipe, BonDialogComponent],
+  imports: [RouterLink, ButtonComponent, BonDialogComponent, LocaleNumberPipe, LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './bon.page.html',
   styleUrl: './bon.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,8 +1,9 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
+import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../../../../core/i18n'
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
-import { RETOUR_FOURNISSEUR_STATUT_LABELS, RetourFournisseur, RetourFournisseurDraft, RetourFournisseurStatut } from '../../../models/achat';
+import { RETOUR_FOURNISSEUR_STATUT_KEYS, RetourFournisseur, RetourFournisseurDraft, RetourFournisseurStatut } from '../../../models/achat';
 import { AchatActions } from '../../../state/achat.actions';
 import {
   selectRetoursFournisseur,
@@ -15,19 +16,20 @@ import { RetourFournisseurFormDialogComponent } from './dialogs/retour-fournisse
 @Component({
   selector: 'app-erp-retours-fournisseur-list-page',
   standalone: true,
-  imports: [ButtonComponent, RetourFournisseurFormDialogComponent, DatePipe, DecimalPipe],
+  imports: [ButtonComponent, RetourFournisseurFormDialogComponent, DatePipe, LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './retours-list.page.html',
   styleUrl: './retours-list.page.scss',
 })
 export class RetoursListPage implements OnInit {
   private readonly store = inject(Store);
+  private readonly translate = inject(TranslateService);
 
   readonly retours = this.store.selectSignal(selectRetoursFournisseur);
   readonly loading = this.store.selectSignal(selectRetoursFournisseurLoading);
   readonly error = this.store.selectSignal(selectRetoursFournisseurError);
   readonly saving = this.store.selectSignal(selectRetoursFournisseurSaving);
 
-  readonly statutLabels = RETOUR_FOURNISSEUR_STATUT_LABELS;
+  readonly statutKeys = RETOUR_FOURNISSEUR_STATUT_KEYS;
   readonly showDialog = signal(false);
   readonly editingRetour = signal<RetourFournisseur | null>(null);
 
@@ -62,7 +64,7 @@ export class RetoursListPage implements OnInit {
   }
 
   removeRetour(id: number): void {
-    if (confirm('Supprimer ce bon de retour ?')) {
+    if (confirm(this.translate.instant('common.confirm.deleteRetour'))) {
       this.store.dispatch(AchatActions.removeRetourFournisseur({ id }));
     }
   }

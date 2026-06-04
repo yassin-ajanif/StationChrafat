@@ -1,16 +1,16 @@
 <div class="stock-product-table overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant">
   @if (products().length === 0) {
-    <p class="px-4 py-8 text-center text-sm text-on-surface-variant">Aucun produit trouvé.</p>
+    <p class="px-4 py-8 text-center text-sm text-on-surface-variant">{{ 'stock.gestion.empty' | translate }}</p>
   } @else {
     <table class="stock-product-table__table w-full border-collapse text-sm">
       <thead>
         <tr class="bg-table-header">
-          <th class="px-4 py-3.5 text-left font-display text-xs font-bold uppercase tracking-wide text-white">Produit</th>
-          <th class="px-4 py-3.5 text-left font-display text-xs font-bold uppercase tracking-wide text-white">Catégorie</th>
-          <th class="px-4 py-3.5 text-right font-display text-xs font-bold uppercase tracking-wide text-white">Stock actuel</th>
-          <th class="px-4 py-3.5 text-left font-display text-xs font-bold uppercase tracking-wide text-white">Unité</th>
-          <th class="px-4 py-3.5 text-right font-display text-xs font-bold uppercase tracking-wide text-white">Seuil</th>
-          <th class="px-4 py-3.5 text-center font-display text-xs font-bold uppercase tracking-wide text-white">Statut</th>
+          <th class="px-4 py-3.5 text-left font-display text-xs font-bold uppercase tracking-wide text-white">{{ 'stock.gestion.colProduit' | translate }}</th>
+          <th class="px-4 py-3.5 text-left font-display text-xs font-bold uppercase tracking-wide text-white">{{ 'produitsServices.table.colCategory' | translate }}</th>
+          <th class="px-4 py-3.5 text-right font-display text-xs font-bold uppercase tracking-wide text-white">{{ 'stock.gestion.colStock' | translate }}</th>
+          <th class="px-4 py-3.5 text-left font-display text-xs font-bold uppercase tracking-wide text-white">{{ 'stock.gestion.colUnite' | translate }}</th>
+          <th class="px-4 py-3.5 text-right font-display text-xs font-bold uppercase tracking-wide text-white">{{ 'stock.gestion.colSeuil' | translate }}</th>
+          <th class="px-4 py-3.5 text-center font-display text-xs font-bold uppercase tracking-wide text-white">{{ 'common.table.status' | translate }}</th>
         </tr>
       </thead>
       <tbody>
@@ -31,7 +31,7 @@
               [class.text-primary]="product.stockStatus === 'critique'"
               [class.text-on-surface]="product.stockStatus === 'optimal'"
             >
-              {{ product.currentStock | number:'1.0-0':'fr-MA' }}
+              {{ product.currentStock | localeNumber:'1.0-0' }}
             </td>
             <td class="px-4 py-3.5">
               <span class="stock-product-table__unit font-display text-xs font-bold uppercase text-secondary">
@@ -39,7 +39,7 @@
               </span>
             </td>
             <td class="px-4 py-3.5 text-right tabular-nums text-on-surface-variant">
-              {{ product.threshold | number:'1.0-0':'fr-MA' }}
+              {{ product.threshold | localeNumber:'1.0-0' }}
             </td>
             <td class="px-4 py-3.5 text-center">
               @if (product.stockStatus === 'optimal') {

@@ -1,5 +1,5 @@
-import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal } from '@angular/core';
+import { LocaleCurrencyPipe, TranslatePipe } from '../../../../../../../../core/i18n'
 import { ButtonComponent } from '../../../../../../../../shared/components/button/button.component';
 import { BonRecapPaymentsComponent } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import { DocumentLinesTableComponent } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
@@ -9,7 +9,7 @@ import {
   DevisDraft,
   DevisLineTableRow,
   DevisStatut,
-  STATUT_LABELS,
+  STATUT_KEYS,
   buildDevisLineDrafts,
   computeDraftDevisProductsTotal,
   computeDraftDevisServicesTotal,
@@ -26,7 +26,7 @@ const DEFAULT_PRODUCT_ROWS = 1;
 @Component({
   selector: 'app-devis-form-dialog',
   standalone: true,
-  imports: [ButtonComponent, DecimalPipe, BonRecapPaymentsComponent, DocumentLinesTableComponent],
+  imports: [ButtonComponent, BonRecapPaymentsComponent, DocumentLinesTableComponent, LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './devis-form-dialog.component.html',
   styleUrl: './devis-form-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,7 +37,7 @@ export class DevisFormDialogComponent {
   readonly saved = output<DevisDraft>();
   readonly closed = output<void>();
 
-  readonly statutLabels = STATUT_LABELS;
+  readonly statutKeys = STATUT_KEYS;
   readonly statutOptions: DevisStatut[] = ['brouillon', 'envoye', 'accepte', 'refuse'];
 
   readonly isEditMode = computed(() => this.editDevis() != null);

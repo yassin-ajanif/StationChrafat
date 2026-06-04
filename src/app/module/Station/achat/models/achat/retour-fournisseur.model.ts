@@ -47,11 +47,11 @@ export interface RetourFournisseurDraft {
   payments: PaymentSplit;
 }
 
-export const RETOUR_FOURNISSEUR_STATUT_LABELS: Record<RetourFournisseurStatut, string> = {
-  en_attente: 'En attente',
-  envoye: 'Envoyé',
-  recu: 'Reçu',
-  refuse: 'Refusé',
+export const RETOUR_FOURNISSEUR_STATUT_KEYS: Record<RetourFournisseurStatut, string> = {
+  en_attente: 'ventes.retour.statusEnAttente',
+  envoye: 'achat.retour.statusEnvoye',
+  recu: 'ventes.retour.statusRecu',
+  refuse: 'ventes.retour.statusRefuse',
 };
 
 export function computeRetourFournisseurMontant(

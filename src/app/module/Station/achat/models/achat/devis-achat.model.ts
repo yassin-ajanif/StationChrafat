@@ -51,11 +51,11 @@ export interface DevisAchatDraft {
 
 export const DEFAULT_TVA_ACHAT = 20;
 
-export const DEVIS_ACHAT_STATUT_LABELS: Record<DevisAchatStatut, string> = {
-  brouillon: 'Brouillon',
-  envoye: 'Envoyé',
-  accepte: 'Accepté',
-  refuse: 'Refusé',
+export const DEVIS_ACHAT_STATUT_KEYS: Record<DevisAchatStatut, string> = {
+  brouillon: 'ventes.devis.statusBrouillon',
+  envoye: 'ventes.devis.statusEnvoye',
+  accepte: 'ventes.devis.statusAccepte',
+  refuse: 'ventes.devis.statusRefuse',
 };
 
 export function computeDevisAchatMontantHT(

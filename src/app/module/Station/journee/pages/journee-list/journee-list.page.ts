@@ -1,5 +1,5 @@
-import { DecimalPipe } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
+import { LocaleNumberPipe, LocaleCurrencyPipe, TranslatePipe } from '../../../../../core/i18n'
 import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
@@ -16,7 +16,7 @@ import {
 @Component({
   selector: 'app-journee-list-page',
   standalone: true,
-  imports: [RouterLink, ButtonComponent, DecimalPipe],
+  imports: [RouterLink, ButtonComponent, LocaleNumberPipe, LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './journee-list.page.html',
   styleUrl: './journee-list.page.scss',
 })
@@ -34,12 +34,12 @@ export class JourneeListPage implements OnInit {
     this.store.dispatch(JourneeActions.loadKpis());
   }
 
-  statusLabel(status: JourneeStatus): string {
+  statusKey(status: JourneeStatus): string {
     const map: Record<JourneeStatus, string> = {
-      brouillon: 'Brouillon',
-      en_cours: 'En cours',
-      soumise: 'Soumise',
-      cloturee: 'Clôturée',
+      brouillon: 'journee.list.statusBrouillon',
+      en_cours: 'journee.list.statusEnCours',
+      soumise: 'journee.list.statusSoumise',
+      cloturee: 'journee.list.statusCloturee',
     };
     return map[status];
   }

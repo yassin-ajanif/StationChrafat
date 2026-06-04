@@ -17,19 +17,19 @@
         <div class="min-w-0 flex-1">
           <h2 id="catalogue-item-form-dialog-title" class="catalogue-item-form-dialog__title font-display uppercase text-on-surface">
             @if (isEditMode()) {
-              Modifier l'article
+              {{ 'produitsServices.itemDialog.edit' | translate }}
             } @else {
-              Ajouter un article
+              {{ 'produitsServices.itemDialog.create' | translate }}
             }
           </h2>
           <p class="catalogue-item-form-dialog__subtitle mt-1 text-sm text-on-surface-variant">
-            Enregistrer un nouveau produit ou service dans votre catalogue de vente.
+            {{ 'produitsServices.itemDialog.subtitle' | translate }}
           </p>
         </div>
         <button
           type="button"
           class="text-2xl leading-none text-on-surface-variant hover:text-on-surface"
-          aria-label="Fermer"
+          [attr.aria-label]="'common.actions.close' | translate"
           (click)="cancel()"
         >
           ×
@@ -39,32 +39,32 @@
       <div class="px-6 py-5">
         <div class="catalogue-item-form-dialog__grid grid gap-4 sm:grid-cols-2">
           <label class="catalogue-item-form-dialog__field">
-            <span class="catalogue-item-form-dialog__label">Nom de l'article</span>
+            <span class="catalogue-item-form-dialog__label">{{ 'produitsServices.itemDialog.name' | translate }}</span>
             <input
               type="text"
               class="catalogue-item-form-dialog__input"
-              placeholder="Ex: Gazole Excellium"
+              [placeholder]="'produitsServices.itemDialog.namePlaceholder' | translate"
               [value]="name()"
               (input)="name.set($any($event.target).value)"
             />
           </label>
 
           <label class="catalogue-item-form-dialog__field">
-            <span class="catalogue-item-form-dialog__label">Type</span>
+            <span class="catalogue-item-form-dialog__label">{{ 'produitsServices.table.colType' | translate }}</span>
             <select class="catalogue-item-form-dialog__input" [value]="type()" (change)="onTypeChange($event)">
-              <option value="produit">Produit</option>
-              <option value="service">Service</option>
+              <option value="produit">{{ 'produitsServices.itemDialog.typeProduit' | translate }}</option>
+              <option value="service">{{ 'produitsServices.itemDialog.typeService' | translate }}</option>
             </select>
           </label>
 
           <label class="catalogue-item-form-dialog__field">
-            <span class="catalogue-item-form-dialog__label">Catégorie</span>
+            <span class="catalogue-item-form-dialog__label">{{ 'produitsServices.table.colCategory' | translate }}</span>
             <select
               class="catalogue-item-form-dialog__input"
               [value]="categoryId()"
               (change)="categoryId.set(+$any($event.target).value)"
             >
-              <option [value]="0">Sélectionner…</option>
+              <option [value]="0">{{ 'common.placeholders.select' | translate }}</option>
               @for (cat of categoriesForType(); track cat.id) {
                 <option [value]="cat.id">{{ cat.label }}</option>
               }
@@ -72,31 +72,31 @@
           </label>
 
           <label class="catalogue-item-form-dialog__field">
-            <span class="catalogue-item-form-dialog__label">Prix unitaire (TTC)</span>
+            <span class="catalogue-item-form-dialog__label">{{ 'produitsServices.itemDialog.unitPrice' | translate }}</span>
             <span class="catalogue-item-form-dialog__price-wrap flex">
               <input
                 type="number"
                 class="catalogue-item-form-dialog__input catalogue-item-form-dialog__input--price min-w-0 flex-1"
-                placeholder="0.00"
+                [placeholder]="'produitsServices.itemDialog.pricePlaceholder' | translate"
                 min="0"
                 step="0.01"
                 inputmode="decimal"
                 [value]="unitPrice() || ''"
                 (input)="unitPrice.set(+$any($event.target).value || 0)"
               />
-              <span class="catalogue-item-form-dialog__currency">MAD</span>
+              <span class="catalogue-item-form-dialog__currency">{{ 'common.currencyMad' | translate }}</span>
             </span>
           </label>
         </div>
       </div>
 
       <footer class="flex justify-end gap-3 border-t border-outline-variant px-6 py-4">
-        <app-button variant="secondary" (pressed)="cancel()">Annuler</app-button>
+        <app-button variant="secondary" (pressed)="cancel()">{{ 'common.actions.cancel' | translate }}</app-button>
         <app-button variant="primary" [disabled]="!isValid() || saving()" [loading]="saving()" (pressed)="save()">
           @if (isEditMode()) {
-            Enregistrer les modifications
+            {{ 'common.actions.saveChanges' | translate }}
           } @else {
-            Enregistrer l'article
+            {{ 'produitsServices.itemDialog.save' | translate }}
           }
         </app-button>
       </footer>

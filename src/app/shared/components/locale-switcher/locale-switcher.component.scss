@@ -1,0 +1,13 @@
+@reference '../../../../tailwind.css';
+
+.locale-switcher {
+  @apply inline-flex overflow-hidden rounded-[var(--radius-card)] border border-outline-variant;
+
+  &__btn {
+    @apply min-h-9 min-w-10 px-3 font-display text-xs font-bold uppercase tracking-wide text-on-surface-variant transition hover:bg-surface-container;
+
+    &--active {
+      @apply bg-primary text-on-primary;
+    }
+  }
+}

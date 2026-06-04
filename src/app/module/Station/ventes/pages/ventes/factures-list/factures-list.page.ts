@@ -1,9 +1,10 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
+import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../../../../core/i18n'
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
 import {
-  FACTURE_STATUT_LABELS,
+  FACTURE_STATUT_KEYS,
   Facture,
   FactureDraft,
   FactureStatut,
@@ -20,19 +21,20 @@ import { FactureFormDialogComponent } from './dialogs/facture-form-dialog/factur
 @Component({
   selector: 'app-erp-factures-list-page',
   standalone: true,
-  imports: [ButtonComponent, FactureFormDialogComponent, DatePipe, DecimalPipe],
+  imports: [ButtonComponent, FactureFormDialogComponent, DatePipe, LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './factures-list.page.html',
   styleUrl: './factures-list.page.scss',
 })
 export class FacturesListPage implements OnInit {
   private readonly store = inject(Store);
+  private readonly translate = inject(TranslateService);
 
   readonly factures = this.store.selectSignal(selectFactures);
   readonly loading = this.store.selectSignal(selectFacturesLoading);
   readonly error = this.store.selectSignal(selectFacturesError);
   readonly saving = this.store.selectSignal(selectFacturesSaving);
 
-  readonly statutLabels = FACTURE_STATUT_LABELS;
+  readonly statutKeys = FACTURE_STATUT_KEYS;
   readonly showDialog = signal(false);
   readonly editingFacture = signal<Facture | null>(null);
 
@@ -67,7 +69,7 @@ export class FacturesListPage implements OnInit {
   }
 
   removeFacture(id: number): void {
-    if (confirm('Supprimer cette facture ?')) {
+    if (confirm(this.translate.instant('common.confirm.deleteFacture'))) {
       this.store.dispatch(VentesActions.removeFacture({ id }));
     }
   }

@@ -1,0 +1,56 @@
+{
+  "page": {
+    "title": "إعدادات الكتالوج",
+    "subtitle": "أدر المنتجات والخدمات المباعة في المحطة (وقود، بوتيك، غسيل، تزييت…).",
+    "cta": "+ إضافة منتج",
+    "loading": "جاري تحميل الكتالوج…",
+    "saving": "جاري الحفظ…"
+  },
+  "sidebar": {
+    "aria": "فئات الكتالوج",
+    "servicesTitle": "فئات الخدمات",
+    "productsTitle": "فئات المنتجات",
+    "addService": "إضافة فئة خدمة",
+    "addProduct": "إضافة فئة منتج",
+    "editCategory": "تعديل الفئة",
+    "editCategoryNamed": "تعديل {{name}}"
+  },
+  "table": {
+    "title": "قائمة الكتالوج",
+    "search": "بحث…",
+    "empty": "لم يُعثر على منتج.",
+    "colArticle": "المنتج",
+    "colType": "النوع",
+    "colCategory": "الفئة",
+    "colPrice": "السعر",
+    "typeService": "خدمة",
+    "typeProduit": "منتج"
+  },
+  "categoryDialog": {
+    "edit": "تعديل الفئة",
+    "create": "فئة جديدة",
+    "serviceHint": "فئة خدمات (غسيل، تزييت…)",
+    "productHint": "فئة منتجات (وقود، بوتيك…)",
+    "type": "النوع",
+    "typeService": "خدمة",
+    "typeProduct": "منتج",
+    "name": "اسم الفئة",
+    "namePlaceholder": "مثال: تنظيف",
+    "createBtn": "إنشاء الفئة"
+  },
+  "itemDialog": {
+    "edit": "تعديل المنتج",
+    "create": "إضافة منتج",
+    "subtitle": "تسجيل منتج أو خدمة جديدة في كتالوج المبيعات.",
+    "name": "اسم المنتج",
+    "namePlaceholder": "مثال: غازول ممتاز",
+    "type": "النوع",
+    "typeProduit": "منتج",
+    "typeService": "خدمة",
+    "category": "الفئة",
+    "categoryPlaceholder": "اختر…",
+    "unitPrice": "السعر الوحدوي (شامل الضريبة)",
+    "pricePlaceholder": "0.00",
+    "save": "حفظ المنتج"
+  }
+}

@@ -31,7 +31,7 @@
   <section
     class="no-print mb-6 rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest p-5 shadow-sm"
   >
-    <label class="index-pistoles-step2__label" for="bombiste-select">Ajouter un bombiste</label>
+    <label class="index-pistoles-step2__label" for="bombiste-select">{{ 'journee.step2.addBombiste' | translate }}</label>
     <div class="flex flex-wrap items-end gap-3">
       <select
         id="bombiste-select"
@@ -40,7 +40,7 @@
         (change)="onBombisteSelect($event)"
         [disabled]="loading() || operatorsLoading() || availableBombistes().length === 0"
       >
-        <option value="">Sélectionner un bombiste…</option>
+        <option value="">{{ 'journee.step2.bombistePlaceholder' | translate }}</option>
         @for (op of availableBombistes(); track op.id) {
           <option [value]="op.id">{{ op.name }}</option>
         }
@@ -50,14 +50,14 @@
         [disabled]="pendingBombisteId() == null || loading()"
         (pressed)="addBombiste()"
       >
-        Ajouter
+        {{ 'common.actions.add' | translate }}
       </app-button>
     </div>
     @if (!loading() && !operatorsLoading() && availableBombistes().length === 0 && bombisteGroups().length === 0) {
-      <p class="mt-3 text-sm text-on-surface-variant">Aucun bombiste disponible pour ce shift.</p>
+      <p class="mt-3 text-sm text-on-surface-variant">{{ 'journee.step2.noBombiste' | translate }}</p>
     } @else if (!loading() && bombisteGroups().length === 0) {
       <p class="mt-3 text-sm text-on-surface-variant">
-        Choisissez un bombiste pour afficher le groupe de pistolets qui lui est assigné.
+        {{ 'journee.step2.pickBombiste' | translate }}
       </p>
     }
   </section>
@@ -67,7 +67,7 @@
       class="w-full overflow-hidden rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest p-12 text-center shadow-sm"
       aria-busy="true"
     >
-      <p class="text-base text-on-surface-variant">Chargement des pistolets…</p>
+      <p class="text-base text-on-surface-variant">{{ 'journee.step2.loading' | translate }}</p>
     </section>
   } @else {
     @for (group of bombisteGroups(); track group.bombisteId) {
@@ -94,15 +94,15 @@
           <table class="w-full border-collapse text-base">
             <thead>
               <tr class="bg-table-header">
-                <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">Ilot</th>
-                <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">Pistolet</th>
-                <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">Carburant</th>
-                <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">Index entrée</th>
-                <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">Index sortie</th>
-                <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">Remise cuve</th>
-                <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">Quantité (L)</th>
-                <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">P.U (DH)</th>
-                <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">Total (DH)</th>
+                <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">{{ 'journee.step2.ilot' | translate }}</th>
+                <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">{{ 'journee.step2.pistolet' | translate }}</th>
+                <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">{{ 'stock.gestion.tabCarburant' | translate }}</th>
+                <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">{{ 'journee.step2.indexEntree' | translate }}</th>
+                <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">{{ 'journee.step2.indexSortie' | translate }}</th>
+                <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">{{ 'journee.step2.remiseCuve' | translate }}</th>
+                <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">{{ 'journee.step2.quantite' | translate }}</th>
+                <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">{{ 'journee.step2.pu' | translate }}</th>
+                <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">{{ 'journee.step2.total' | translate }}</th>
               </tr>
             </thead>
             <tbody>
@@ -141,7 +141,7 @@
                         min="0"
                         step="0.01"
                         inputmode="decimal"
-                        [attr.aria-label]="'Index entrée ' + row.line.pumpLabel"
+                        [attr.aria-label]="('journee.step2.indexEntree' | translate) + ' ' + row.line.pumpLabel"
                       />
                     }
                   </td>
@@ -166,11 +166,11 @@
                     }
                   </td>
                   <td class="px-4 py-3.5 text-right text-on-surface-variant">
-                    {{ row.line.tankReturn | number: '1.2-2' }}
+                    {{ row.line.tankReturn | localeNumber:'1.2-2' }}
                   </td>
-                  <td class="px-4 py-3.5 text-right tabular-nums">{{ row.quantity | number: '1.2-2' }}</td>
-                  <td class="px-4 py-3.5 text-right tabular-nums">{{ row.line.unitPrice | number: '1.2-2' }}</td>
-                  <td class="px-4 py-3.5 text-right font-semibold tabular-nums">{{ row.total | number: '1.2-2' }}</td>
+                  <td class="px-4 py-3.5 text-right tabular-nums">{{ row.quantity | localeNumber:'1.2-2' }}</td>
+                  <td class="px-4 py-3.5 text-right tabular-nums">{{ row.line.unitPrice | localeNumber:'1.2-2' }}</td>
+                  <td class="px-4 py-3.5 text-right font-semibold tabular-nums">{{ row.total | localeNumber:'1.2-2' }}</td>
                 </tr>
               }
             </tbody>
@@ -183,12 +183,12 @@
                   Sous-total {{ group.bombisteName }}
                 </td>
                 <td class="px-4 py-4 text-right text-base font-bold tabular-nums text-on-surface">
-                  {{ group.totals.liters | number: '1.2-2' }}
+                  {{ group.totals.liters | localeNumber:'1.2-2' }}
                   <span class="ml-1 font-normal text-on-surface-variant">L</span>
                 </td>
                 <td class="px-4 py-4"></td>
                 <td class="px-4 py-4 text-right font-display text-xl font-bold text-primary tabular-nums">
-                  {{ group.totals.amount | number: '1.2-2' }}
+                  {{ group.totals.amount | localeNumber:'1.2-2' }}
                   <span class="ml-1 text-sm font-semibold">DH</span>
                 </td>
               </tr>
@@ -198,12 +198,12 @@
 
         <div class="index-pistoles-step2__remittance border-t-2 border-outline-variant bg-primary/5 px-5 py-5">
           <p class="font-display text-sm font-bold uppercase tracking-wide text-on-surface">
-            Répartition des encaissements — {{ group.bombisteName }}
+            {{ 'journee.step2.paymentsTitle' | translate: { name: group.bombisteName } }}
           </p>
           <div class="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
             <div>
               <label class="index-pistoles-step2__label" [for]="'cash-' + group.bombisteId">
-                Espèces (DH)
+                {{ 'common.payment.cash' | translate }}
               </label>
               <input
                 [id]="'cash-' + group.bombisteId"
@@ -247,14 +247,14 @@
               />
             </div>
             <div class="flex flex-col justify-end">
-              <p class="index-pistoles-step2__label">Total saisi</p>
+              <p class="index-pistoles-step2__label">{{ 'common.payment.totalEntered' | translate }}</p>
               <p class="font-display text-xl font-bold tabular-nums text-on-surface">
-                {{ group.paymentTotal | number: '1.2-2' }}
+                {{ group.paymentTotal | localeNumber:'1.2-2' }}
                 <span class="text-sm font-semibold">DH</span>
               </p>
             </div>
             <div class="flex flex-col justify-end">
-              <p class="index-pistoles-step2__label">Écart</p>
+              <p class="index-pistoles-step2__label">{{ 'common.payment.gap' | translate }}</p>
               <p
                 class="font-display text-xl font-bold tabular-nums"
                 [class.text-on-surface-variant]="group.paymentDifference === 0"
@@ -262,9 +262,9 @@
                 [class.text-primary]="group.paymentDifference < 0"
               >
                 @if (group.paymentDifference > 0) {
-                  +{{ group.paymentDifference | number: '1.2-2' }}
+                  +{{ group.paymentDifference | localeNumber:'1.2-2' }}
                 } @else {
-                  {{ group.paymentDifference | number: '1.2-2' }}
+                  {{ group.paymentDifference | localeNumber:'1.2-2' }}
                 }
                 <span class="text-sm font-semibold">DH</span>
               </p>
@@ -276,7 +276,7 @@
               >
                 {{ paymentDifferenceLabel(group.paymentDifference) }}
                 <span class="font-normal text-on-surface-variant">
-                  (attendu {{ group.totals.amount | number: '1.2-2' }} DH)
+                  (attendu {{ group.totals.amount | localeCurrency }})
                 </span>
               </p>
             </div>
@@ -291,15 +291,15 @@
       >
         <div class="flex flex-wrap items-center justify-between gap-4">
           <p class="font-display text-sm font-bold uppercase tracking-wide text-on-surface">
-            Totaux de la session
+            {{ 'journee.step2.sessionTotals' | translate }}
           </p>
           <div class="flex flex-wrap items-baseline gap-6">
             <p class="text-base font-bold tabular-nums text-on-surface">
-              {{ sessionTotals().liters | number: '1.2-2' }}
+              {{ sessionTotals().liters | localeNumber:'1.2-2' }}
               <span class="ml-1 font-normal text-on-surface-variant">L</span>
             </p>
             <p class="font-display text-2xl font-bold leading-none text-primary tabular-nums">
-              {{ sessionTotals().amount | number: '1.2-2' }}
+              {{ sessionTotals().amount | localeNumber:'1.2-2' }}
               <span class="ml-1 text-sm font-semibold">DH</span>
             </p>
           </div>

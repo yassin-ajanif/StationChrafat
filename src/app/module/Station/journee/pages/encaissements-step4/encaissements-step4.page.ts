@@ -1,5 +1,5 @@
-import { DecimalPipe } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
+import { LocaleNumberPipe, TranslatePipe } from '../../../../../core/i18n'
 import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
@@ -26,7 +26,7 @@ import {
 @Component({
   selector: 'app-encaissements-step4-page',
   standalone: true,
-  imports: [RouterLink, ButtonComponent, DecimalPipe],
+  imports: [RouterLink, ButtonComponent, LocaleNumberPipe, TranslatePipe],
   templateUrl: './encaissements-step4.page.html',
   styleUrl: './encaissements-step4.page.scss',
 })

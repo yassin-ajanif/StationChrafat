@@ -1,0 +1,119 @@
+{
+  "currency": "درهم",
+  "currencyMad": "درهم",
+  "actions": {
+    "cancel": "إلغاء",
+    "close": "إغلاق",
+    "save": "حفظ",
+    "saveChanges": "حفظ التعديلات",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "back": "→ رجوع",
+    "next": "التالي ←",
+    "add": "إضافة",
+    "remove": "إزالة",
+    "apply": "تطبيق",
+    "clear": "مسح",
+    "clearLine": "مسح السطر {{n}}",
+    "search": "بحث",
+    "filter": "تصفية",
+    "exportCsv": "تصدير CSV",
+    "print": "طباعة",
+    "loading": "جاري التحميل…",
+    "saving": "جاري الحفظ…",
+    "comingSoon": "قريباً"
+  },
+  "table": {
+    "num": "رقم",
+    "actions": "إجراءات",
+    "client": "الزبون",
+    "supplier": "المورد",
+    "status": "الحالة",
+    "amount": "المبلغ",
+    "amountTtc": "المبلغ شامل الضريبة",
+    "date": "التاريخ",
+    "dash": "—"
+  },
+  "units": {
+    "liters": "ل",
+    "litres": "لتر"
+  },
+  "payment": {
+    "balanced": "متوازن",
+    "surplus": "فائض",
+    "shortage": "نقص",
+    "expected": "(المتوقع {{amount}} درهم)",
+    "cash": "نقداً (درهم)",
+    "tpe": "بطاقة (درهم)",
+    "vouchers": "قسائم (درهم)",
+    "totalEntered": "المجموع المُدخل",
+    "gap": "الفارق"
+  },
+  "documentLines": {
+    "services": "الخدمات",
+    "products": "المنتجات المستهلكة",
+    "returnedProducts": "المنتجات المرتجعة",
+    "addService": "+ إضافة سطر خدمة",
+    "addProduct": "+ إضافة سطر منتج",
+    "clearColumn": "مسح",
+    "subtotal": "المجموع الفرعي ({{count}} سطر)",
+    "subtotalPlural": "المجموع الفرعي ({{count}} أسطر)",
+    "reference": "المرجع",
+    "designation": "التسمية",
+    "quantity": "الكمية",
+    "unit": "الوحدة",
+    "unitPriceHt": "س.و. بدون ضريبة",
+    "discount": "تخفيض %",
+    "vat": "الضريبة %",
+    "amountHt": "المبلغ بدون ضريبة",
+    "amountTtc": "المبلغ شامل الضريبة",
+    "hint": "املأ جداول الخدمات والمنتجات. حدد الأعمدة المراد عرضها."
+  },
+  "bon": {
+    "number": "رقم الوصل",
+    "clientPlate": "الزبون / اللوحة",
+    "servAmount": "خدمات (درهم)",
+    "partnerPlaceholder": "اللوحة أو الاسم",
+    "new": "وصل محطة جديد",
+    "edit": "تعديل الوصل",
+    "billable": "المبلغ القابل للفوترة =",
+    "save": "حفظ الوصل",
+    "total": "مجموع الوصل",
+    "modifyAria": "تعديل الوصل",
+    "deleteAria": "حذف الوصل"
+  },
+  "bonRecap": {
+    "aria": "ملخص الوصل",
+    "totalServicesTtc": "مجموع الخدمات شامل الضريبة",
+    "totalProductsTtc": "مجموع المنتجات شامل الضريبة",
+    "totalTtc": "المجموع الشامل للوصل",
+    "paymentsTitle": "توزيع المقبوضات"
+  },
+  "placeholders": {
+    "companyName": "الاسم أو السجل التجاري",
+    "internalComment": "تعليق داخلي",
+    "subjectComment": "الموضوع أو تعليق",
+    "invoiceClient": "FAC-S-0001",
+    "invoiceSupplier": "FF-S-0001",
+    "select": "اختر…",
+    "notes": "ملاحظة…"
+  },
+  "pump": {
+    "hs": "خ.م"
+  },
+  "confirm": {
+    "deleteArticle": "حذف هذا المنتج من الكتالوج؟",
+    "deleteDevis": "حذف هذا العرض؟",
+    "deleteCommande": "حذف هذا الأمر؟",
+    "deleteLivraison": "حذف هذا التسليم؟",
+    "deleteFacture": "حذف هذه الفاتورة؟",
+    "deleteAvoir": "حذف هذا الإشعار الدائن؟",
+    "deleteRetour": "حذف وصل الإرجاع؟",
+    "deleteDevisAchat": "حذف عرض المورد؟",
+    "deleteCommandeAchat": "حذف أمر المورد؟",
+    "deleteReception": "حذف هذا الاستلام؟",
+    "deleteFactureFournisseur": "حذف فاتورة المورد؟",
+    "deleteAvoirFournisseur": "حذف إشعار دائن المورد؟",
+    "deleteRetourFournisseur": "حذف وصل إرجاع المورد؟"
+  }
+}

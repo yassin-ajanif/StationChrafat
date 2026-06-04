@@ -1,9 +1,6 @@
-import { registerLocaleData } from '@angular/common';
-import localeFrMa from '@angular/common/locales/fr-MA';
-import { ApplicationConfig, LOCALE_ID, isDevMode, provideBrowserGlobalErrorListeners } from '@angular/core';
-
-registerLocaleData(localeFrMa);
+import { ApplicationConfig, isDevMode, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
+import { provideI18n } from './core/i18n';
 import { provideRouter } from '@angular/router';
 import { provideEffects } from '@ngrx/effects';
 import { provideState } from '@ngrx/store';
@@ -26,7 +23,7 @@ import { ventesFeature } from './module/Station/ventes/state/ventes.reducer';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    { provide: LOCALE_ID, useValue: 'fr-MA' },
+    provideI18n(),
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(),
     provideRouter(routes),

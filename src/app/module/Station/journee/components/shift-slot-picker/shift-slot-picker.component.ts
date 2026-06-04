@@ -1,16 +1,18 @@
 import { Component, input, output } from '@angular/core';
+import { TranslatePipe } from '../../../../../core/i18n'
 import { ShiftSlot } from '../../models/journee.model';
 
 interface SlotOption {
   value: ShiftSlot;
-  label: string;
-  hours: string;
+  labelKey: string;
+  hoursKey: string;
   icon: string;
 }
 
 @Component({
   selector: 'app-shift-slot-picker',
   standalone: true,
+  imports: [TranslatePipe],
   templateUrl: './shift-slot-picker.component.html',
   styleUrl: './shift-slot-picker.component.scss',
 })
@@ -19,8 +21,8 @@ export class ShiftSlotPickerComponent {
   readonly selectedChange = output<ShiftSlot>();
 
   readonly slots: SlotOption[] = [
-    { value: 'Matin', label: 'Matin', hours: '06h – 14h', icon: '☀' },
-    { value: 'Apres-midi', label: 'Après-midi', hours: '14h – 22h', icon: '☀' },
-    { value: 'Nuit', label: 'Nuit', hours: '22h – 06h', icon: '☽' },
+    { value: 'Matin', labelKey: 'journee.shift.matin', hoursKey: 'journee.shift.matinHours', icon: '☀' },
+    { value: 'Apres-midi', labelKey: 'journee.shift.apresMidi', hoursKey: 'journee.shift.apresMidiHours', icon: '☀' },
+    { value: 'Nuit', labelKey: 'journee.shift.nuit', hoursKey: 'journee.shift.nuitHours', icon: '☽' },
   ];
 }

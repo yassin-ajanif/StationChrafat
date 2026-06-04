@@ -1,8 +1,8 @@
 <div class="flex w-full flex-col gap-6">
   <header>
-    <h1 class="font-display text-2xl font-bold uppercase text-on-surface">Statut pistolets et cuves</h1>
+    <h1 class="font-display text-2xl font-bold uppercase text-on-surface">{{ 'stock.pistolets.title' | translate }}</h1>
     <p class="mt-0.5 text-sm text-on-surface-variant">
-      Index pistolets et niveaux cuves en temps réel.
+      {{ 'stock.pistolets.subtitle' | translate }}
     </p>
   </header>
 
@@ -11,24 +11,24 @@
   }
 
   @if (loading()) {
-    <p class="py-16 text-center text-on-surface-variant">Chargement de l'état du stock…</p>
+    <p class="py-16 text-center text-on-surface-variant">{{ 'stock.pistolets.loading' | translate }}</p>
   } @else if (overview(); as data) {
     <section
       class="rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest p-4 shadow-sm"
-      aria-label="Zone de pompage"
+      [attr.aria-label]="'stock.pistolets.canopyAria' | translate"
     >
       <div class="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 class="font-display text-base font-bold uppercase text-on-surface">Zone de Pompage (Live)</h2>
+          <h2 class="font-display text-base font-bold uppercase text-on-surface">{{ 'stock.pistolets.canopyTitle' | translate }}</h2>
           <p class="mt-0.5 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
-            {{ canopyName() }} · {{ data.lineCount }} lignes
+            {{ 'stock.pistolets.canopyLines' | translate: { name: canopyName(), count: data.lineCount } }}
           </p>
         </div>
-        <ul class="flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-wide text-on-surface-variant" aria-label="Légende statuts pistolets">
-          <li class="flex items-center gap-2"><span class="size-2.5 rounded-full bg-success"></span>Libre</li>
-          <li class="flex items-center gap-2"><span class="size-2.5 rounded-full bg-secondary"></span>En cours</li>
-          <li class="flex items-center gap-2"><span class="size-2.5 rounded-full bg-warning-text"></span>Attente</li>
-          <li class="flex items-center gap-2"><span class="size-2.5 rounded-full bg-primary"></span>Hors-service</li>
+        <ul class="flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-wide text-on-surface-variant" [attr.aria-label]="'stock.pistolets.legendAria' | translate">
+          <li class="flex items-center gap-2"><span class="size-2.5 rounded-full bg-success"></span>{{ 'stock.pistolets.nozzleLibre' | translate }}</li>
+          <li class="flex items-center gap-2"><span class="size-2.5 rounded-full bg-secondary"></span>{{ 'stock.pistolets.nozzleEnCours' | translate }}</li>
+          <li class="flex items-center gap-2"><span class="size-2.5 rounded-full bg-warning-text"></span>{{ 'stock.pistolets.nozzleAttente' | translate }}</li>
+          <li class="flex items-center gap-2"><span class="size-2.5 rounded-full bg-primary"></span>{{ 'stock.pistolets.nozzleHorsService' | translate }}</li>
         </ul>
       </div>
 
@@ -38,12 +38,12 @@
             <div class="flex items-center gap-2 border-b border-outline-variant/40 pb-1.5">
               <span
                 class="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary font-display text-xs font-bold text-on-primary"
-                aria-label="Ligne {{ line.lineNumber }}"
+                [attr.aria-label]="'stock.pistolets.line' | translate: { n: line.lineNumber }"
               >
                 {{ line.lineNumber }}
               </span>
               <p class="font-display text-xs font-bold uppercase text-on-surface">
-                Ligne {{ line.lineNumber }}
+                {{ 'stock.pistolets.line' | translate: { n: line.lineNumber } }}
               </p>
             </div>
             @for (nozzle of line.nozzles; track nozzle.id) {
@@ -88,14 +88,14 @@
                       {{ nozzle.pumpLabel }}
                     </p>
                     <p class="font-display text-xl font-bold leading-tight tabular-nums text-on-surface">
-                      {{ nozzle.currentIndexLiters | number: '1.1-1' }}
+                      {{ nozzle.currentIndexLiters | localeNumber:'1.1-1' }}
                       <span class="text-sm font-semibold">L</span>
                     </p>
                     <p
                       class="text-[11px] font-semibold uppercase leading-none"
                       [class]="nozzleStatusTextClass(nozzle.status)"
                     >
-                      {{ nozzleStatusLabels[nozzle.status] }}
+                      {{ nozzleStatusKeys[nozzle.status] | translate }}
                     </p>
                     @if (isNozzleExpanded(nozzle.id)) {
                       <dl
@@ -103,20 +103,20 @@
                         class="mt-2 grid grid-cols-2 gap-2 border-t border-outline-variant/50 pt-2 text-[10px]"
                       >
                         <div>
-                          <dt class="font-semibold uppercase text-on-surface-variant">Entrée</dt>
+                          <dt class="font-semibold uppercase text-on-surface-variant">{{ 'stock.pistolets.indexEntree' | translate }}</dt>
                           <dd class="mt-0.5 font-semibold tabular-nums text-on-surface">
                             @if (nozzle.indexEntree != null) {
-                              {{ nozzle.indexEntree | number: '1.1-1' }} L
+                              {{ nozzle.indexEntree | localeNumber:'1.1-1' }} L
                             } @else {
                               —
                             }
                           </dd>
                         </div>
                         <div>
-                          <dt class="font-semibold uppercase text-on-surface-variant">Sortie</dt>
+                          <dt class="font-semibold uppercase text-on-surface-variant">{{ 'stock.pistolets.indexSortie' | translate }}</dt>
                           <dd class="mt-0.5 font-semibold tabular-nums text-on-surface">
                             @if (nozzle.indexSortie != null) {
-                              {{ nozzle.indexSortie | number: '1.1-1' }} L
+                              {{ nozzle.indexSortie | localeNumber:'1.1-1' }} L
                             } @else {
                               —
                             }
@@ -138,11 +138,11 @@
 
     <section
       class="rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest p-4 shadow-sm"
-      aria-label="État des cuves"
+      [attr.aria-label]="'stock.pistolets.tanksAria' | translate"
     >
       <div class="mb-6 flex flex-wrap items-start justify-between gap-4">
-        <h2 class="font-display text-lg font-bold uppercase text-on-surface">État des Cuves</h2>
-        <ul class="flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-wide text-on-surface-variant" aria-label="Légende niveaux cuves">
+        <h2 class="font-display text-lg font-bold uppercase text-on-surface">{{ 'stock.pistolets.tanksTitle' | translate }}</h2>
+        <ul class="flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-wide text-on-surface-variant" [attr.aria-label]="'stock.pistolets.tanksAria' | translate">
           <li class="flex items-center gap-2"><span class="size-2.5 rounded-full bg-success"></span>Optimal (&gt;40%)</li>
           <li class="flex items-center gap-2"><span class="size-2.5 rounded-full bg-warning-text"></span>Alerte (20–40%)</li>
           <li class="flex items-center gap-2"><span class="size-2.5 rounded-full bg-primary"></span>Critique (&lt;20%)</li>
@@ -166,7 +166,7 @@
                 [class.bg-primary]="tank.status === 'critique'"
                 [class.text-on-primary]="tank.status === 'critique'"
               >
-                {{ tankStatusLabels[tank.status] }}
+                {{ tankStatusKeys[tank.status] | translate }}
               </span>
             </div>
 
@@ -181,26 +181,26 @@
               ></div>
               <div class="absolute inset-0 flex flex-col items-center justify-center px-3 text-center">
                 <p class="font-display text-2xl font-bold tabular-nums text-on-surface">
-                  {{ tank.currentLiters | number: '1.0-0' }}
+                  {{ tank.currentLiters | localeNumber:'1.0-0' }}
                   <span class="text-sm font-semibold">Litres</span>
                 </p>
                 <p class="mt-1 text-xs font-semibold uppercase text-on-surface-variant">
-                  {{ computeTankFillPercent(tank) }}% Capacité
+                  {{ 'stock.pistolets.capacity' | translate: { percent: computeTankFillPercent(tank) } }}
                 </p>
               </div>
             </div>
 
             <dl class="grid grid-cols-2 gap-4 border-t border-outline-variant/50 pt-4 text-sm">
               <div>
-                <dt class="text-xs font-semibold uppercase text-on-surface-variant">Capacité Max</dt>
+                <dt class="text-xs font-semibold uppercase text-on-surface-variant">{{ 'stock.pistolets.maxCapacity' | translate }}</dt>
                 <dd class="mt-1 font-bold tabular-nums text-on-surface">
-                  {{ tank.maxCapacityLiters | number: '1.0-0' }} L
+                  {{ tank.maxCapacityLiters | localeNumber:'1.0-0' }} L
                 </dd>
               </div>
               <div>
-                <dt class="text-xs font-semibold uppercase text-on-surface-variant">Vente 24h</dt>
+                <dt class="text-xs font-semibold uppercase text-on-surface-variant">{{ 'stock.pistolets.sales24h' | translate }}</dt>
                 <dd class="mt-1 font-bold tabular-nums text-on-surface">
-                  {{ tank.sales24hLiters | number: '1.0-0' }} L
+                  {{ tank.sales24hLiters | localeNumber:'1.0-0' }} L
                 </dd>
               </div>
             </dl>

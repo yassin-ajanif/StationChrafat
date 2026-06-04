@@ -1,4 +1,5 @@
 import { DatePipe } from '@angular/common';
+import { TranslatePipe } from '../../../../../core/i18n'
 import { Component, OnInit, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -17,7 +18,7 @@ import {
 @Component({
   selector: 'app-configuration-step1-page',
   standalone: true,
-  imports: [RouterLink, ButtonComponent, ShiftSlotPickerComponent, DatePipe],
+  imports: [RouterLink, ButtonComponent, ShiftSlotPickerComponent, DatePipe, TranslatePipe],
   templateUrl: './configuration-step1.page.html',
   styleUrl: './configuration-step1.page.scss',
 })

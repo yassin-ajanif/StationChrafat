@@ -1,10 +1,11 @@
 import { Component, input, output } from '@angular/core';
+import { TranslatePipe } from '../../../../../core/i18n';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
 
 @Component({
   selector: 'app-stock-gestion-toolbar',
   standalone: true,
-  imports: [ButtonComponent],
+  imports: [ButtonComponent, TranslatePipe],
   templateUrl: './stock-gestion-toolbar.component.html',
   styleUrl: './stock-gestion-toolbar.component.scss',
 })

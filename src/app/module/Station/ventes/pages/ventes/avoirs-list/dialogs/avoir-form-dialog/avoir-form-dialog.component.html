@@ -16,19 +16,19 @@
         <div>
           <h2 id="avoir-form-dialog-title" class="font-display text-xl font-bold uppercase text-on-surface">
             @if (isEditMode()) {
-              Modifier avoir
+              {{ 'ventes.avoir.dialogEdit' | translate }}
             } @else {
-              Nouvel avoir
+              {{ 'ventes.avoir.dialogNew' | translate }}
             }
           </h2>
           <p class="mt-1 text-sm text-on-surface-variant">
-            Remplissez les tableaux services et produits. Cochez ou décochez les colonnes à afficher.
+            {{ 'common.documentLines.hint' | translate }}
           </p>
         </div>
         <button
           type="button"
           class="text-2xl leading-none text-on-surface-variant hover:text-on-surface"
-          aria-label="Fermer"
+          [attr.aria-label]="'common.actions.close' | translate"
           (click)="cancel()"
         >
           ×
@@ -38,7 +38,7 @@
       <div class="max-h-[70vh] overflow-y-auto px-6 py-5">
         <div class="mb-6 grid gap-4 sm:grid-cols-2">
           <div>
-            <label class="erp-dialog__label" for="dialog-avoir-facture">Facture liée</label>
+            <label class="erp-dialog__label" for="dialog-avoir-facture">{{ 'ventes.avoir.colFacture' | translate }}</label>
             <input
               id="dialog-avoir-facture"
               type="text"
@@ -49,18 +49,18 @@
             />
           </div>
           <div>
-            <label class="erp-dialog__label" for="dialog-avoir-client">Client</label>
+            <label class="erp-dialog__label" for="dialog-avoir-client">{{ 'common.table.client' | translate }}</label>
             <input
               id="dialog-avoir-client"
               type="text"
               class="erp-dialog__input"
-              placeholder="Nom ou raison sociale"
+              [placeholder]="'common.placeholders.companyName' | translate"
               [value]="client()"
               (input)="client.set($any($event.target).value)"
             />
           </div>
           <div>
-            <label class="erp-dialog__label" for="dialog-avoir-statut">Statut</label>
+            <label class="erp-dialog__label" for="dialog-avoir-statut">{{ 'common.table.status' | translate }}</label>
             <select
               id="dialog-avoir-statut"
               class="erp-dialog__input"
@@ -68,12 +68,12 @@
               (change)="statut.set($any($event.target).value)"
             >
               @for (s of statutOptions; track s) {
-                <option [value]="s">{{ statutLabels[s] }}</option>
+                <option [value]="s">{{ statutKeys[s] | translate }}</option>
               }
             </select>
           </div>
           <div>
-            <label class="erp-dialog__label" for="dialog-avoir-emission">Date émission</label>
+            <label class="erp-dialog__label" for="dialog-avoir-emission">{{ 'ventes.facture.emission' | translate }}</label>
             <input
               id="dialog-avoir-emission"
               type="date"
@@ -86,8 +86,8 @@
 
         <section class="mb-8">
           <app-document-lines-table
-            title="Services"
-            addRowLabel="+ Ajouter une ligne service"
+            [titleKey]="'common.documentLines.services'"
+            [addRowLabelKey]="'common.documentLines.addService'"
             [rows]="serviceRows()"
             (rowChange)="onServiceRowChange($event)"
             (addRowRequested)="addServiceRow()"
@@ -97,8 +97,8 @@
 
         <section class="mb-8">
           <app-document-lines-table
-            title="Produits consommés"
-            addRowLabel="+ Ajouter une ligne produit"
+            [titleKey]="'common.documentLines.products'"
+            [addRowLabelKey]="'common.documentLines.addProduct'"
             [rows]="productRows()"
             (rowChange)="onProductRowChange($event)"
             (addRowRequested)="addProductRow()"
@@ -118,15 +118,15 @@
 
       <footer class="flex flex-wrap items-center justify-between gap-4 border-t border-outline-variant px-6 py-4">
         <p class="text-sm text-on-surface-variant">
-          Montant avoir =
-          <span class="font-bold tabular-nums text-on-surface">{{ avoirTotal() | number: '1.2-2' }} DH</span>
+          {{ 'ventes.avoir.total' | translate }}
+          <span class="font-bold tabular-nums text-on-surface">{{ avoirTotal() | localeCurrency }}</span>
         </p>
-        <app-button variant="secondary" (pressed)="cancel()">Annuler</app-button>
+        <app-button variant="secondary" (pressed)="cancel()">{{ 'common.actions.cancel' | translate }}</app-button>
         <app-button variant="primary" [disabled]="!canSave()" (pressed)="save()">
           @if (isEditMode()) {
-            Enregistrer les modifications
+            {{ 'common.actions.saveChanges' | translate }}
           } @else {
-            Enregistrer l'avoir
+            {{ 'ventes.avoir.save' | translate }}
           }
         </app-button>
       </footer>

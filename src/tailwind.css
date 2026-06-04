@@ -3,6 +3,7 @@
 @theme {
   --font-display: 'Barlow Condensed', ui-sans-serif, system-ui, sans-serif;
   --font-body: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-body-ar: 'Noto Sans Arabic', 'DM Sans', ui-sans-serif, system-ui, sans-serif;
 
   --color-primary: #bb0014;
   --color-primary-container: #e71421;
@@ -42,5 +43,9 @@
   body {
     margin: 0;
     min-height: 100dvh;
+  }
+
+  html[dir='rtl'] body {
+    font-family: var(--font-body-ar);
   }
 }

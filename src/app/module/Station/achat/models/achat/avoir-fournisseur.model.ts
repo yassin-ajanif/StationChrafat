@@ -45,10 +45,10 @@ export interface AvoirFournisseurDraft {
   payments: PaymentSplit;
 }
 
-export const AVOIR_FOURNISSEUR_STATUT_LABELS: Record<AvoirFournisseurStatut, string> = {
-  brouillon: 'Brouillon',
-  recu: 'Reçu',
-  applique: 'Appliqué',
+export const AVOIR_FOURNISSEUR_STATUT_KEYS: Record<AvoirFournisseurStatut, string> = {
+  brouillon: 'ventes.avoir.statusBrouillon',
+  recu: 'achat.avoir.statusRecu',
+  applique: 'achat.avoir.statusApplique',
 };
 
 export function computeAvoirFournisseurMontant(

@@ -1,9 +1,10 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
+import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../../../../core/i18n'
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
 import {
-  LIVRAISON_STATUT_LABELS,
+  LIVRAISON_STATUT_KEYS,
   Livraison,
   LivraisonDraft,
   LivraisonStatut,
@@ -20,19 +21,20 @@ import { LivraisonFormDialogComponent } from './dialogs/livraison-form-dialog/li
 @Component({
   selector: 'app-erp-livraisons-list-page',
   standalone: true,
-  imports: [ButtonComponent, LivraisonFormDialogComponent, DatePipe, DecimalPipe],
+  imports: [ButtonComponent, LivraisonFormDialogComponent, DatePipe, LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './livraisons-list.page.html',
   styleUrl: './livraisons-list.page.scss',
 })
 export class LivraisonsListPage implements OnInit {
   private readonly store = inject(Store);
+  private readonly translate = inject(TranslateService);
 
   readonly livraisons = this.store.selectSignal(selectLivraisons);
   readonly loading = this.store.selectSignal(selectLivraisonsLoading);
   readonly error = this.store.selectSignal(selectLivraisonsError);
   readonly saving = this.store.selectSignal(selectLivraisonsSaving);
 
-  readonly statutLabels = LIVRAISON_STATUT_LABELS;
+  readonly statutKeys = LIVRAISON_STATUT_KEYS;
   readonly showDialog = signal(false);
   readonly editingLivraison = signal<Livraison | null>(null);
 
@@ -67,7 +69,7 @@ export class LivraisonsListPage implements OnInit {
   }
 
   removeLivraison(id: number): void {
-    if (confirm('Supprimer cette livraison ?')) {
+    if (confirm(this.translate.instant('common.confirm.deleteLivraison'))) {
       this.store.dispatch(VentesActions.removeLivraison({ id }));
     }
   }

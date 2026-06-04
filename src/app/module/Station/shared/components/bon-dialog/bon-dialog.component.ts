@@ -1,5 +1,5 @@
-import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal } from '@angular/core';
+import { LocaleCurrencyPipe, TranslatePipe } from '../../../../../core/i18n'
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
 import { BonRecapPaymentsComponent } from '../../components/bon-recap-payments/bon-recap-payments.component';
 import { DocumentLinesTableComponent } from '../../components/document-lines-table/document-lines-table.component';
@@ -23,7 +23,7 @@ const DEFAULT_PRODUCT_ROWS = 1;
 
 @Component({
   selector: 'app-bon-dialog',
-  imports: [ButtonComponent, DecimalPipe, BonRecapPaymentsComponent, DocumentLinesTableComponent],
+  imports: [ButtonComponent, BonRecapPaymentsComponent, DocumentLinesTableComponent, LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './bon-dialog.component.html',
   styleUrl: './bon-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

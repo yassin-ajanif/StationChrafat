@@ -2,20 +2,22 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter, map } from 'rxjs';
+import { LocaleService, TranslatePipe, TranslateService } from '../../../core/i18n';
+import { LocaleSwitcherComponent } from '../locale-switcher/locale-switcher.component';
 import {
   SidebarNavIconComponent,
   SidebarNavIconId,
 } from '../sidebar-nav-icon/sidebar-nav-icon.component';
 
 interface NavLeaf {
-  label: string;
+  labelKey: string;
   route?: string;
   icon?: SidebarNavIconId;
 }
 
 interface NavBranch {
   id: string;
-  label: string;
+  labelKey: string;
   baseRoute: string;
   icon: SidebarNavIconId;
   children: NavLeaf[];
@@ -23,7 +25,7 @@ interface NavBranch {
 
 interface PrincipalMenu {
   id: string;
-  label: string;
+  labelKey: string;
   baseRoute: string;
   icon: SidebarNavIconId;
   entries: (NavLeaf | NavBranch)[];
@@ -34,35 +36,39 @@ function isNavBranch(entry: NavLeaf | NavBranch): entry is NavBranch {
 }
 
 const VENTES_CHILDREN: NavLeaf[] = [
-  { label: 'Devis', route: '/station/ventes/devis' },
-  { label: 'Bon de commande', route: '/station/ventes/commandes' },
-  { label: 'Bon de livraison', route: '/station/ventes/livraisons' },
-  { label: 'Factures', route: '/station/ventes/factures' },
-  { label: 'Bon de retour', route: '/station/ventes/retours' },
-  { label: 'Avoirs', route: '/station/ventes/avoirs' },
+  { labelKey: 'shell.nav.devis', route: '/station/ventes/devis' },
+  { labelKey: 'shell.nav.commande', route: '/station/ventes/commandes' },
+  { labelKey: 'shell.nav.livraison', route: '/station/ventes/livraisons' },
+  { labelKey: 'shell.nav.factures', route: '/station/ventes/factures' },
+  { labelKey: 'shell.nav.retour', route: '/station/ventes/retours' },
+  { labelKey: 'shell.nav.avoirs', route: '/station/ventes/avoirs' },
 ];
 
 const ACHATS_CHILDREN: NavLeaf[] = [
-  { label: 'Devis', route: '/station/achat/devis' },
-  { label: 'Bon de commande', route: '/station/achat/commandes' },
-  { label: 'Bon de livraison', route: '/station/achat/livraisons' },
-  { label: 'Factures', route: '/station/achat/factures' },
-  { label: 'Bon de retour', route: '/station/achat/retours' },
-  { label: 'Avoirs', route: '/station/achat/avoirs' },
+  { labelKey: 'shell.nav.devis', route: '/station/achat/devis' },
+  { labelKey: 'shell.nav.commande', route: '/station/achat/commandes' },
+  { labelKey: 'shell.nav.reception', route: '/station/achat/livraisons' },
+  { labelKey: 'shell.nav.factures', route: '/station/achat/factures' },
+  { labelKey: 'shell.nav.retour', route: '/station/achat/retours' },
+  { labelKey: 'shell.nav.avoirs', route: '/station/achat/avoirs' },
 ];
 
 const STOCK_CHILDREN: NavLeaf[] = [
-  { label: 'Gestion des stocks', route: '/station/stock/gestion' },
-  { label: 'Pistolets et cuves', route: '/station/stock/pistolets-cuves' },
+  { labelKey: 'shell.nav.stockGestion', route: '/station/stock/gestion' },
+  { labelKey: 'shell.nav.stockPistolets', route: '/station/stock/pistolets-cuves' },
 ];
-
-const SIDEBAR_GROUP_IDS = ['station', 'station-ventes', 'station-achats'] as const;
-type SidebarGroupId = (typeof SIDEBAR_GROUP_IDS)[number];
 
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, SidebarNavIconComponent],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    SidebarNavIconComponent,
+    LocaleSwitcherComponent,
+    TranslatePipe,
+  ],
   templateUrl: './app-shell.component.html',
   styleUrl: './app-shell.component.scss',
 })
@@ -70,54 +76,54 @@ export class AppShellComponent {
   private static readonly SIDEBAR_COLLAPSED_KEY = 'charafate-sidebar-collapsed';
 
   private readonly router = inject(Router);
+  private readonly translate = inject(TranslateService);
+  readonly locale = inject(LocaleService);
 
   readonly sidebarCollapsed = signal(this.readSidebarCollapsedPreference());
 
   readonly navLinks: NavLeaf[] = [
-    { label: 'Dashboard', route: '/journees', icon: 'dashboard' },
+    { labelKey: 'shell.nav.dashboard', route: '/journees', icon: 'dashboard' },
   ];
 
   readonly principalMenus: PrincipalMenu[] = [
     {
       id: 'station',
-      label: 'Station',
+      labelKey: 'shell.nav.station',
       baseRoute: '/station',
       icon: 'station',
       entries: [
         {
           id: 'station-ventes',
-          label: 'Ventes',
+          labelKey: 'shell.nav.ventes',
           baseRoute: '/station/ventes',
           icon: 'ventes',
           children: VENTES_CHILDREN,
         },
         {
           id: 'station-achats',
-          label: 'Achats',
+          labelKey: 'shell.nav.achats',
           baseRoute: '/station/achat',
           icon: 'achats',
           children: ACHATS_CHILDREN,
         },
         {
           id: 'station-stock',
-          label: 'Stock',
+          labelKey: 'shell.nav.stock',
           baseRoute: '/station/stock',
           icon: 'stock',
           children: STOCK_CHILDREN,
         },
         {
-          label: 'Produits & services',
+          labelKey: 'shell.nav.produitsServices',
           route: '/station/produits-services',
           icon: 'catalogue',
         },
-        { label: 'Journée', route: '/journees', icon: 'journee' },
+        { labelKey: 'shell.nav.journee', route: '/journees', icon: 'journee' },
       ],
     },
   ];
 
-  readonly expandedGroups = signal<Set<string>>(
-    new Set(['station']),
-  );
+  readonly expandedGroups = signal<Set<string>>(new Set(['station']));
 
   private readonly navigationUrl = toSignal(
     this.router.events.pipe(
@@ -167,7 +173,6 @@ export class AppShellComponent {
     });
   }
 
-  /** Click on Ventes / Achats / Stock: expand submenu and open first child route. */
   onBranchClick(branch: NavBranch): void {
     this.expandedGroups.update((current) => {
       const next = new Set(current);
@@ -217,10 +222,16 @@ export class AppShellComponent {
     return entry.icon ?? 'station';
   }
 
-  collapsedLeafClick(entry: NavLeaf): void {
-    if (entry.route) {
-      void this.router.navigateByUrl(entry.route);
-    }
+  navLabel(key: string): string {
+    this.translate.version();
+    return this.translate.instant(key);
+  }
+
+  sidebarToggleLabel(): string {
+    this.translate.version();
+    return this.sidebarCollapsed()
+      ? this.translate.instant('shell.sidebar.toggleExpand')
+      : this.translate.instant('shell.sidebar.toggleCollapse');
   }
 
   toggleSidebar(): void {
@@ -229,10 +240,6 @@ export class AppShellComponent {
       this.persistSidebarCollapsedPreference(next);
       return next;
     });
-  }
-
-  sidebarToggleLabel(): string {
-    return this.sidebarCollapsed() ? 'Afficher le menu' : 'Masquer le menu';
   }
 
   private readSidebarCollapsedPreference(): boolean {

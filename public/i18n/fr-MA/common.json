@@ -1,0 +1,119 @@
+{
+  "currency": "DH",
+  "currencyMad": "MAD",
+  "actions": {
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "save": "Enregistrer",
+    "saveChanges": "Enregistrer les modifications",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "back": "← Retour",
+    "next": "Suivant →",
+    "add": "Ajouter",
+    "remove": "Retirer",
+    "apply": "Appliquer",
+    "clear": "Effacer",
+    "clearLine": "Effacer ligne {{n}}",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "exportCsv": "Exporter CSV",
+    "print": "Imprimer",
+    "loading": "Chargement…",
+    "saving": "Enregistrement…",
+    "comingSoon": "Bientôt disponible"
+  },
+  "table": {
+    "num": "N°",
+    "actions": "Actions",
+    "client": "Client",
+    "supplier": "Fournisseur",
+    "status": "Statut",
+    "amount": "Montant",
+    "amountTtc": "Montant TTC",
+    "date": "Date",
+    "dash": "—"
+  },
+  "units": {
+    "liters": "L",
+    "litres": "Litres"
+  },
+  "payment": {
+    "balanced": "Équilibré",
+    "surplus": "Surplus",
+    "shortage": "Manque",
+    "expected": "(attendu {{amount}} DH)",
+    "cash": "Espèces (DH)",
+    "tpe": "TPE (DH)",
+    "vouchers": "Bons (DH)",
+    "totalEntered": "Total saisi",
+    "gap": "Écart"
+  },
+  "documentLines": {
+    "services": "Services",
+    "products": "Produits consommés",
+    "returnedProducts": "Produits retournés",
+    "addService": "+ Ajouter une ligne service",
+    "addProduct": "+ Ajouter une ligne produit",
+    "clearColumn": "Effacer",
+    "subtotal": "Sous-total ({{count}} ligne)",
+    "subtotalPlural": "Sous-total ({{count}} lignes)",
+    "reference": "Réf.",
+    "designation": "Désignation",
+    "quantity": "Qté",
+    "unit": "Unité",
+    "unitPriceHt": "P.U. HT",
+    "discount": "Rem. %",
+    "vat": "TVA %",
+    "amountHt": "Montant HT",
+    "amountTtc": "Montant TTC",
+    "hint": "Remplissez les tableaux services et produits. Cochez ou décochez les colonnes à afficher."
+  },
+  "bon": {
+    "number": "N° bon",
+    "clientPlate": "Client / plaque",
+    "servAmount": "Serv. (DH)",
+    "partnerPlaceholder": "Plaque ou nom",
+    "new": "Nouveau bon station",
+    "edit": "Modifier le bon",
+    "billable": "Montant facturable =",
+    "save": "Enregistrer le bon",
+    "total": "Total du bon",
+    "modifyAria": "Modifier le bon",
+    "deleteAria": "Supprimer le bon"
+  },
+  "bonRecap": {
+    "aria": "Récapitulatif du bon",
+    "totalServicesTtc": "Total services TTC",
+    "totalProductsTtc": "Total produits TTC",
+    "totalTtc": "Total TTC du bon",
+    "paymentsTitle": "Répartition des encaissements"
+  },
+  "placeholders": {
+    "companyName": "Nom ou raison sociale",
+    "internalComment": "Commentaire interne",
+    "subjectComment": "Objet ou commentaire",
+    "invoiceClient": "FAC-S-0001",
+    "invoiceSupplier": "FF-S-0001",
+    "select": "Sélectionner…",
+    "notes": "Note…"
+  },
+  "pump": {
+    "hs": "HS"
+  },
+  "confirm": {
+    "deleteArticle": "Supprimer cet article du catalogue ?",
+    "deleteDevis": "Supprimer ce devis ?",
+    "deleteCommande": "Supprimer cette commande ?",
+    "deleteLivraison": "Supprimer cette livraison ?",
+    "deleteFacture": "Supprimer cette facture ?",
+    "deleteAvoir": "Supprimer cet avoir ?",
+    "deleteRetour": "Supprimer ce bon de retour ?",
+    "deleteDevisAchat": "Supprimer ce devis fournisseur ?",
+    "deleteCommandeAchat": "Supprimer cette commande fournisseur ?",
+    "deleteReception": "Supprimer cette réception ?",
+    "deleteFactureFournisseur": "Supprimer cette facture fournisseur ?",
+    "deleteAvoirFournisseur": "Supprimer cet avoir fournisseur ?",
+    "deleteRetourFournisseur": "Supprimer ce bon de retour ?"
+  }
+}

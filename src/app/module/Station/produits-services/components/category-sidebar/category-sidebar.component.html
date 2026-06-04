@@ -1,11 +1,11 @@
-<aside class="category-sidebar" aria-label="Catégories du catalogue">
+<aside class="category-sidebar" [attr.aria-label]="'produitsServices.sidebar.aria' | translate">
   <section class="category-sidebar__panel">
     <div class="category-sidebar__panel-header">
-      <h2 class="category-sidebar__panel-title">Catégories de services</h2>
+      <h2 class="category-sidebar__panel-title">{{ 'produitsServices.sidebar.servicesTitle' | translate }}</h2>
       <button
         type="button"
         class="category-sidebar__add-btn"
-        aria-label="Ajouter une catégorie service"
+        [attr.aria-label]="'produitsServices.sidebar.addService' | translate"
         (click)="addCategoryRequested.emit('service')"
       >
         +
@@ -29,8 +29,8 @@
             <button
               type="button"
               class="category-sidebar__edit-btn"
-              title="Modifier la catégorie"
-              aria-label="Modifier {{ cat.label }}"
+              [attr.title]="'produitsServices.categoryDialog.edit' | translate"
+              [attr.aria-label]="('produitsServices.sidebar.editCategoryNamed' | translate: { name: cat.label })"
               (click)="editCategoryRequested.emit(cat)"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -49,11 +49,11 @@
 
   <section class="category-sidebar__panel">
     <div class="category-sidebar__panel-header">
-      <h2 class="category-sidebar__panel-title">Catégories de produits</h2>
+      <h2 class="category-sidebar__panel-title">{{ 'produitsServices.sidebar.productsTitle' | translate }}</h2>
       <button
         type="button"
         class="category-sidebar__add-btn"
-        aria-label="Ajouter une catégorie produit"
+        [attr.aria-label]="'produitsServices.sidebar.addProduct' | translate"
         (click)="addCategoryRequested.emit('product')"
       >
         +
@@ -77,8 +77,8 @@
             <button
               type="button"
               class="category-sidebar__edit-btn"
-              title="Modifier la catégorie"
-              aria-label="Modifier {{ cat.label }}"
+              [attr.title]="'produitsServices.categoryDialog.edit' | translate"
+              [attr.aria-label]="('produitsServices.sidebar.editCategoryNamed' | translate: { name: cat.label })"
               (click)="editCategoryRequested.emit(cat)"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">

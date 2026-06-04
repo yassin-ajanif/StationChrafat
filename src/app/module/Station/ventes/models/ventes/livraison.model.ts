@@ -47,11 +47,11 @@ export interface LivraisonDraft {
   payments: PaymentSplit;
 }
 
-export const LIVRAISON_STATUT_LABELS: Record<LivraisonStatut, string> = {
-  planifiee: 'Planifiée',
-  en_cours: 'En cours',
-  livree: 'Livrée',
-  annulee: 'Annulée',
+export const LIVRAISON_STATUT_KEYS: Record<LivraisonStatut, string> = {
+  planifiee: 'ventes.livraison.statusPlanifiee',
+  en_cours: 'ventes.livraison.statusEnCours',
+  livree: 'ventes.livraison.statusLivree',
+  annulee: 'ventes.livraison.statusAnnulee',
 };
 
 export function computeLivraisonMontant(

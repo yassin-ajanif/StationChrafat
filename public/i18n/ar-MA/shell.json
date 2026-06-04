@@ -1,0 +1,40 @@
+{
+  "brand": {
+    "name": "CHARAFATE",
+    "subtitle": "بوابة الإدارة"
+  },
+  "header": {
+    "stationTitle": "محطة CHARAFATE",
+    "userRole": "مسؤول المحطة"
+  },
+  "sidebar": {
+    "toggleExpand": "إظهار القائمة",
+    "toggleCollapse": "إخفاء القائمة"
+  },
+  "locale": {
+    "fr": "Français",
+    "ar": "العربية",
+    "switchAria": "تغيير اللغة"
+  },
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "station": "المحطة",
+    "ventes": "المبيعات",
+    "achats": "المشتريات",
+    "stock": "المخزون",
+    "produitsServices": "المنتجات والخدمات",
+    "journee": "اليومية",
+    "devis": "عرض السعر",
+    "commande": "أمر الشراء",
+    "livraison": "وصل التسليم",
+    "factures": "الفواتير",
+    "retour": "وصل الإرجاع",
+    "avoirs": "الإشعارات الدائنة",
+    "reception": "وصل الاستلام",
+    "stockGestion": "إدارة المخزون",
+    "stockPistolets": "المسدسات والخزانات"
+  },
+  "wizardStepper": {
+    "aria": "الخطوات"
+  }
+}

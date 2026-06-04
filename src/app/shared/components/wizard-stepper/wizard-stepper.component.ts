@@ -1,11 +1,12 @@
 import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { TranslatePipe } from '../../../core/i18n';
 import { JourneeWizardStep } from '../../../module/Station/journee/journee-wizard.steps';
 
 @Component({
   selector: 'app-wizard-stepper',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, TranslatePipe],
   templateUrl: './wizard-stepper.component.html',
   styleUrl: './wizard-stepper.component.scss',
 })

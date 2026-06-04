@@ -1,9 +1,10 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
+import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../../../../core/i18n'
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
 import {
-  AVOIR_FOURNISSEUR_STATUT_LABELS,
+  AVOIR_FOURNISSEUR_STATUT_KEYS,
   AvoirFournisseur,
   AvoirFournisseurDraft,
   AvoirFournisseurStatut,
@@ -20,19 +21,20 @@ import { AvoirFournisseurFormDialogComponent } from './dialogs/avoir-fournisseur
 @Component({
   selector: 'app-erp-achat-avoirs-list-page',
   standalone: true,
-  imports: [ButtonComponent, AvoirFournisseurFormDialogComponent, DatePipe, DecimalPipe],
+  imports: [ButtonComponent, AvoirFournisseurFormDialogComponent, DatePipe, LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './avoirs-list.page.html',
   styleUrl: './avoirs-list.page.scss',
 })
 export class AchatAvoirsListPage implements OnInit {
   private readonly store = inject(Store);
+  private readonly translate = inject(TranslateService);
 
   readonly avoirs = this.store.selectSignal(selectAvoirsFournisseur);
   readonly loading = this.store.selectSignal(selectAvoirsFournisseurLoading);
   readonly error = this.store.selectSignal(selectAvoirsFournisseurError);
   readonly saving = this.store.selectSignal(selectAvoirsFournisseurSaving);
 
-  readonly statutLabels = AVOIR_FOURNISSEUR_STATUT_LABELS;
+  readonly statutKeys = AVOIR_FOURNISSEUR_STATUT_KEYS;
   readonly showDialog = signal(false);
   readonly editingAvoir = signal<AvoirFournisseur | null>(null);
 
@@ -67,7 +69,7 @@ export class AchatAvoirsListPage implements OnInit {
   }
 
   removeAvoir(id: number): void {
-    if (confirm('Supprimer cet avoir fournisseur ?')) {
+    if (confirm(this.translate.instant('common.confirm.deleteAvoirFournisseur'))) {
       this.store.dispatch(AchatActions.removeAvoirFournisseur({ id }));
     }
   }

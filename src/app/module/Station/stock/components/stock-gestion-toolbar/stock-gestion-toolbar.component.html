@@ -1,6 +1,6 @@
 <div class="stock-gestion-toolbar my-4 flex flex-wrap items-center gap-3">
   <label class="stock-gestion-toolbar__search flex min-w-[12rem] flex-1 items-center gap-2 rounded-[var(--radius-card)] border border-outline-variant bg-surface-container px-3 py-2">
-    <span class="sr-only">Rechercher</span>
+    <span class="sr-only">{{ 'common.actions.search' | translate }}</span>
     <svg class="size-5 shrink-0 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
       <circle cx="11" cy="11" r="7" />
       <path d="M20 20l-3-3" stroke-linecap="round" />
@@ -8,13 +8,13 @@
     <input
       type="search"
       class="min-w-0 flex-1 bg-transparent text-sm text-on-surface outline-none placeholder:text-on-surface-variant"
-      placeholder="Rechercher un produit ou une référence…"
+      [placeholder]="'stock.gestion.searchPlaceholder' | translate"
       [value]="searchQuery()"
       (input)="onSearchInput($event)"
     />
   </label>
   <div class="flex shrink-0 flex-wrap gap-2">
-    <app-button variant="secondary">Filtrer</app-button>
-    <app-button variant="secondary">Exporter CSV</app-button>
+    <app-button variant="secondary">{{ 'common.actions.filter' | translate }}</app-button>
+    <app-button variant="secondary">{{ 'common.actions.exportCsv' | translate }}</app-button>
   </div>
 </div>

@@ -1,9 +1,10 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
+import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../../../../core/i18n'
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
 import {
-  FACTURE_FOURNISSEUR_STATUT_LABELS,
+  FACTURE_FOURNISSEUR_STATUT_KEYS,
   FactureFournisseur,
   FactureFournisseurDraft,
   FactureFournisseurStatut,
@@ -20,19 +21,20 @@ import { FactureFournisseurFormDialogComponent } from './dialogs/facture-fournis
 @Component({
   selector: 'app-erp-achat-factures-list-page',
   standalone: true,
-  imports: [ButtonComponent, FactureFournisseurFormDialogComponent, DatePipe, DecimalPipe],
+  imports: [ButtonComponent, FactureFournisseurFormDialogComponent, DatePipe, LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './factures-list.page.html',
   styleUrl: './factures-list.page.scss',
 })
 export class AchatFacturesListPage implements OnInit {
   private readonly store = inject(Store);
+  private readonly translate = inject(TranslateService);
 
   readonly factures = this.store.selectSignal(selectFacturesFournisseur);
   readonly loading = this.store.selectSignal(selectFacturesFournisseurLoading);
   readonly error = this.store.selectSignal(selectFacturesFournisseurError);
   readonly saving = this.store.selectSignal(selectFacturesFournisseurSaving);
 
-  readonly statutLabels = FACTURE_FOURNISSEUR_STATUT_LABELS;
+  readonly statutKeys = FACTURE_FOURNISSEUR_STATUT_KEYS;
   readonly showDialog = signal(false);
   readonly editingFacture = signal<FactureFournisseur | null>(null);
 
@@ -67,7 +69,7 @@ export class AchatFacturesListPage implements OnInit {
   }
 
   removeFacture(id: number): void {
-    if (confirm('Supprimer cette facture fournisseur ?')) {
+    if (confirm(this.translate.instant('common.confirm.deleteFactureFournisseur'))) {
       this.store.dispatch(AchatActions.removeFactureFournisseur({ id }));
     }
   }

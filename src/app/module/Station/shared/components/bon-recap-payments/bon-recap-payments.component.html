@@ -1,35 +1,35 @@
 <section
   class="bon-recap-payments mt-8 rounded-[var(--radius-card)] border border-outline-variant bg-surface-container px-5 py-4 shadow-sm"
-  aria-label="Récapitulatif du bon"
+  [attr.aria-label]="'common.bonRecap.aria' | translate"
 >
-  <p class="bon-recap-payments__label mb-3">Total du bon</p>
+  <p class="bon-recap-payments__label mb-3">{{ 'common.bon.total' | translate }}</p>
   <dl class="grid gap-2 text-sm sm:grid-cols-2">
     <div class="flex justify-between gap-4 sm:flex-col sm:justify-start">
-      <dt class="text-on-surface-variant">Total services TTC</dt>
+      <dt class="text-on-surface-variant">{{ 'common.bonRecap.totalServicesTtc' | translate }}</dt>
       <dd class="font-semibold tabular-nums text-on-surface">
-        {{ serviceTotal() | number: '1.2-2' }} DH
+        {{ serviceTotal() | localeCurrency }}
       </dd>
     </div>
     <div class="flex justify-between gap-4 sm:flex-col sm:justify-start">
-      <dt class="text-on-surface-variant">Total produits TTC</dt>
+      <dt class="text-on-surface-variant">{{ 'common.bonRecap.totalProductsTtc' | translate }}</dt>
       <dd class="font-semibold tabular-nums text-on-surface">
-        {{ productTotal() | number: '1.2-2' }} DH
+        {{ productTotal() | localeCurrency }}
       </dd>
     </div>
   </dl>
   <div class="mt-4 flex items-baseline justify-between border-t border-outline-variant pt-4">
-    <span class="font-display text-sm font-bold uppercase text-on-surface">Total TTC du bon</span>
+    <span class="font-display text-sm font-bold uppercase text-on-surface">{{ 'common.bonRecap.totalTtc' | translate }}</span>
     <span class="font-display text-2xl font-bold tabular-nums text-primary">
-      {{ bonTotal() | number: '1.2-2' }} DH
+      {{ bonTotal() | localeCurrency }}
     </span>
   </div>
 
   <div class="bon-recap-payments__payments mt-5 border-t border-outline-variant pt-5">
-    <p class="bon-recap-payments__label mb-3">Répartition des encaissements</p>
+    <p class="bon-recap-payments__label mb-3">{{ 'common.bonRecap.paymentsTitle' | translate }}</p>
     <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
       <div>
         <label class="bon-recap-payments__label" [for]="inputIdPrefix() + '-payment-cash'">
-          Espèces (DH)
+          {{ 'common.payment.cash' | translate }}
         </label>
         <input
           [id]="inputIdPrefix() + '-payment-cash'"
@@ -44,7 +44,7 @@
       </div>
       <div>
         <label class="bon-recap-payments__label" [for]="inputIdPrefix() + '-payment-tpe'">
-          TPE (DH)
+          {{ 'common.payment.tpe' | translate }}
         </label>
         <input
           [id]="inputIdPrefix() + '-payment-tpe'"
@@ -59,7 +59,7 @@
       </div>
       <div>
         <label class="bon-recap-payments__label" [for]="inputIdPrefix() + '-payment-bons'">
-          Bons (DH)
+          {{ 'common.payment.vouchers' | translate }}
         </label>
         <input
           [id]="inputIdPrefix() + '-payment-bons'"
@@ -73,14 +73,13 @@
         />
       </div>
       <div class="flex flex-col justify-end">
-        <p class="bon-recap-payments__label">Total saisi</p>
+        <p class="bon-recap-payments__label">{{ 'common.payment.totalEntered' | translate }}</p>
         <p class="font-display text-xl font-bold tabular-nums text-on-surface">
-          {{ paymentTotal() | number: '1.2-2' }}
-          <span class="text-sm font-semibold">DH</span>
+          {{ paymentTotal() | localeCurrency }}
         </p>
       </div>
       <div class="flex flex-col justify-end">
-        <p class="bon-recap-payments__label">Écart</p>
+        <p class="bon-recap-payments__label">{{ 'common.payment.gap' | translate }}</p>
         <p
           class="font-display text-xl font-bold tabular-nums"
           [class.text-on-surface-variant]="paymentDifference() === 0"
@@ -88,11 +87,11 @@
           [class.text-primary]="paymentDifference() < 0"
         >
           @if (paymentDifference() > 0) {
-            +{{ paymentDifference() | number: '1.2-2' }}
+            +{{ paymentDifference() | localeNumber:'1.2-2' }}
           } @else {
-            {{ paymentDifference() | number: '1.2-2' }}
+            {{ paymentDifference() | localeNumber:'1.2-2' }}
           }
-          <span class="text-sm font-semibold">DH</span>
+          <span class="text-sm font-semibold">{{ 'common.currency' | translate }}</span>
         </p>
         <p
           class="mt-1 text-sm font-semibold"
@@ -100,9 +99,9 @@
           [class.text-secondary]="paymentDifference() > 0"
           [class.text-primary]="paymentDifference() < 0"
         >
-          {{ paymentDifferenceLabel(paymentDifference()) }}
+          {{ paymentDifferenceLabelKey(paymentDifference()) | translate }}
           <span class="font-normal text-on-surface-variant">
-            (attendu {{ bonTotal() | number: '1.2-2' }} DH)
+            {{ 'common.payment.expected' | translate: { amount: (bonTotal() | localeNumber:'1.2-2') } }}
           </span>
         </p>
       </div>

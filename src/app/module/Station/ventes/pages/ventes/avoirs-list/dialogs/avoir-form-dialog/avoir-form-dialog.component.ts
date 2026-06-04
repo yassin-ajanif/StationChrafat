@@ -1,11 +1,11 @@
-import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal } from '@angular/core';
+import { LocaleCurrencyPipe, TranslatePipe } from '../../../../../../../../core/i18n'
 import { ButtonComponent } from '../../../../../../../../shared/components/button/button.component';
 import { BonRecapPaymentsComponent } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import { DocumentLinesTableComponent } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
 import { PaymentSplit, isPaymentSplitBalanced } from '../../../../../../shared/models/common/payment-split.model';
 import {
-  AVOIR_STATUT_LABELS,
+  AVOIR_STATUT_KEYS,
   Avoir,
   AvoirDraft,
   AvoirLineTableRow,
@@ -26,7 +26,7 @@ const DEFAULT_PRODUCT_ROWS = 1;
 @Component({
   selector: 'app-avoir-form-dialog',
   standalone: true,
-  imports: [ButtonComponent, DecimalPipe, BonRecapPaymentsComponent, DocumentLinesTableComponent],
+  imports: [ButtonComponent, BonRecapPaymentsComponent, DocumentLinesTableComponent, LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './avoir-form-dialog.component.html',
   styleUrl: './avoir-form-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,7 +37,7 @@ export class AvoirFormDialogComponent {
   readonly saved = output<AvoirDraft>();
   readonly closed = output<void>();
 
-  readonly statutLabels = AVOIR_STATUT_LABELS;
+  readonly statutKeys = AVOIR_STATUT_KEYS;
   readonly statutOptions: AvoirStatut[] = ['brouillon', 'emis', 'applique'];
 
   readonly isEditMode = computed(() => this.editAvoir() != null);

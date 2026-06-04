@@ -52,17 +52,17 @@ export interface CanopyLineGroup {
   nozzles: NozzleLiveState[];
 }
 
-export const NOZZLE_STATUS_LABELS: Record<NozzleLiveStatus, string> = {
-  libre: 'Libre',
-  en_cours: 'En cours',
-  attente: 'Attente Paiement',
-  hors_service: 'Maintenance',
+export const NOZZLE_STATUS_KEYS: Record<NozzleLiveStatus, string> = {
+  libre: 'stock.pistolets.nozzleLibreStatus',
+  en_cours: 'stock.pistolets.nozzleEnCoursStatus',
+  attente: 'stock.pistolets.nozzleAttenteStatus',
+  hors_service: 'stock.pistolets.nozzleHorsServiceStatus',
 };
 
-export const TANK_STATUS_LABELS: Record<TankLevelStatus, string> = {
-  optimal: 'Statut Optimal',
-  alerte: 'État d\'Alerte',
-  critique: 'Statut Critique',
+export const TANK_STATUS_KEYS: Record<TankLevelStatus, string> = {
+  optimal: 'stock.pistolets.tankOptimalStatus',
+  alerte: 'stock.pistolets.tankAlerteStatus',
+  critique: 'stock.pistolets.tankCritiqueStatus',
 };
 
 export function computeTankFillPercent(tank: TankLiveState): number {

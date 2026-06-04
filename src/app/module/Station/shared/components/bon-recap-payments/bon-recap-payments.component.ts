@@ -1,15 +1,14 @@
-import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { LocaleCurrencyPipe, LocaleNumberPipe, TranslatePipe } from '../../../../../core/i18n';
 import {
   PaymentSplit,
   computePaymentDifference,
   computePaymentTotal,
-  paymentDifferenceLabel,
 } from '../../models/common/payment-split.model';
 
 @Component({
   selector: 'app-bon-recap-payments',
-  imports: [DecimalPipe],
+  imports: [LocaleCurrencyPipe, LocaleNumberPipe, TranslatePipe],
   templateUrl: './bon-recap-payments.component.html',
   styleUrl: './bon-recap-payments.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,7 +29,12 @@ export class BonRecapPaymentsComponent {
     computePaymentDifference(this.payments(), this.bonTotal()),
   );
 
-  readonly paymentDifferenceLabel = paymentDifferenceLabel;
+  paymentDifferenceLabelKey(difference: number): string {
+    if (difference === 0) {
+      return 'common.payment.balanced';
+    }
+    return difference > 0 ? 'common.payment.surplus' : 'common.payment.shortage';
+  }
 
   onPaymentInput(field: keyof PaymentSplit, event: Event): void {
     const raw = (event.target as HTMLInputElement).value.trim();

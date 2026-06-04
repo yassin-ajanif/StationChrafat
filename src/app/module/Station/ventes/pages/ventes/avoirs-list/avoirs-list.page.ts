@@ -1,8 +1,9 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
+import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../../../../core/i18n'
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
-import { AVOIR_STATUT_LABELS, Avoir, AvoirDraft, AvoirStatut } from '../../../models/ventes';
+import { AVOIR_STATUT_KEYS, Avoir, AvoirDraft, AvoirStatut } from '../../../models/ventes';
 import { VentesActions } from '../../../state/ventes.actions';
 import {
   selectAvoirs,
@@ -15,19 +16,20 @@ import { AvoirFormDialogComponent } from './dialogs/avoir-form-dialog/avoir-form
 @Component({
   selector: 'app-erp-avoirs-list-page',
   standalone: true,
-  imports: [ButtonComponent, AvoirFormDialogComponent, DatePipe, DecimalPipe],
+  imports: [ButtonComponent, AvoirFormDialogComponent, DatePipe, LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './avoirs-list.page.html',
   styleUrl: './avoirs-list.page.scss',
 })
 export class AvoirsListPage implements OnInit {
   private readonly store = inject(Store);
+  private readonly translate = inject(TranslateService);
 
   readonly avoirs = this.store.selectSignal(selectAvoirs);
   readonly loading = this.store.selectSignal(selectAvoirsLoading);
   readonly error = this.store.selectSignal(selectAvoirsError);
   readonly saving = this.store.selectSignal(selectAvoirsSaving);
 
-  readonly statutLabels = AVOIR_STATUT_LABELS;
+  readonly statutKeys = AVOIR_STATUT_KEYS;
   readonly showDialog = signal(false);
   readonly editingAvoir = signal<Avoir | null>(null);
 
@@ -62,7 +64,7 @@ export class AvoirsListPage implements OnInit {
   }
 
   removeAvoir(id: number): void {
-    if (confirm('Supprimer cet avoir ?')) {
+    if (confirm(this.translate.instant('common.confirm.deleteAvoir'))) {
       this.store.dispatch(VentesActions.removeAvoir({ id }));
     }
   }

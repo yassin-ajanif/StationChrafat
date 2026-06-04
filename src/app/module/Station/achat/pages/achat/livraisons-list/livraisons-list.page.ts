@@ -1,9 +1,10 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
+import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../../../../core/i18n'
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
 import {
-  RECEPTION_STATUT_LABELS,
+  RECEPTION_STATUT_KEYS,
   Reception,
   ReceptionDraft,
   ReceptionStatut,
@@ -20,19 +21,20 @@ import { ReceptionFormDialogComponent } from './dialogs/reception-form-dialog/re
 @Component({
   selector: 'app-erp-achat-livraisons-list-page',
   standalone: true,
-  imports: [ButtonComponent, ReceptionFormDialogComponent, DatePipe, DecimalPipe],
+  imports: [ButtonComponent, ReceptionFormDialogComponent, DatePipe, LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './livraisons-list.page.html',
   styleUrl: './livraisons-list.page.scss',
 })
 export class AchatLivraisonsListPage implements OnInit {
   private readonly store = inject(Store);
+  private readonly translate = inject(TranslateService);
 
   readonly receptions = this.store.selectSignal(selectReceptions);
   readonly loading = this.store.selectSignal(selectReceptionsLoading);
   readonly error = this.store.selectSignal(selectReceptionsError);
   readonly saving = this.store.selectSignal(selectReceptionsSaving);
 
-  readonly statutLabels = RECEPTION_STATUT_LABELS;
+  readonly statutKeys = RECEPTION_STATUT_KEYS;
   readonly showDialog = signal(false);
   readonly editingReception = signal<Reception | null>(null);
 
@@ -67,7 +69,7 @@ export class AchatLivraisonsListPage implements OnInit {
   }
 
   removeReception(id: number): void {
-    if (confirm('Supprimer cette réception ?')) {
+    if (confirm(this.translate.instant('common.confirm.deleteReception'))) {
       this.store.dispatch(AchatActions.removeReception({ id }));
     }
   }

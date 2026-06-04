@@ -47,11 +47,11 @@ export interface RetourDraft {
   payments: PaymentSplit;
 }
 
-export const RETOUR_STATUT_LABELS: Record<RetourStatut, string> = {
-  en_attente: 'En attente',
-  recu: 'Reçu',
-  traite: 'Traité',
-  refuse: 'Refusé',
+export const RETOUR_STATUT_KEYS: Record<RetourStatut, string> = {
+  en_attente: 'ventes.retour.statusEnAttente',
+  recu: 'ventes.retour.statusRecu',
+  traite: 'ventes.retour.statusTraite',
+  refuse: 'ventes.retour.statusRefuse',
 };
 
 export function computeRetourMontant(retour: Pick<Retour, 'serviceLines' | 'productLines'>): number {

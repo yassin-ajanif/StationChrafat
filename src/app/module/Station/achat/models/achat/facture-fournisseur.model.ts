@@ -45,11 +45,11 @@ export interface FactureFournisseurDraft {
   payments: PaymentSplit;
 }
 
-export const FACTURE_FOURNISSEUR_STATUT_LABELS: Record<FactureFournisseurStatut, string> = {
-  brouillon: 'Brouillon',
-  recue: 'Reçue',
-  payee: 'Payée',
-  en_retard: 'En retard',
+export const FACTURE_FOURNISSEUR_STATUT_KEYS: Record<FactureFournisseurStatut, string> = {
+  brouillon: 'ventes.facture.statusBrouillon',
+  recue: 'achat.reception.statusRecue',
+  payee: 'ventes.facture.statusPayee',
+  en_retard: 'ventes.facture.statusEnRetard',
 };
 
 export function computeFactureFournisseurMontantTTC(

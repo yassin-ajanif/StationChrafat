@@ -1,18 +1,18 @@
 export interface JourneeWizardStep {
   id: string;
   path: string;
-  label: string;
+  labelKey: string;
   order: number;
 }
 
 /** Canonical wizard order. */
 export const JOURNEE_WIZARD_STEPS: readonly JourneeWizardStep[] = [
-  { id: 'configuration-step1', path: 'configuration-step1', label: 'Configuration', order: 1 },
-  { id: 'index-pistoles-step2', path: 'index-pistoles-step2', label: 'Carburant vendue', order: 2 },
-  { id: 'bons-step3', path: 'bons-step3', label: 'Bons station', order: 3 },
-  { id: 'encaissements-step4', path: 'encaissements-step4', label: 'Encaissements', order: 4 },
-  { id: 'depenses-step6', path: 'depenses-step6', label: 'Dépenses', order: 5 },
-  { id: 'validation-step6', path: 'validation-step6', label: 'Validation', order: 6 },
+  { id: 'configuration-step1', path: 'configuration-step1', labelKey: 'journee.wizard.steps.configuration', order: 1 },
+  { id: 'index-pistoles-step2', path: 'index-pistoles-step2', labelKey: 'journee.wizard.steps.carburant', order: 2 },
+  { id: 'bons-step3', path: 'bons-step3', labelKey: 'journee.wizard.steps.bonsStation', order: 3 },
+  { id: 'encaissements-step4', path: 'encaissements-step4', labelKey: 'journee.wizard.steps.encaissements', order: 4 },
+  { id: 'depenses-step6', path: 'depenses-step6', labelKey: 'journee.wizard.steps.depenses', order: 5 },
+  { id: 'validation-step6', path: 'validation-step6', labelKey: 'journee.wizard.steps.validation', order: 6 },
 ] as const;
 
 export const JOURNEE_WIZARD_STEP_COUNT = JOURNEE_WIZARD_STEPS.length;

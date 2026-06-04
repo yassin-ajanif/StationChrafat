@@ -1,11 +1,11 @@
-﻿import { DecimalPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal } from '@angular/core';
 import { ButtonComponent } from '../../../../../../../../shared/components/button/button.component';
+import { LocaleCurrencyPipe, TranslatePipe } from '../../../../../../../../core/i18n'
 import { BonRecapPaymentsComponent } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import { DocumentLinesTableComponent } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
 import { PaymentSplit, isPaymentSplitBalanced } from '../../../../../../shared/models/common/payment-split.model';
 import {
-  AVOIR_FOURNISSEUR_STATUT_LABELS,
+  AVOIR_FOURNISSEUR_STATUT_KEYS,
   AvoirFournisseur,
   AvoirFournisseurDraft,
   AvoirFournisseurLineTableRow,
@@ -26,7 +26,7 @@ const DEFAULT_PRODUCT_ROWS = 1;
 @Component({
   selector: 'app-avoir-fournisseur-form-dialog',
   standalone: true,
-  imports: [ButtonComponent, DecimalPipe, BonRecapPaymentsComponent, DocumentLinesTableComponent],
+  imports: [ButtonComponent, BonRecapPaymentsComponent, DocumentLinesTableComponent, LocaleCurrencyPipe, TranslatePipe],
   templateUrl: './avoir-fournisseur-form-dialog.component.html',
   styleUrl: './avoir-fournisseur-form-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,7 +37,7 @@ export class AvoirFournisseurFormDialogComponent {
   readonly saved = output<AvoirFournisseurDraft>();
   readonly closed = output<void>();
 
-  readonly statutLabels = AVOIR_FOURNISSEUR_STATUT_LABELS;
+  readonly statutKeys = AVOIR_FOURNISSEUR_STATUT_KEYS;
   readonly statutOptions: AvoirFournisseurStatut[] = ['brouillon', 'recu', 'applique'];
 
   readonly isEditMode = computed(() => this.editAvoirFournisseur() != null);

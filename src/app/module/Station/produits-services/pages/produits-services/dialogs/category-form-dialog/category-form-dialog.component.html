@@ -16,23 +16,23 @@
         <div>
           <h2 id="category-form-dialog-title" class="font-display text-xl font-bold uppercase text-on-surface">
             @if (isEditMode()) {
-              Modifier la catégorie
+              {{ 'produitsServices.categoryDialog.edit' | translate }}
             } @else {
-              Nouvelle catégorie
+              {{ 'produitsServices.categoryDialog.create' | translate }}
             }
           </h2>
           <p class="mt-1 text-sm text-on-surface-variant">
             @if (kind() === 'service') {
-              Catégorie de services (lavage, vidange…)
+              {{ 'produitsServices.categoryDialog.serviceHint' | translate }}
             } @else {
-              Catégorie de produits (carburant, boutique…)
+              {{ 'produitsServices.categoryDialog.productHint' | translate }}
             }
           </p>
         </div>
         <button
           type="button"
           class="text-2xl leading-none text-on-surface-variant hover:text-on-surface"
-          aria-label="Fermer"
+          [attr.aria-label]="'common.actions.close' | translate"
           (click)="cancel()"
         >
           ×
@@ -41,7 +41,7 @@
 
       <div class="px-6 py-5">
         <label class="category-form-dialog__field block">
-          <span class="category-form-dialog__label">Type</span>
+          <span class="category-form-dialog__label">{{ 'produitsServices.table.colType' | translate }}</span>
           <select
             class="category-form-dialog__input w-full"
             [value]="kind()"
@@ -49,12 +49,12 @@
             (change)="kind.set($any($event.target).value)"
           >
             <option value="service">Service</option>
-            <option value="product">Produit</option>
+            <option value="product">{{ 'stock.gestion.colProduit' | translate }}</option>
           </select>
         </label>
 
         <label class="category-form-dialog__field mt-4 block">
-          <span class="category-form-dialog__label">Nom de la catégorie</span>
+          <span class="category-form-dialog__label">{{ 'produitsServices.categoryDialog.name' | translate }}</span>
           <input
             type="text"
             class="category-form-dialog__input w-full"
@@ -66,12 +66,12 @@
       </div>
 
       <footer class="flex justify-end gap-3 border-t border-outline-variant px-6 py-4">
-        <app-button variant="secondary" (pressed)="cancel()">Annuler</app-button>
+        <app-button variant="secondary" (pressed)="cancel()">{{ 'common.actions.cancel' | translate }}</app-button>
         <app-button variant="primary" [disabled]="!isValid() || saving()" [loading]="saving()" (pressed)="save()">
           @if (isEditMode()) {
             Enregistrer
           } @else {
-            Créer la catégorie
+            {{ 'produitsServices.categoryDialog.createBtn' | translate }}
           }
         </app-button>
       </footer>
