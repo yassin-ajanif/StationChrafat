@@ -1,0 +1,62 @@
+<div class="stock-product-table overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant">
+  @if (products().length === 0) {
+    <p class="px-4 py-8 text-center text-sm text-on-surface-variant">Aucun produit trouvé.</p>
+  } @else {
+    <table class="stock-product-table__table w-full border-collapse text-sm">
+      <thead>
+        <tr class="bg-table-header">
+          <th class="px-4 py-3.5 text-left font-display text-xs font-bold uppercase tracking-wide text-white">Produit</th>
+          <th class="px-4 py-3.5 text-left font-display text-xs font-bold uppercase tracking-wide text-white">Catégorie</th>
+          <th class="px-4 py-3.5 text-right font-display text-xs font-bold uppercase tracking-wide text-white">Stock actuel</th>
+          <th class="px-4 py-3.5 text-left font-display text-xs font-bold uppercase tracking-wide text-white">Unité</th>
+          <th class="px-4 py-3.5 text-right font-display text-xs font-bold uppercase tracking-wide text-white">Seuil</th>
+          <th class="px-4 py-3.5 text-center font-display text-xs font-bold uppercase tracking-wide text-white">Statut</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (product of products(); track product.id) {
+          <tr class="border-t border-outline-variant/40 bg-surface-container-lowest">
+            <td class="px-4 py-3.5">
+              <div class="flex items-center gap-3">
+                <span class="stock-product-table__icon flex size-9 shrink-0 items-center justify-center rounded bg-surface-container text-on-surface-variant" aria-hidden="true">&#9981;</span>
+                <div class="min-w-0">
+                  <p class="font-semibold text-on-surface">{{ product.name }}</p>
+                  <p class="text-xs text-on-surface-variant">{{ product.subtitle }}</p>
+                </div>
+              </div>
+            </td>
+            <td class="px-4 py-3.5 text-on-surface-variant">{{ product.categoryLabel }}</td>
+            <td
+              class="px-4 py-3.5 text-right font-bold tabular-nums"
+              [class.text-primary]="product.stockStatus === 'critique'"
+              [class.text-on-surface]="product.stockStatus === 'optimal'"
+            >
+              {{ product.currentStock | number:'1.0-0':'fr-MA' }}
+            </td>
+            <td class="px-4 py-3.5">
+              <span class="stock-product-table__unit font-display text-xs font-bold uppercase text-secondary">
+                {{ product.unit }}
+              </span>
+            </td>
+            <td class="px-4 py-3.5 text-right tabular-nums text-on-surface-variant">
+              {{ product.threshold | number:'1.0-0':'fr-MA' }}
+            </td>
+            <td class="px-4 py-3.5 text-center">
+              @if (product.stockStatus === 'optimal') {
+                <span class="stock-product-table__status stock-product-table__status--optimal">
+                  <span class="stock-product-table__status-dot" aria-hidden="true"></span>
+                  Optimal
+                </span>
+              } @else {
+                <span class="stock-product-table__status stock-product-table__status--critique">
+                  <span class="stock-product-table__status-dot" aria-hidden="true"></span>
+                  Critique
+                </span>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

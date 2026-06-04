@@ -1,0 +1,32 @@
+<div class="stock-gestion-tabs flex border-b border-outline-variant" role="tablist" aria-label="Famille de stock">
+  <button
+    type="button"
+    role="tab"
+    class="stock-gestion-tabs__tab"
+    [class.stock-gestion-tabs__tab--active]="activeTab() === 'carburant'"
+    [attr.aria-selected]="activeTab() === 'carburant'"
+    (click)="tabChange.emit('carburant')"
+  >
+    Carburant
+  </button>
+  <button
+    type="button"
+    role="tab"
+    class="stock-gestion-tabs__tab"
+    [class.stock-gestion-tabs__tab--active]="activeTab() === 'vidange'"
+    [attr.aria-selected]="activeTab() === 'vidange'"
+    (click)="tabChange.emit('vidange')"
+  >
+    Vidange
+  </button>
+  <button
+    type="button"
+    role="tab"
+    class="stock-gestion-tabs__tab"
+    [class.stock-gestion-tabs__tab--active]="activeTab() === 'lavage'"
+    [attr.aria-selected]="activeTab() === 'lavage'"
+    (click)="tabChange.emit('lavage')"
+  >
+    Lavage
+  </button>
+</div>

@@ -1,4 +1,4 @@
-import { CurrencyPipe, DecimalPipe, NgClass, NgStyle } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { NozzleIconComponent } from '../../../../../shared/components/nozzle-icon/nozzle-icon.component';
@@ -7,13 +7,13 @@ import { StockActions } from '../../state/stock.actions';
 import { selectError, selectLoading, selectOverview } from '../../state/stock.selectors';
 
 @Component({
-  selector: 'app-stock-overview-page',
+  selector: 'app-pistolets-cuves-status-page',
   standalone: true,
   imports: [DecimalPipe, NozzleIconComponent],
-  templateUrl: './stock-overview.page.html',
-  styleUrl: './stock-overview.page.scss',
+  templateUrl: './pistolets-cuves-status.page.html',
+  styleUrl: './pistolets-cuves-status.page.scss',
 })
-export class StockOverviewPage implements OnInit {
+export class PistoletsCuvesStatusPage implements OnInit {
   private readonly store = inject(Store);
 
   readonly loading = this.store.selectSignal(selectLoading);
@@ -55,14 +55,14 @@ export class StockOverviewPage implements OnInit {
   }
 
   nozzleStatusAccentClass(status: NozzleLiveStatus): string {
-    return `stock-overview__nozzle-accent--${status.replace('_', '-')}`;
+    return `pistolets-cuves-status__nozzle-accent--${status.replace('_', '-')}`;
   }
 
   nozzleStatusTextClass(status: NozzleLiveStatus): string {
-    return `stock-overview__nozzle-status--${status.replace('_', '-')}`;
+    return `pistolets-cuves-status__nozzle-status--${status.replace('_', '-')}`;
   }
 
   fuelLabelClass(fuelLabel: string): string {
-    return `stock-overview__fuel-label--${resolveFuelSignVariant(fuelLabel)}`;
+    return `pistolets-cuves-status__fuel-label--${resolveFuelSignVariant(fuelLabel)}`;
   }
 }

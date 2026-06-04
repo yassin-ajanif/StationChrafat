@@ -1,0 +1,18 @@
+<div class="stock-gestion-kpi-cards grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Valeur des stocks">
+  @for (card of summaries(); track card.id) {
+    <article
+      class="stock-gestion-kpi-cards__card relative overflow-hidden rounded-[var(--radius-card)] border border-outline-variant/80 bg-surface-container-lowest p-4 shadow-sm"
+      [class]="'stock-gestion-kpi-cards__card--' + (card.accent ?? 'default')"
+    >
+      <p class="font-display text-[10px] font-bold uppercase tracking-wide text-on-surface-variant">
+        {{ card.label }}
+      </p>
+      <p class="stock-gestion-kpi-cards__value mt-2 font-display text-2xl font-bold tabular-nums">
+        {{ card.valueDh | number:'1.2-2':'fr-MA' }} DH
+      </p>
+      <p class="mt-1 text-xs font-semibold text-success">
+        +{{ card.trendPercent }}% ce mois
+      </p>
+    </article>
+  }
+</div>

@@ -1,0 +1,36 @@
+@reference '../../../../../../tailwind.css';
+
+.stock-product-table {
+  &__status {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase leading-none;
+
+    &--optimal {
+      @apply bg-success/15 text-success;
+    }
+
+    &--critique {
+      @apply bg-primary/15 text-primary;
+    }
+  }
+
+  &__status-dot {
+    @apply size-1.5 rounded-full;
+
+    .stock-product-table__status--optimal & {
+      @apply bg-success;
+    }
+
+    .stock-product-table__status--critique & {
+      @apply bg-primary;
+    }
+  }
+
+  &__unit {
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__icon {
+    font-size: 1rem;
+    line-height: 1;
+  }
+}

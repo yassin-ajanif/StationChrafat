@@ -44,6 +44,11 @@ const ACHATS_CHILDREN: NavLeaf[] = [
   { label: 'Avoirs', route: '/station/achat/avoirs' },
 ];
 
+const STOCK_CHILDREN: NavLeaf[] = [
+  { label: 'Gestion des stocks', route: '/station/stock/gestion' },
+  { label: 'Pistolets et cuves', route: '/station/stock/pistolets-cuves' },
+];
+
 const SIDEBAR_GROUP_IDS = ['station', 'station-ventes', 'station-achats'] as const;
 type SidebarGroupId = (typeof SIDEBAR_GROUP_IDS)[number];
 
@@ -81,7 +86,12 @@ export class AppShellComponent {
           baseRoute: '/station/achat',
           children: ACHATS_CHILDREN,
         },
-        { label: 'Stock', route: '/station/stock' },
+        {
+          id: 'station-stock',
+          label: 'Stock',
+          baseRoute: '/station/stock',
+          children: STOCK_CHILDREN,
+        },
         { label: 'Produits & services', route: '/station/produits-services' },
         { label: 'Journée', route: '/journees' },
       ],
@@ -154,6 +164,9 @@ export class AppShellComponent {
       }
       if (url.includes('/achat')) {
         next.add('station-achats');
+      }
+      if (url.includes('/stock')) {
+        next.add('station-stock');
       }
 
       return next;

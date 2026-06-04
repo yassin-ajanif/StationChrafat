@@ -1,6 +1,6 @@
 <div class="flex w-full flex-col gap-6">
   <header>
-    <h1 class="font-display text-2xl font-bold uppercase text-on-surface">Stock station</h1>
+    <h1 class="font-display text-2xl font-bold uppercase text-on-surface">Statut pistolets et cuves</h1>
     <p class="mt-0.5 text-sm text-on-surface-variant">
       Index pistolets et niveaux cuves en temps réel.
     </p>
@@ -51,7 +51,7 @@
                 class="flex overflow-hidden rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest shadow-sm"
               >
                 <div
-                  class="stock-overview__nozzle-accent"
+                  class="pistolets-cuves-status__nozzle-accent"
                   [class]="nozzleStatusAccentClass(nozzle.status)"
                   aria-hidden="true"
                 ></div>
@@ -175,8 +175,8 @@
               aria-hidden="true"
             >
               <div
-                class="stock-overview__tank-fill absolute inset-x-0 bottom-0 transition-[height] duration-500"
-                [class]="'stock-overview__tank-fill--' + tank.status"
+                class="pistolets-cuves-status__tank-fill absolute inset-x-0 bottom-0 transition-[height] duration-500"
+                [class]="'pistolets-cuves-status__tank-fill--' + tank.status"
                 [style.height.%]="computeTankFillPercent(tank)"
               ></div>
               <div class="absolute inset-0 flex flex-col items-center justify-center px-3 text-center">

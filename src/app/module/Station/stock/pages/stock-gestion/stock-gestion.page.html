@@ -1,0 +1,72 @@
+<div class="stock-gestion flex flex-col gap-6">
+  <header class="stock-gestion__header">
+    <h1 class="stock-gestion__title font-display text-2xl font-bold uppercase text-primary">
+      Gestion des stocks
+    </h1>
+    <p class="stock-gestion__subtitle mt-1 text-sm text-on-surface-variant">
+      Suivi des niveaux de stock par famille (carburant, vidange, lavage).
+    </p>
+  </header>
+
+  @if (loading()) {
+    <p class="stock-gestion__status py-16 text-center text-on-surface-variant">Chargement des stocks…</p>
+  } @else {
+    @if (error(); as err) {
+      <p class="stock-gestion__alert rounded-[var(--radius-card)] border border-primary bg-primary/10 px-4 py-3 text-sm text-primary" role="alert">
+        {{ err }}
+      </p>
+    }
+
+    <app-stock-gestion-kpi-cards [summaries]="summaries()" />
+
+    <section class="stock-gestion__panel rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest shadow-sm">
+      <app-stock-gestion-tabs
+        [activeTab]="activeTab()"
+        (tabChange)="onTabChange($event)"
+      />
+
+      <div class="stock-gestion__panel-body px-4 pb-4 md:px-6 md:pb-6">
+        <app-stock-gestion-toolbar
+          [searchQuery]="searchQuery()"
+          (searchChange)="onSearchChange($event)"
+        />
+
+        <app-stock-product-table [products]="paginatedProducts()" />
+
+        <footer class="stock-gestion__pagination mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-outline-variant/60 pt-4">
+          <p class="text-sm text-on-surface-variant">{{ paginationLabel() }}</p>
+          <nav class="stock-gestion__pagination-nav flex items-center gap-1" aria-label="Pagination">
+            <button
+              type="button"
+              class="stock-gestion__page-btn"
+              [disabled]="currentPage() <= 1"
+              (click)="onPageChange(currentPage() - 1)"
+              aria-label="Page précédente"
+            >
+              &#8249;
+            </button>
+            @for (page of visiblePages(); track page) {
+              <button
+                type="button"
+                class="stock-gestion__page-btn"
+                [class.stock-gestion__page-btn--active]="page === currentPage()"
+                (click)="onPageChange(page)"
+              >
+                {{ page }}
+              </button>
+            }
+            <button
+              type="button"
+              class="stock-gestion__page-btn"
+              [disabled]="currentPage() >= totalPages()"
+              (click)="onPageChange(currentPage() + 1)"
+              aria-label="Page suivante"
+            >
+              &#8250;
+            </button>
+          </nav>
+        </footer>
+      </div>
+    </section>
+  }
+</div>

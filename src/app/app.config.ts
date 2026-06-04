@@ -18,6 +18,8 @@ import { journeeFeature } from './module/Station/journee/state/journee.reducer';
 import { ProduitsServicesEffects } from './module/Station/produits-services/state/produits-services.effects';
 import { produitsServicesFeature } from './module/Station/produits-services/state/produits-services.reducer';
 import { StockEffects } from './module/Station/stock/state/stock.effects';
+import { StockGestionEffects } from './module/Station/stock/state/stock-gestion.effects';
+import { stockGestionFeature } from './module/Station/stock/state/stock-gestion.reducer';
 import { stockFeature } from './module/Station/stock/state/stock.reducer';
 import { VentesEffects } from './module/Station/ventes/state/ventes.effects';
 import { ventesFeature } from './module/Station/ventes/state/ventes.reducer';
@@ -33,8 +35,9 @@ export const appConfig: ApplicationConfig = {
     provideState(ventesFeature),
     provideState(achatFeature),
     provideState(stockFeature),
+    provideState(stockGestionFeature),
     provideState(produitsServicesFeature),
-    provideEffects(JourneeEffects, VentesEffects, AchatEffects, StockEffects, ProduitsServicesEffects),
+    provideEffects(JourneeEffects, VentesEffects, AchatEffects, StockEffects, StockGestionEffects, ProduitsServicesEffects),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
   ],
 };

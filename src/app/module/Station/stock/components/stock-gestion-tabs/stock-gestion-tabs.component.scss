@@ -1,0 +1,11 @@
+@reference '../../../../../../tailwind.css';
+
+.stock-gestion-tabs {
+  &__tab {
+    @apply min-h-[var(--spacing-touch)] border-b-2 border-transparent px-4 font-display text-xs font-bold uppercase tracking-wide text-on-surface-variant transition hover:text-on-surface;
+
+    &--active {
+      @apply border-b-2 border-primary text-primary;
+    }
+  }
+}

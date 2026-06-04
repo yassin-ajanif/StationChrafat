@@ -1,0 +1,9 @@
+@reference '../../../../../../tailwind.css';
+
+.stock-gestion-toolbar {
+  &__search {
+    &:focus-within {
+      @apply border-primary ring-1 ring-primary/30;
+    }
+  }
+}

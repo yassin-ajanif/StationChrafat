@@ -1,0 +1,25 @@
+@reference '../../../../../../tailwind.css';
+
+.stock-gestion-kpi-cards {
+  &__card {
+    &--carburant {
+      @apply border-l-4 border-l-success;
+    }
+
+    &--vidange {
+      @apply border-l-4 border-l-secondary;
+    }
+
+    &--lavage {
+      @apply border-l-4 border-l-warning-text;
+    }
+
+    &--total {
+      @apply border-l-4 border-l-primary;
+    }
+  }
+
+  &__value {
+    font-variant-numeric: tabular-nums;
+  }
+}
