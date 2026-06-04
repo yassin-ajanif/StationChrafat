@@ -1,8 +1,7 @@
+import { StationBon } from '../../shared/models/bon';
 import { DepenseLine } from './depense.model';
 import { EncaissementLine } from './encaissement.model';
-import { LavageBon } from './lavage-bon.model';
 import { NozzleIndexLine, BombisteNozzlePayment } from './nozzle-index.model';
-import { VidangeBon } from './vidange-bon.model';
 
 export type JourneeStatus = 'brouillon' | 'en_cours' | 'soumise' | 'cloturee';
 
@@ -51,13 +50,10 @@ export interface JourneeDraft {
   selectedNozzleBombisteIds: number[];
   /** Répartition espèces / TPE / bons par bombiste (étape index pistolets). */
   nozzleBombistePayments: BombisteNozzlePaymentEntry[];
-  /** Chef vidange / lavage sélectionné à l'étape bons lavage. */
-  lavageChefVidangeLavageId: number | null;
-  /** Chef vidange / lavage sélectionné à l'étape bons vidange. */
-  vidangeChefVidangeLavageId: number | null;
+  /** Chef vidange / lavage sélectionné à l'étape bons station. */
+  stationBonsChefId: number | null;
   nozzleIndexes: NozzleIndexLine[];
-  lavageBons: LavageBon[];
-  vidangeBons: VidangeBon[];
+  stationBons: StationBon[];
   encaissements: EncaissementLine[];
   depenses: DepenseLine[];
 }

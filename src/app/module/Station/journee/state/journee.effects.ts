@@ -101,42 +101,6 @@ export class JourneeEffects {
     ),
   );
 
-  loadLavageBons$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(JourneeActions.loadLavageBons),
-      switchMap(() =>
-        this.api.getLavageBons().pipe(
-          map((bons) => JourneeActions.loadLavageBonsSuccess({ bons })),
-          catchError((err) =>
-            of(
-              JourneeActions.loadLavageBonsFailure({
-                error: err?.message ?? 'Erreur chargement bons lavage',
-              }),
-            ),
-          ),
-        ),
-      ),
-    ),
-  );
-
-  loadVidangeBons$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(JourneeActions.loadVidangeBons),
-      switchMap(() =>
-        this.api.getVidangeBons().pipe(
-          map((bons) => JourneeActions.loadVidangeBonsSuccess({ bons })),
-          catchError((err) =>
-            of(
-              JourneeActions.loadVidangeBonsFailure({
-                error: err?.message ?? 'Erreur chargement bons vidange',
-              }),
-            ),
-          ),
-        ),
-      ),
-    ),
-  );
-
   loadEncaissementClients$ = createEffect(() =>
     this.actions$.pipe(
       ofType(JourneeActions.loadEncaissementClients),

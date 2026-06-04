@@ -103,6 +103,6 @@ export class DepensesStep6Page implements OnInit {
     if (!this.canProceed()) {
       return;
     }
-    void this.router.navigate(['/journees', 'nouvelle', 'validation-step7']);
+    void this.router.navigate(['/journees', 'nouvelle', 'validation-step6']);
   }
 }

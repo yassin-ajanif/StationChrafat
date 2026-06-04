@@ -13,6 +13,7 @@ import { emptyPaymentSplit } from '../models/payment-split.model';
 import { ValidationExtras } from '../models/journee-validation.model';
 import { JourneeActions } from './journee.actions';
 
+
 export interface JourneeState {
   journees: JourneeSummary[];
   listLoading: boolean;
@@ -26,10 +27,6 @@ export interface JourneeState {
   startError: string | null;
   nozzleIndexesLoading: boolean;
   nozzleIndexesError: string | null;
-  lavageBonsLoading: boolean;
-  lavageBonsError: string | null;
-  vidangeBonsLoading: boolean;
-  vidangeBonsError: string | null;
   encaissementClients: EncaissementClientOption[];
   encaissementClientsLoading: boolean;
   encaissementClientsError: string | null;
@@ -53,11 +50,9 @@ const emptyDraft = (): JourneeDraft => ({
   },
   selectedNozzleBombisteIds: [],
   nozzleBombistePayments: [],
-  lavageChefVidangeLavageId: null,
-  vidangeChefVidangeLavageId: null,
+  stationBonsChefId: null,
   nozzleIndexes: [],
-  lavageBons: [],
-  vidangeBons: [],
+  stationBons: [],
   encaissements: [],
   depenses: [],
 });
@@ -75,10 +70,6 @@ export const initialJourneeState: JourneeState = {
   startError: null,
   nozzleIndexesLoading: false,
   nozzleIndexesError: null,
-  lavageBonsLoading: false,
-  lavageBonsError: null,
-  vidangeBonsLoading: false,
-  vidangeBonsError: null,
   encaissementClients: [],
   encaissementClientsLoading: false,
   encaissementClientsError: null,
@@ -164,8 +155,6 @@ export const journeeFeature = createFeature({
       draft: emptyDraft(),
       startError: null,
       nozzleIndexesError: null,
-      lavageBonsError: null,
-      vidangeBonsError: null,
       encaissementClientsError: null,
       encaissementsError: null,
       depensesError: null,
@@ -202,31 +191,13 @@ export const journeeFeature = createFeature({
       nozzleIndexesError: error,
     })),
 
-    on(JourneeActions.loadLavageBons, (state) => ({
-      ...state,
-      lavageBonsLoading: true,
-      lavageBonsError: null,
-    })),
-    on(JourneeActions.loadLavageBonsSuccess, (state, { bons }) => {
-      const merged =
-        state.draft.lavageBons.length > 0 ? state.draft.lavageBons : bons;
-      return {
-        ...state,
-        lavageBonsLoading: false,
-        draft: { ...state.draft, lavageBons: merged },
-      };
-    }),
-    on(JourneeActions.loadLavageBonsFailure, (state, { error }) => ({
-      ...state,
-      lavageBonsLoading: false,
-      lavageBonsError: error,
-    })),
+    on(JourneeActions.transmitFuelSalesToStationBons, (state) => state),
 
-    on(JourneeActions.addLavageBon, (state, { bon }) => {
+    on(JourneeActions.addStationBon, (state, { bon }) => {
       const nextBonId =
-        state.draft.lavageBons.reduce((max, b) => Math.max(max, b.id), 0) + 1;
+        state.draft.stationBons.reduce((max, b) => Math.max(max, b.id), 0) + 1;
       let nextLineId =
-        state.draft.lavageBons.reduce(
+        state.draft.stationBons.reduce(
           (max, b) =>
             Math.max(
               max,
@@ -250,12 +221,12 @@ export const journeeFeature = createFeature({
         ...state,
         draft: {
           ...state.draft,
-          lavageBons: [
-            ...state.draft.lavageBons,
+          stationBons: [
+            ...state.draft.stationBons,
             {
               id: nextBonId,
               bonNumber: bon.bonNumber.trim(),
-              clientRef: bon.clientRef.trim(),
+              partnerRef: bon.partnerRef.trim(),
               chefVidangeLavageId: bon.chefVidangeLavageId,
               serviceLines: bon.serviceLines.map(mapLine),
               productLines: bon.productLines.map(mapLine),
@@ -266,13 +237,13 @@ export const journeeFeature = createFeature({
       };
     }),
 
-    on(JourneeActions.updateLavageBon, (state, { id, bon }) => {
-      const existing = state.draft.lavageBons.find((b) => b.id === id);
+    on(JourneeActions.updateStationBon, (state, { id, bon }) => {
+      const existing = state.draft.stationBons.find((b) => b.id === id);
       if (!existing) {
         return state;
       }
       let nextLineId =
-        state.draft.lavageBons.reduce(
+        state.draft.stationBons.reduce(
           (max, b) =>
             Math.max(
               max,
@@ -300,12 +271,12 @@ export const journeeFeature = createFeature({
         ...state,
         draft: {
           ...state.draft,
-          lavageBons: state.draft.lavageBons.map((b) =>
+          stationBons: state.draft.stationBons.map((b) =>
             b.id === id
               ? {
                   ...b,
                   bonNumber: bon.bonNumber.trim(),
-                  clientRef: bon.clientRef.trim(),
+                  partnerRef: bon.partnerRef.trim(),
                   chefVidangeLavageId: bon.chefVidangeLavageId,
                   serviceLines: bon.serviceLines.map((line, index) =>
                     mapLine(line, index, existing.serviceLines),
@@ -321,154 +292,19 @@ export const journeeFeature = createFeature({
       };
     }),
 
-    on(JourneeActions.removeLavageBon, (state, { id }) => ({
+    on(JourneeActions.removeStationBon, (state, { id }) => ({
       ...state,
       draft: {
         ...state.draft,
-        lavageBons: state.draft.lavageBons.filter((b) => b.id !== id),
+        stationBons: state.draft.stationBons.filter((b) => b.id !== id),
       },
     })),
 
-    on(JourneeActions.setLavageChefVidangeLavage, (state, { chefVidangeLavageId }) => ({
+    on(JourneeActions.setStationBonsChefId, (state, { chefVidangeLavageId }) => ({
       ...state,
       draft: {
         ...state.draft,
-        lavageChefVidangeLavageId: chefVidangeLavageId,
-      },
-    })),
-
-    on(JourneeActions.loadVidangeBons, (state) => ({
-      ...state,
-      vidangeBonsLoading: true,
-      vidangeBonsError: null,
-    })),
-    on(JourneeActions.loadVidangeBonsSuccess, (state, { bons }) => {
-      const merged =
-        state.draft.vidangeBons.length > 0 ? state.draft.vidangeBons : bons;
-      return {
-        ...state,
-        vidangeBonsLoading: false,
-        draft: { ...state.draft, vidangeBons: merged },
-      };
-    }),
-    on(JourneeActions.loadVidangeBonsFailure, (state, { error }) => ({
-      ...state,
-      vidangeBonsLoading: false,
-      vidangeBonsError: error,
-    })),
-
-    on(JourneeActions.addVidangeBon, (state, { bon }) => {
-      const nextBonId =
-        state.draft.vidangeBons.reduce((max, b) => Math.max(max, b.id), 0) + 1;
-      let nextLineId =
-        state.draft.vidangeBons.reduce(
-          (max, b) =>
-            Math.max(
-              max,
-              ...b.serviceLines.map((l) => l.id),
-              ...b.productLines.map((l) => l.id),
-              0,
-            ),
-          0,
-        ) + 1;
-      const mapLine = (line: (typeof bon.serviceLines)[number]) => ({
-        id: nextLineId++,
-        reference: line.reference,
-        designation: line.designation,
-        quantity: line.quantity,
-        unit: line.unit,
-        unitPriceHT: line.unitPriceHT,
-        discountPercent: line.discountPercent,
-        vatPercent: line.vatPercent,
-      });
-      return {
-        ...state,
-        draft: {
-          ...state.draft,
-          vidangeBons: [
-            ...state.draft.vidangeBons,
-            {
-              id: nextBonId,
-              bonNumber: bon.bonNumber.trim(),
-              vehicleRef: bon.vehicleRef.trim(),
-              chefVidangeLavageId: bon.chefVidangeLavageId,
-              serviceLines: bon.serviceLines.map(mapLine),
-              productLines: bon.productLines.map(mapLine),
-              payments: bon.payments ?? emptyPaymentSplit(),
-            },
-          ],
-        },
-      };
-    }),
-
-    on(JourneeActions.updateVidangeBon, (state, { id, bon }) => {
-      const existing = state.draft.vidangeBons.find((b) => b.id === id);
-      if (!existing) {
-        return state;
-      }
-      let nextLineId =
-        state.draft.vidangeBons.reduce(
-          (max, b) =>
-            Math.max(
-              max,
-              ...b.serviceLines.map((l) => l.id),
-              ...b.productLines.map((l) => l.id),
-              0,
-            ),
-          0,
-        ) + 1;
-      const mapLine = (
-        line: (typeof bon.serviceLines)[number],
-        index: number,
-        existingLines: typeof existing.serviceLines,
-      ) => ({
-        id: existingLines[index]?.id ?? nextLineId++,
-        reference: line.reference,
-        designation: line.designation,
-        quantity: line.quantity,
-        unit: line.unit,
-        unitPriceHT: line.unitPriceHT,
-        discountPercent: line.discountPercent,
-        vatPercent: line.vatPercent,
-      });
-      return {
-        ...state,
-        draft: {
-          ...state.draft,
-          vidangeBons: state.draft.vidangeBons.map((b) =>
-            b.id === id
-              ? {
-                  ...b,
-                  bonNumber: bon.bonNumber.trim(),
-                  vehicleRef: bon.vehicleRef.trim(),
-                  chefVidangeLavageId: bon.chefVidangeLavageId,
-                  serviceLines: bon.serviceLines.map((line, index) =>
-                    mapLine(line, index, existing.serviceLines),
-                  ),
-                  productLines: bon.productLines.map((line, index) =>
-                    mapLine(line, index, existing.productLines),
-                  ),
-                  payments: bon.payments ?? emptyPaymentSplit(),
-                }
-              : b,
-          ),
-        },
-      };
-    }),
-
-    on(JourneeActions.removeVidangeBon, (state, { id }) => ({
-      ...state,
-      draft: {
-        ...state.draft,
-        vidangeBons: state.draft.vidangeBons.filter((b) => b.id !== id),
-      },
-    })),
-
-    on(JourneeActions.setVidangeChefVidangeLavage, (state, { chefVidangeLavageId }) => ({
-      ...state,
-      draft: {
-        ...state.draft,
-        vidangeChefVidangeLavageId: chefVidangeLavageId,
+        stationBonsChefId: chefVidangeLavageId,
       },
     })),
 
@@ -600,10 +436,9 @@ export const journeeFeature = createFeature({
       validationExtrasLoading: false,
       validationExtras: extras,
     })),
-    on(JourneeActions.loadValidationExtrasFailure, (state, { error }) => ({
+    on(JourneeActions.loadValidationExtrasFailure, (state) => ({
       ...state,
       validationExtrasLoading: false,
-      validationExtrasError: error,
     })),
 
     on(JourneeActions.submitJournee, (state) => ({

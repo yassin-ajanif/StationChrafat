@@ -1,9 +1,8 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
+import { StationBon, StationBonDraftInput } from '../../shared/models/bon';
 import { DepenseLine, DepenseLinePatch } from '../models/depense.model';
 import { EncaissementClientOption, EncaissementLine, EncaissementLinePatch } from '../models/encaissement.model';
 import { ValidationExtras } from '../models/journee-validation.model';
-import { LavageBon, LavageBonDraftInput } from '../models/lavage-bon.model';
-import { VidangeBon, VidangeBonDraftInput } from '../models/vidange-bon.model';
 import { NozzleIndexLine } from '../models/nozzle-index.model';
 import {
   JourneeDraftConfig,
@@ -58,25 +57,13 @@ export const JourneeActions = createActionGroup({
       bons?: number;
     }>(),
 
-    'Load Lavage Bons': emptyProps(),
-    'Load Lavage Bons Success': props<{ bons: LavageBon[] }>(),
-    'Load Lavage Bons Failure': props<{ error: string }>(),
+    'Transmit Fuel Sales To Station Bons': emptyProps(),
 
-    'Add Lavage Bon': props<{ bon: LavageBonDraftInput }>(),
-    'Update Lavage Bon': props<{ id: number; bon: LavageBonDraftInput }>(),
-    'Remove Lavage Bon': props<{ id: number }>(),
+    'Add Station Bon': props<{ bon: StationBonDraftInput }>(),
+    'Update Station Bon': props<{ id: number; bon: StationBonDraftInput }>(),
+    'Remove Station Bon': props<{ id: number }>(),
 
-    'Set Lavage Chef Vidange Lavage': props<{ chefVidangeLavageId: number | null }>(),
-
-    'Load Vidange Bons': emptyProps(),
-    'Load Vidange Bons Success': props<{ bons: VidangeBon[] }>(),
-    'Load Vidange Bons Failure': props<{ error: string }>(),
-
-    'Add Vidange Bon': props<{ bon: VidangeBonDraftInput }>(),
-    'Update Vidange Bon': props<{ id: number; bon: VidangeBonDraftInput }>(),
-    'Remove Vidange Bon': props<{ id: number }>(),
-
-    'Set Vidange Chef Vidange Lavage': props<{ chefVidangeLavageId: number | null }>(),
+    'Set Station Bons Chef Id': props<{ chefVidangeLavageId: number | null }>(),
 
     'Load Encaissement Clients': emptyProps(),
     'Load Encaissement Clients Success': props<{ clients: EncaissementClientOption[] }>(),

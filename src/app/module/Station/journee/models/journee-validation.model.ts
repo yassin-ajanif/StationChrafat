@@ -1,8 +1,7 @@
+import { StationBon, computeBonProductsAmount, computeBonServicesAmount } from '../../shared/models/bon';
 import { EncaissementLine, PaymentMode, isEncaissementLineFilled } from './encaissement.model';
 import { Operator, resolveOperatorName } from './journee.model';
-import { LavageBon, computeBonProductsAmount as computeLavageBonProductsAmount, computeBonServicesAmount as computeLavageBonServicesAmount } from './lavage-bon.model';
 import { PaymentSplit, emptyPaymentSplit } from './payment-split.model';
-import { VidangeBon, computeBonProductsAmount as computeVidangeBonProductsAmount, computeBonServicesAmount as computeVidangeBonServicesAmount } from './vidange-bon.model';
 
 export interface ValidationExtras {
   shopProducts: number;
@@ -161,29 +160,18 @@ function processBonForChefSales(
 }
 
 export function buildChefSalesDetailsFromBons(
-  lavageBons: LavageBon[],
-  vidangeBons: VidangeBon[],
+  stationBons: StationBon[],
   operators: Operator[],
   kind: 'services' | 'products',
 ): ChefSalesDetail[] {
   const byChef = new Map<number, { total: number; payments: PaymentSplit }>();
 
-  for (const bon of lavageBons) {
+  for (const bon of stationBons) {
     processBonForChefSales(
       byChef,
       bon.chefVidangeLavageId,
-      computeLavageBonServicesAmount(bon),
-      computeLavageBonProductsAmount(bon),
-      bon.payments ?? emptyPaymentSplit(),
-      kind,
-    );
-  }
-  for (const bon of vidangeBons) {
-    processBonForChefSales(
-      byChef,
-      bon.chefVidangeLavageId,
-      computeVidangeBonServicesAmount(bon),
-      computeVidangeBonProductsAmount(bon),
+      computeBonServicesAmount(bon),
+      computeBonProductsAmount(bon),
       bon.payments ?? emptyPaymentSplit(),
       kind,
     );
@@ -203,8 +191,7 @@ export function buildChefSalesDetailsFromBons(
 export function buildJourneeValidationSummary(input: {
   fuelSales: number;
   fuelSalesByBombiste: FuelSalesBombisteDetail[];
-  lavageBons: LavageBon[];
-  vidangeBons: VidangeBon[];
+  stationBons: StationBon[];
   servicesTotal: number;
   encaissementsTotal: number;
   depensesTotal: number;
@@ -214,14 +201,12 @@ export function buildJourneeValidationSummary(input: {
   chefDePisteId: number | null;
 }): JourneeValidationSummary {
   const servicesByChef = buildChefSalesDetailsFromBons(
-    input.lavageBons,
-    input.vidangeBons,
+    input.stationBons,
     input.operators,
     'services',
   );
   const shopProductsByChef = buildChefSalesDetailsFromBons(
-    input.lavageBons,
-    input.vidangeBons,
+    input.stationBons,
     input.operators,
     'products',
   );

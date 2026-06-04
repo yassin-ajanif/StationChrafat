@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { delay, of } from 'rxjs';
-import { LavageBon } from '../models/lavage-bon.model';
-import { VidangeBon } from '../models/vidange-bon.model';
+import { StationBon } from '../../shared/models/bon';
 import {
   ENCAISSEMENT_DIVERS_CLIENT_ID,
   EncaissementClientOption,
@@ -193,12 +192,12 @@ export class JourneeApi {
     return of(lines).pipe(delay(350));
   }
 
-  getLavageBons() {
-    const bons: LavageBon[] = [
+  getStationBons() {
+    const bons: StationBon[] = [
       {
         id: 1,
         bonNumber: 'LAV-8801',
-        clientRef: '12345-A-12',
+        partnerRef: '12345-A-12',
         chefVidangeLavageId: 2,
         serviceLines: [
           {
@@ -229,7 +228,7 @@ export class JourneeApi {
       {
         id: 2,
         bonNumber: 'LAV-8802',
-        clientRef: '67890-B-34',
+        partnerRef: '67890-B-34',
         chefVidangeLavageId: 3,
         serviceLines: [
           {
@@ -256,21 +255,15 @@ export class JourneeApi {
         productLines: [],
         payments: { cash: 75, tpe: 0, bons: 0 },
       },
-    ];
-    return of(bons).pipe(delay(300));
-  }
-
-  getVidangeBons() {
-    const bons: VidangeBon[] = [
       {
-        id: 1,
+        id: 3,
         bonNumber: 'VID-8901',
-        vehicleRef: '12345-A-12',
+        partnerRef: '12345-A-12',
         chefVidangeLavageId: 2,
         serviceLines: [
           {
-            id: 1,
-            reference: 'SRV-01',
+            id: 5,
+            reference: 'SRV-04',
             designation: 'Vidange complète',
             quantity: 1,
             unit: 'u',
@@ -281,7 +274,7 @@ export class JourneeApi {
         ],
         productLines: [
           {
-            id: 2,
+            id: 6,
             reference: '1236',
             designation: 'Huile moteur 10W40',
             quantity: 4,
@@ -291,7 +284,7 @@ export class JourneeApi {
             vatPercent: 20,
           },
           {
-            id: 3,
+            id: 7,
             reference: 'FLT-01',
             designation: 'Filtre à huile',
             quantity: 1,
@@ -304,14 +297,14 @@ export class JourneeApi {
         payments: { cash: 0, tpe: 355, bons: 0 },
       },
       {
-        id: 2,
+        id: 4,
         bonNumber: 'VID-8902',
-        vehicleRef: '67890-B-34',
+        partnerRef: '67890-B-34',
         chefVidangeLavageId: 3,
         serviceLines: [
           {
-            id: 4,
-            reference: 'SRV-02',
+            id: 8,
+            reference: 'SRV-05',
             designation: 'Vidange + filtre',
             quantity: 1,
             unit: 'u',
@@ -320,8 +313,8 @@ export class JourneeApi {
             vatPercent: 20,
           },
           {
-            id: 5,
-            reference: 'SRV-03',
+            id: 9,
+            reference: 'SRV-06',
             designation: 'Pack entretien',
             quantity: 1,
             unit: 'u',

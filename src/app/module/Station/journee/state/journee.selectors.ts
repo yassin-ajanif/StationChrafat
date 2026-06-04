@@ -1,4 +1,5 @@
 import { createSelector } from '@ngrx/store';
+import { computeStationBonsTotal, canProceedBonsStep } from '../../shared/models/bon';
 import {
   computeDepensesTotal,
   canProceedDepensesStep,
@@ -9,19 +10,11 @@ import {
 } from '../models/encaissement.model';
 import { buildJourneeValidationSummary } from '../models/journee-validation.model';
 import {
-  computeLavageBonsTotal,
-  canProceedLavageStep,
-} from '../models/lavage-bon.model';
-import {
   buildNozzleBombisteGroups,
   canProceedNozzleStep,
   computeSessionSummary,
   mapLinesWithTotals,
 } from '../models/nozzle-index.model';
-import {
-  computeVidangeBonsTotal,
-  canProceedVidangeStep,
-} from '../models/vidange-bon.model';
 import { journeeFeature } from './journee.reducer';
 
 export const {
@@ -38,10 +31,6 @@ export const {
   selectStartError,
   selectNozzleIndexesLoading,
   selectNozzleIndexesError,
-  selectLavageBonsLoading,
-  selectLavageBonsError,
-  selectVidangeBonsLoading,
-  selectVidangeBonsError,
   selectEncaissementClients,
   selectEncaissementClientsLoading,
   selectEncaissementClientsError,
@@ -56,48 +45,26 @@ export const {
   selectSubmitJourneeError,
 } = journeeFeature;
 
-export const selectLavageBons = createSelector(selectDraft, (draft) => draft.lavageBons);
+export const selectStationBons = createSelector(selectDraft, (draft) => draft.stationBons);
 
-export const selectLavageChefVidangeLavageId = createSelector(
+export const selectStationBonsChefId = createSelector(
   selectDraft,
-  (draft) => draft.lavageChefVidangeLavageId,
+  (draft) => draft.stationBonsChefId,
 );
 
-export const selectFilteredLavageBons = createSelector(
-  selectLavageBons,
-  selectLavageChefVidangeLavageId,
+export const selectFilteredStationBons = createSelector(
+  selectStationBons,
+  selectStationBonsChefId,
   (bons, chefId) =>
     chefId == null ? [] : bons.filter((bon) => bon.chefVidangeLavageId === chefId),
 );
 
-export const selectLavageBonsTotal = createSelector(selectLavageBons, (bons) =>
-  computeLavageBonsTotal(bons),
+export const selectStationBonsTotal = createSelector(selectStationBons, (bons) =>
+  computeStationBonsTotal(bons),
 );
 
-export const selectCanProceedLavageStep = createSelector(selectLavageBons, (bons) =>
-  canProceedLavageStep(bons),
-);
-
-export const selectVidangeBons = createSelector(selectDraft, (draft) => draft.vidangeBons);
-
-export const selectVidangeChefVidangeLavageId = createSelector(
-  selectDraft,
-  (draft) => draft.vidangeChefVidangeLavageId,
-);
-
-export const selectFilteredVidangeBons = createSelector(
-  selectVidangeBons,
-  selectVidangeChefVidangeLavageId,
-  (bons, chefId) =>
-    chefId == null ? [] : bons.filter((bon) => bon.chefVidangeLavageId === chefId),
-);
-
-export const selectVidangeBonsTotal = createSelector(selectVidangeBons, (bons) =>
-  computeVidangeBonsTotal(bons),
-);
-
-export const selectCanProceedVidangeStep = createSelector(selectVidangeBons, (bons) =>
-  canProceedVidangeStep(bons),
+export const selectCanProceedBonsStep = createSelector(selectStationBons, (bons) =>
+  canProceedBonsStep(bons),
 );
 
 export const selectEncaissements = createSelector(
@@ -188,10 +155,8 @@ export const selectJourneeValidationSummary = createSelector(
   selectValidationExtras,
   selectNozzleSessionSummary,
   selectNozzleBombisteGroups,
-  selectLavageBons,
-  selectVidangeBons,
-  selectLavageBonsTotal,
-  selectVidangeBonsTotal,
+  selectStationBons,
+  selectStationBonsTotal,
   selectEncaissementsTotal,
   selectDepensesTotal,
   (
@@ -200,10 +165,8 @@ export const selectJourneeValidationSummary = createSelector(
     extras,
     nozzleSummary,
     bombisteGroups,
-    lavageBons,
-    vidangeBons,
-    lavageTotal,
-    vidangeTotal,
+    stationBons,
+    bonsTotal,
     encTotal,
     depTotal,
   ) => {
@@ -219,9 +182,8 @@ export const selectJourneeValidationSummary = createSelector(
         salesTotal: group.totals.amount,
         payments: group.payments,
       })),
-      lavageBons,
-      vidangeBons,
-      servicesTotal: lavageTotal + vidangeTotal,
+      stationBons,
+      servicesTotal: bonsTotal,
       encaissementsTotal: encTotal,
       depensesTotal: depTotal,
       encaissements: draft.encaissements,
