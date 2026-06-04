@@ -2,16 +2,22 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter, map } from 'rxjs';
+import {
+  SidebarNavIconComponent,
+  SidebarNavIconId,
+} from '../sidebar-nav-icon/sidebar-nav-icon.component';
 
 interface NavLeaf {
   label: string;
   route?: string;
+  icon?: SidebarNavIconId;
 }
 
 interface NavBranch {
   id: string;
   label: string;
   baseRoute: string;
+  icon: SidebarNavIconId;
   children: NavLeaf[];
 }
 
@@ -19,6 +25,7 @@ interface PrincipalMenu {
   id: string;
   label: string;
   baseRoute: string;
+  icon: SidebarNavIconId;
   entries: (NavLeaf | NavBranch)[];
 }
 
@@ -55,7 +62,7 @@ type SidebarGroupId = (typeof SIDEBAR_GROUP_IDS)[number];
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, SidebarNavIconComponent],
   templateUrl: './app-shell.component.html',
   styleUrl: './app-shell.component.scss',
 })
@@ -66,34 +73,44 @@ export class AppShellComponent {
 
   readonly sidebarCollapsed = signal(this.readSidebarCollapsedPreference());
 
-  readonly navLinks: NavLeaf[] = [{ label: 'Dashboard', route: '/journees' }];
+  readonly navLinks: NavLeaf[] = [
+    { label: 'Dashboard', route: '/journees', icon: 'dashboard' },
+  ];
 
   readonly principalMenus: PrincipalMenu[] = [
     {
       id: 'station',
       label: 'Station',
       baseRoute: '/station',
+      icon: 'station',
       entries: [
         {
           id: 'station-ventes',
           label: 'Ventes',
           baseRoute: '/station/ventes',
+          icon: 'ventes',
           children: VENTES_CHILDREN,
         },
         {
           id: 'station-achats',
           label: 'Achats',
           baseRoute: '/station/achat',
+          icon: 'achats',
           children: ACHATS_CHILDREN,
         },
         {
           id: 'station-stock',
           label: 'Stock',
           baseRoute: '/station/stock',
+          icon: 'stock',
           children: STOCK_CHILDREN,
         },
-        { label: 'Produits & services', route: '/station/produits-services' },
-        { label: 'Journée', route: '/journees' },
+        {
+          label: 'Produits & services',
+          route: '/station/produits-services',
+          icon: 'catalogue',
+        },
+        { label: 'Journée', route: '/journees', icon: 'journee' },
       ],
     },
   ];
@@ -144,12 +161,28 @@ export class AppShellComponent {
       if (next.has(id)) {
         next.delete(id);
       } else {
-        if (id === 'station-ventes') next.delete('station-achats');
-        if (id === 'station-achats') next.delete('station-ventes');
         next.add(id);
       }
       return next;
     });
+  }
+
+  /** Click on Ventes / Achats / Stock: expand submenu and open first child route. */
+  onBranchClick(branch: NavBranch): void {
+    this.expandedGroups.update((current) => {
+      const next = new Set(current);
+      next.add('station');
+      next.delete('station-ventes');
+      next.delete('station-achats');
+      next.delete('station-stock');
+      next.add(branch.id);
+      return next;
+    });
+
+    const defaultRoute = branch.children.find((child) => child.route)?.route;
+    if (defaultRoute) {
+      void this.router.navigateByUrl(defaultRoute);
+    }
   }
 
   private syncSidebarExpansionFromUrl(url: string): void {
@@ -158,14 +191,13 @@ export class AppShellComponent {
       next.add('station');
       next.delete('station-ventes');
       next.delete('station-achats');
+      next.delete('station-stock');
 
       if (url.includes('/ventes')) {
         next.add('station-ventes');
-      }
-      if (url.includes('/achat')) {
+      } else if (url.includes('/achat')) {
         next.add('station-achats');
-      }
-      if (url.includes('/stock')) {
+      } else if (url.includes('/stock')) {
         next.add('station-stock');
       }
 
@@ -179,6 +211,16 @@ export class AppShellComponent {
 
   isImplementedRoute(route: string | undefined): boolean {
     return !!route;
+  }
+
+  entryIcon(entry: NavLeaf | NavBranch): SidebarNavIconId {
+    return entry.icon ?? 'station';
+  }
+
+  collapsedLeafClick(entry: NavLeaf): void {
+    if (entry.route) {
+      void this.router.navigateByUrl(entry.route);
+    }
   }
 
   toggleSidebar(): void {

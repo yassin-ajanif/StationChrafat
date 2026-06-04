@@ -1,7 +1,7 @@
 @reference '../../../../tailwind.css';
 
 .app-shell {
-  --width-sidebar-collapsed: 48px;
+  --width-sidebar-collapsed: 56px;
 
   &__sidebar {
     @apply relative transition-[width] duration-200 ease-out;
@@ -9,15 +9,18 @@
     &--collapsed {
       width: var(--width-sidebar-collapsed);
       min-width: var(--width-sidebar-collapsed);
-      @apply overflow-hidden;
     }
   }
 
-  &__sidebar-edge-toggle {
-    @apply absolute right-0 top-1/2 z-10 flex size-6 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-outline-variant bg-surface-container text-on-surface-variant shadow-sm transition-colors hover:bg-surface hover:text-on-surface;
+  &__brand-row {
+    @apply min-h-[var(--spacing-touch)];
+  }
+
+  &__sidebar-collapse-btn {
+    @apply flex size-9 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/10 text-inverse-on-surface transition-colors hover:bg-white/20;
 
     svg {
-      @apply size-3.5 transition-transform duration-200;
+      @apply size-4 transition-transform duration-200;
     }
 
     &--collapsed svg {
@@ -25,39 +28,50 @@
     }
   }
 
-  &__sidebar-toggle {
-    @apply flex size-11 shrink-0 items-center justify-center rounded-[var(--radius-card)] border border-outline-variant bg-surface text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface;
-
-    svg {
-      @apply size-5;
-    }
+  &__sidebar--collapsed &__brand-text {
+    @apply sr-only;
   }
 
-  &__nav-link--active {
-    @apply border-l-4 border-primary bg-white/10 text-inverse-on-surface;
+  &__sidebar--collapsed &__brand-row {
+    @apply justify-center px-0;
   }
 
-  &__nav-group-toggle {
+  &__nav-icon-btn {
+    @apply flex min-h-[var(--spacing-touch)] w-full items-center justify-center rounded-[var(--radius-card)] text-inverse-on-surface/80 transition hover:bg-white/10;
+
     &--active {
       @apply border-l-4 border-primary bg-white/10 text-inverse-on-surface;
     }
+  }
+
+  &__nav-link,
+  &__nav-group-toggle,
+  &__nav-subgroup-toggle,
+  &__nav-sublink {
+    @apply flex min-h-[var(--spacing-touch)] w-full items-center gap-2 rounded-r-[var(--radius-card)] px-3 py-2.5 font-display text-sm font-semibold uppercase tracking-wide text-inverse-on-surface/80 transition hover:bg-white/5;
   }
 
   &__nav-subgroup-toggle {
-    &--active {
-      @apply border-l-4 border-primary bg-white/10 text-inverse-on-surface;
-    }
+    @apply py-2 pl-4 pr-3 text-xs;
   }
 
-  &__chevron {
-    &--expanded {
-      @apply rotate-90;
-    }
+  &__nav-sublink {
+    @apply py-2.5 pl-6 pr-3 text-xs;
   }
 
+  &__nav-nested-link {
+    @apply block min-h-[var(--spacing-touch)] rounded-r-[var(--radius-card)] py-2 pl-12 pr-3 font-display text-xs font-semibold uppercase tracking-wide text-inverse-on-surface/60 transition hover:bg-white/5;
+  }
+
+  &__nav-link--active,
+  &__nav-group-toggle--active,
+  &__nav-subgroup-toggle--active,
   &__nav-sublink--active,
-  &__nav-nested-link--active,
-  &__nav-deep-link--active {
+  &__nav-nested-link--active {
     @apply border-l-4 border-primary bg-white/10 text-inverse-on-surface;
+  }
+
+  &__chevron--expanded {
+    @apply rotate-90;
   }
 }
