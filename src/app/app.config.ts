@@ -11,12 +11,8 @@ import { provideStore } from '@ngrx/store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 
 import { routes } from './app.routes';
-import { CarburantEffects } from './module/Station/carburant/state/carburant.effects';
-import { carburantFeature } from './module/Station/carburant/state/carburant.reducer';
-import { LavageEffects } from './module/Station/lavage/state/lavage.effects';
-import { lavageFeature } from './module/Station/lavage/state/lavage.reducer';
-import { VidangeEffects } from './module/Station/vidange/state/vidange.effects';
-import { vidangeFeature } from './module/Station/vidange/state/vidange.reducer';
+import { ErpEffects } from './module/Station/erp/state/erp.effects';
+import { erpFeature } from './module/Station/erp/state/erp.reducer';
 import { JourneeEffects } from './module/Station/journee/state/journee.effects';
 import { journeeFeature } from './module/Station/journee/state/journee.reducer';
 
@@ -28,10 +24,8 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideStore(),
     provideState(journeeFeature),
-    provideState(carburantFeature),
-    provideState(lavageFeature),
-    provideState(vidangeFeature),
-    provideEffects(JourneeEffects, CarburantEffects, LavageEffects, VidangeEffects),
+    provideState(erpFeature),
+    provideEffects(JourneeEffects, ErpEffects),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
   ],
 };

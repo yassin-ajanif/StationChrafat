@@ -1,0 +1,49 @@
+@if (open()) {
+  <div class="erp-dialog__backdrop fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/50 p-4" data-dialog-backdrop="true" role="presentation" (click)="onBackdropClick($event)">
+    <div class="erp-dialog__panel w-full max-w-6xl rounded-[var(--radius-card)] bg-surface-container-lowest shadow-lg" role="dialog" aria-modal="true" aria-labelledby="reception-form-dialog-title" (click)="$event.stopPropagation()">
+      <header class="flex items-start justify-between border-b border-outline-variant px-6 py-4">
+        <div>
+          <h2 id="reception-form-dialog-title" class="font-display text-xl font-bold uppercase text-on-surface">
+            @if (isEditMode()) { Modifier bon de réception } @else { Nouveau bon de réception }
+          </h2>
+          <p class="mt-1 text-sm text-on-surface-variant">Remplissez les tableaux services et produits.</p>
+        </div>
+        <button type="button" class="text-2xl leading-none text-on-surface-variant hover:text-on-surface" aria-label="Fermer" (click)="cancel()">×</button>
+      </header>
+      <div class="max-h-[70vh] overflow-y-auto px-6 py-5">
+        <div class="mb-6 grid gap-4 sm:grid-cols-2">
+          <div>
+            <label class="erp-dialog__label" for="dialog-reception-fournisseur">Fournisseur</label>
+            <input id="dialog-reception-fournisseur" type="text" class="erp-dialog__input" placeholder="Nom ou raison sociale" [value]="fournisseur()" (input)="fournisseur.set($any($event.target).value)" />
+          </div>
+          <div>
+            <label class="erp-dialog__label" for="dialog-reception-statut">Statut</label>
+            <select id="dialog-reception-statut" class="erp-dialog__input" [value]="statut()" (change)="statut.set($any($event.target).value)">
+              @for (s of statutOptions; track s) { <option [value]="s">{{ statutLabels[s] }}</option> }
+            </select>
+          </div>
+          <div>
+            <label class="erp-dialog__label" for="dialog-reception-date">Date réception</label>
+            <input id="dialog-reception-date" type="date" class="erp-dialog__input" [value]="dateReception()" (input)="dateReception.set($any($event.target).value)" />
+          </div>
+          <div>
+            <label class="erp-dialog__label" for="dialog-reception-reference">Référence BL</label>
+            <input id="dialog-reception-reference" type="text" class="erp-dialog__input" placeholder="BL-..." [value]="reference()" (input)="reference.set($any($event.target).value)" />
+          </div>
+          <div class="sm:col-span-2">
+            <label class="erp-dialog__label" for="dialog-reception-description">Description</label>
+            <input id="dialog-reception-description" type="text" class="erp-dialog__input" placeholder="Objet ou commentaire" [value]="description()" (input)="description.set($any($event.target).value)" />
+          </div>
+        </div>
+        <section class="mb-8"><app-document-lines-table title="Services" addRowLabel="+ Ajouter une ligne service" [rows]="serviceRows()" (rowChange)="onServiceRowChange($event)" (addRowRequested)="addServiceRow()" (clearRowRequested)="clearServiceRow($event)" /></section>
+        <section class="mb-8"><app-document-lines-table title="Produits consommés" addRowLabel="+ Ajouter une ligne produit" [rows]="productRows()" (rowChange)="onProductRowChange($event)" (addRowRequested)="addProductRow()" (clearRowRequested)="clearProductRow($event)" /></section>
+        <app-bon-recap-payments inputIdPrefix="reception" [serviceTotal]="serviceTotal()" [productTotal]="productTotal()" [bonTotal]="receptionTotal()" [payments]="payments()" (paymentsChange)="payments.set($event)" />
+      </div>
+      <footer class="flex flex-wrap items-center justify-between gap-4 border-t border-outline-variant px-6 py-4">
+        <p class="text-sm text-on-surface-variant">Montant réception = <span class="font-bold tabular-nums text-on-surface">{{ receptionTotal() | number: '1.2-2' }} DH</span></p>
+        <app-button variant="secondary" (pressed)="cancel()">Annuler</app-button>
+        <app-button variant="primary" [disabled]="!canSave()" (pressed)="save()">@if (isEditMode()) { Enregistrer les modifications } @else { Enregistrer la réception }</app-button>
+      </footer>
+    </div>
+  </div>
+}
