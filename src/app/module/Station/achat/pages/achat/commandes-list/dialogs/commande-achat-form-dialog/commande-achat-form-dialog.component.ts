@@ -4,21 +4,40 @@ import { LocaleCurrencyPipe, TranslatePipe } from '../../../../../../../../core/
 import { BonRecapPaymentsComponent } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import { DocumentLinesTableComponent } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
 import { PaymentSplit, isPaymentSplitBalanced } from '../../../../../../shared/models/common/payment-split.model';
-import {
-  COMMANDE_ACHAT_STATUT_KEYS,
-  CommandeAchat,
-  CommandeAchatDraft,
-  CommandeAchatLineTableRow,
-  CommandeAchatStatut,
-  buildCommandeAchatLineDrafts,
-  computeDraftCommandeAchatProductsTotal,
-  computeDraftCommandeAchatServicesTotal,
-  computeDraftCommandeAchatTotal,
-  createEmptyDocumentLineTableRow,
-  documentLineToTableRow,
-  emptyPaymentSplit,
-  isCommandeAchatFormValid,
-} from '../../../../../models/achat';
+import { computeDocumentLineTableTotalTTC, createEmptyDocumentLineTableRow, documentLineToTableRow, filledDocumentLineTableRows, isDocumentLineTableRowEmpty, isDocumentLineTableRowFilled, parseDocumentLineDrafts } from '../../../../../../shared/models/common/document-line.model';
+import { CommandeAchat, CommandeAchatDraft, CommandeAchatLineTableRow, CommandeAchatStatut } from '../../../../../state/store';
+
+const COMMANDE_ACHAT_STATUT_KEYS: Record<CommandeAchatStatut, string> = {
+  en_attente: 'achat.commande.statusEnAttente',
+  confirmee: 'achat.commande.statusConfirmee',
+  en_cours: 'achat.commande.statusEnCours',
+  recue: 'achat.commande.statusRecue',
+  annulee: 'achat.commande.statusAnnulee',
+};
+
+function rowsAreValid(rows: CommandeAchatLineTableRow[]): boolean {
+  return rows.every(
+    (row) => isDocumentLineTableRowEmpty(row) || isDocumentLineTableRowFilled(row),
+  );
+}
+
+function isCommandeAchatFormValid(input: {
+  fournisseur: string;
+  serviceRows: CommandeAchatLineTableRow[];
+  productRows: CommandeAchatLineTableRow[];
+}): boolean {
+  if (input.fournisseur.trim().length === 0) {
+    return false;
+  }
+  if (filledDocumentLineTableRows(input.serviceRows).length === 0) {
+    return false;
+  }
+  return rowsAreValid(input.serviceRows) && rowsAreValid(input.productRows);
+}
+
+function emptyPaymentSplit(): PaymentSplit {
+  return { cash: 0, tpe: 0, bons: 0 };
+}
 
 const DEFAULT_SERVICE_ROWS = 1;
 const DEFAULT_PRODUCT_ROWS = 1;
@@ -58,10 +77,10 @@ export class CommandeAchatFormDialogComponent {
   readonly serviceRows = signal<CommandeAchatLineTableRow[]>([]);
   readonly productRows = signal<CommandeAchatLineTableRow[]>([]);
 
-  readonly serviceTotal = computed(() => computeDraftCommandeAchatServicesTotal(this.serviceRows()));
-  readonly productTotal = computed(() => computeDraftCommandeAchatProductsTotal(this.productRows()));
+  readonly serviceTotal = computed(() => computeDocumentLineTableTotalTTC(this.serviceRows()));
+  readonly productTotal = computed(() => computeDocumentLineTableTotalTTC(this.productRows()));
   readonly commandeTotal = computed(() =>
-    computeDraftCommandeAchatTotal(this.serviceRows(), this.productRows()),
+    computeDocumentLineTableTotalTTC(this.serviceRows()) + computeDocumentLineTableTotalTTC(this.productRows()),
   );
 
   readonly canSave = computed(
@@ -196,7 +215,10 @@ export class CommandeAchatFormDialogComponent {
     if (!this.canSave()) {
       return;
     }
-    const lines = buildCommandeAchatLineDrafts(this.serviceRows(), this.productRows());
+    const lines = {
+      serviceLines: parseDocumentLineDrafts(this.serviceRows()),
+      productLines: parseDocumentLineDrafts(this.productRows()),
+    };
     this.saved.emit({
       fournisseur: this.fournisseur().trim(),
       statut: this.statut(),

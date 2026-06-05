@@ -4,11 +4,16 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
 import {
-  AVOIR_FOURNISSEUR_STATUT_KEYS,
   AvoirFournisseur,
   AvoirFournisseurDraft,
   AvoirFournisseurStatut,
-} from '../../../models/achat';
+} from '../../../state/store';
+
+const AVOIR_FOURNISSEUR_STATUT_KEYS: Record<AvoirFournisseurStatut, string> = {
+  brouillon: 'achat.avoir.statusBrouillon',
+  recu: 'achat.avoir.statusRecu',
+  applique: 'achat.avoir.statusApplique',
+};
 import { AchatActions } from '../../../state/achat.actions';
 import {
   selectAvoirsFournisseur,

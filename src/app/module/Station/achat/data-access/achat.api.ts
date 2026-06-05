@@ -13,27 +13,15 @@ import {
   ReceptionDraft,
   RetourFournisseur,
   RetourFournisseurDraft,
-  assignAvoirFournisseurLineIds,
-  assignCommandeAchatLineIds,
-  assignDevisAchatLineIds,
-  assignFactureFournisseurLineIds,
-  assignReceptionLineIds,
-  assignRetourFournisseurLineIds,
-  computeAvoirFournisseurMontant,
-  computeCommandeAchatMontant,
-  computeDevisAchatEffectiveTva,
-  computeDevisAchatMontantHT,
-  computeDevisAchatMontantTTC,
-  computeFactureFournisseurMontantTTC,
-  computeReceptionMontant,
-  computeRetourFournisseurMontant,
-  nextAvoirFournisseurNumber,
-  nextCommandeAchatNumber,
-  nextDevisAchatNumber,
-  nextFactureFournisseurNumber,
-  nextReceptionNumber,
-  nextRetourFournisseurNumber,
-} from '../models/achat';
+} from '../state/store';
+import {
+  assignLineIds,
+  computeEffectiveTva,
+  computeMontant,
+  computeMontantHT,
+  computeMontantTTC,
+  nextNumber,
+} from './achat.utils';
 
 function randomDelay(): number {
   return 200 + Math.floor(Math.random() * 300);
@@ -304,20 +292,20 @@ export class AchatApi {
   }
 
   addDevisAchat(draft: DevisAchatDraft): Observable<DevisAchat> {
-    const serviceLines = assignDevisAchatLineIds(draft.serviceLines, 1);
-    const productLines = assignDevisAchatLineIds(
+    const serviceLines = assignLineIds(draft.serviceLines, 1);
+    const productLines = assignLineIds(
       draft.productLines,
       serviceLines.length > 0 ? Math.max(...serviceLines.map((l) => l.id)) + 1 : 1,
     );
     const totals = { serviceLines, productLines };
-    const montantHT = computeDevisAchatMontantHT(totals);
-    const montantTTC = computeDevisAchatMontantTTC(totals);
+    const montantHT = computeMontantHT(totals);
+    const montantTTC = computeMontantTTC(totals);
     const devisAchat: DevisAchat = {
       id: Math.max(...demoDevisAchat.map((d) => d.id), 0) + 1,
-      numero: nextDevisAchatNumber(demoDevisAchat),
+      numero: nextNumber(demoDevisAchat, 'DAF-S'),
       fournisseur: draft.fournisseur,
       montantHT,
-      tva: computeDevisAchatEffectiveTva(montantHT, montantTTC),
+      tva: computeEffectiveTva(montantHT, montantTTC),
       montantTTC,
       statut: draft.statut,
       dateCreation: new Date().toISOString().split('T')[0],
@@ -336,19 +324,19 @@ export class AchatApi {
     if (idx === -1) {
       throw new Error('Devis achat introuvable');
     }
-    const serviceLines = assignDevisAchatLineIds(draft.serviceLines, 1);
-    const productLines = assignDevisAchatLineIds(
+    const serviceLines = assignLineIds(draft.serviceLines, 1);
+    const productLines = assignLineIds(
       draft.productLines,
       serviceLines.length > 0 ? Math.max(...serviceLines.map((l) => l.id)) + 1 : 1,
     );
     const totals = { serviceLines, productLines };
-    const montantHT = computeDevisAchatMontantHT(totals);
-    const montantTTC = computeDevisAchatMontantTTC(totals);
+    const montantHT = computeMontantHT(totals);
+    const montantTTC = computeMontantTTC(totals);
     const updated: DevisAchat = {
       ...demoDevisAchat[idx],
       fournisseur: draft.fournisseur,
       montantHT,
-      tva: computeDevisAchatEffectiveTva(montantHT, montantTTC),
+      tva: computeEffectiveTva(montantHT, montantTTC),
       montantTTC,
       statut: draft.statut,
       dateValidite: draft.dateValidite,
@@ -374,17 +362,17 @@ export class AchatApi {
   }
 
   addCommandeAchat(draft: CommandeAchatDraft): Observable<CommandeAchat> {
-    const serviceLines = assignCommandeAchatLineIds(draft.serviceLines, 1);
-    const productLines = assignCommandeAchatLineIds(
+    const serviceLines = assignLineIds(draft.serviceLines, 1);
+    const productLines = assignLineIds(
       draft.productLines,
       serviceLines.length > 0 ? Math.max(...serviceLines.map((l) => l.id)) + 1 : 1,
     );
     const totals = { serviceLines, productLines };
     const commandeAchat: CommandeAchat = {
       id: Math.max(...demoCommandesAchat.map((c) => c.id), 0) + 1,
-      numero: nextCommandeAchatNumber(demoCommandesAchat),
+      numero: nextNumber(demoCommandesAchat, 'BCF-S'),
       fournisseur: draft.fournisseur,
-      montant: computeCommandeAchatMontant(totals),
+      montant: computeMontant(totals),
       statut: draft.statut,
       dateCreation: new Date().toISOString().split('T')[0],
       description: draft.description,
@@ -401,8 +389,8 @@ export class AchatApi {
     if (idx === -1) {
       throw new Error('Commande achat introuvable');
     }
-    const serviceLines = assignCommandeAchatLineIds(draft.serviceLines, 1);
-    const productLines = assignCommandeAchatLineIds(
+    const serviceLines = assignLineIds(draft.serviceLines, 1);
+    const productLines = assignLineIds(
       draft.productLines,
       serviceLines.length > 0 ? Math.max(...serviceLines.map((l) => l.id)) + 1 : 1,
     );
@@ -410,7 +398,7 @@ export class AchatApi {
     const updated: CommandeAchat = {
       ...demoCommandesAchat[idx],
       fournisseur: draft.fournisseur,
-      montant: computeCommandeAchatMontant(totals),
+      montant: computeMontant(totals),
       statut: draft.statut,
       description: draft.description,
       serviceLines,
@@ -434,21 +422,21 @@ export class AchatApi {
   }
 
   addReception(draft: ReceptionDraft): Observable<Reception> {
-    const serviceLines = assignReceptionLineIds(draft.serviceLines, 1);
-    const productLines = assignReceptionLineIds(
+    const serviceLines = assignLineIds(draft.serviceLines, 1);
+    const productLines = assignLineIds(
       draft.productLines,
       serviceLines.length > 0 ? Math.max(...serviceLines.map((l) => l.id)) + 1 : 1,
     );
     const totals = { serviceLines, productLines };
     const reception: Reception = {
       id: Math.max(...demoReceptions.map((r) => r.id), 0) + 1,
-      numero: nextReceptionNumber(demoReceptions),
+      numero: nextNumber(demoReceptions, 'BR-S'),
       fournisseur: draft.fournisseur,
       dateReception: draft.dateReception || new Date().toISOString().split('T')[0],
       statut: draft.statut,
       reference: draft.reference,
       description: draft.description,
-      montant: computeReceptionMontant(totals),
+      montant: computeMontant(totals),
       serviceLines,
       productLines,
       payments: { ...draft.payments },
@@ -462,8 +450,8 @@ export class AchatApi {
     if (idx === -1) {
       throw new Error('Réception introuvable');
     }
-    const serviceLines = assignReceptionLineIds(draft.serviceLines, 1);
-    const productLines = assignReceptionLineIds(
+    const serviceLines = assignLineIds(draft.serviceLines, 1);
+    const productLines = assignLineIds(
       draft.productLines,
       serviceLines.length > 0 ? Math.max(...serviceLines.map((l) => l.id)) + 1 : 1,
     );
@@ -475,7 +463,7 @@ export class AchatApi {
       statut: draft.statut,
       reference: draft.reference,
       description: draft.description,
-      montant: computeReceptionMontant(totals),
+      montant: computeMontant(totals),
       serviceLines,
       productLines,
       payments: { ...draft.payments },
@@ -497,17 +485,17 @@ export class AchatApi {
   }
 
   addFactureFournisseur(draft: FactureFournisseurDraft): Observable<FactureFournisseur> {
-    const serviceLines = assignFactureFournisseurLineIds(draft.serviceLines, 1);
-    const productLines = assignFactureFournisseurLineIds(
+    const serviceLines = assignLineIds(draft.serviceLines, 1);
+    const productLines = assignLineIds(
       draft.productLines,
       serviceLines.length > 0 ? Math.max(...serviceLines.map((l) => l.id)) + 1 : 1,
     );
     const totals = { serviceLines, productLines };
     const factureFournisseur: FactureFournisseur = {
       id: Math.max(...demoFacturesFournisseur.map((f) => f.id), 0) + 1,
-      numero: nextFactureFournisseurNumber(demoFacturesFournisseur),
+      numero: nextNumber(demoFacturesFournisseur, 'FF-S'),
       fournisseur: draft.fournisseur,
-      montantTTC: computeFactureFournisseurMontantTTC(totals),
+      montantTTC: computeMontantTTC(totals),
       statut: draft.statut,
       dateReception: draft.dateReception || new Date().toISOString().split('T')[0],
       dateEcheance: draft.dateEcheance,
@@ -524,8 +512,8 @@ export class AchatApi {
     if (idx === -1) {
       throw new Error('Facture fournisseur introuvable');
     }
-    const serviceLines = assignFactureFournisseurLineIds(draft.serviceLines, 1);
-    const productLines = assignFactureFournisseurLineIds(
+    const serviceLines = assignLineIds(draft.serviceLines, 1);
+    const productLines = assignLineIds(
       draft.productLines,
       serviceLines.length > 0 ? Math.max(...serviceLines.map((l) => l.id)) + 1 : 1,
     );
@@ -533,7 +521,7 @@ export class AchatApi {
     const updated: FactureFournisseur = {
       ...demoFacturesFournisseur[idx],
       fournisseur: draft.fournisseur,
-      montantTTC: computeFactureFournisseurMontantTTC(totals),
+      montantTTC: computeMontantTTC(totals),
       statut: draft.statut,
       dateReception: draft.dateReception,
       dateEcheance: draft.dateEcheance,
@@ -558,18 +546,18 @@ export class AchatApi {
   }
 
   addAvoirFournisseur(draft: AvoirFournisseurDraft): Observable<AvoirFournisseur> {
-    const serviceLines = assignAvoirFournisseurLineIds(draft.serviceLines, 1);
-    const productLines = assignAvoirFournisseurLineIds(
+    const serviceLines = assignLineIds(draft.serviceLines, 1);
+    const productLines = assignLineIds(
       draft.productLines,
       serviceLines.length > 0 ? Math.max(...serviceLines.map((l) => l.id)) + 1 : 1,
     );
     const totals = { serviceLines, productLines };
     const avoirFournisseur: AvoirFournisseur = {
       id: Math.max(...demoAvoirsFournisseur.map((a) => a.id), 0) + 1,
-      numero: nextAvoirFournisseurNumber(demoAvoirsFournisseur),
+      numero: nextNumber(demoAvoirsFournisseur, 'AF-S'),
       factureLiee: draft.factureLiee,
       fournisseur: draft.fournisseur,
-      montant: computeAvoirFournisseurMontant(totals),
+      montant: computeMontant(totals),
       statut: draft.statut,
       dateReception: draft.dateReception || new Date().toISOString().split('T')[0],
       serviceLines,
@@ -585,8 +573,8 @@ export class AchatApi {
     if (idx === -1) {
       throw new Error('Avoir fournisseur introuvable');
     }
-    const serviceLines = assignAvoirFournisseurLineIds(draft.serviceLines, 1);
-    const productLines = assignAvoirFournisseurLineIds(
+    const serviceLines = assignLineIds(draft.serviceLines, 1);
+    const productLines = assignLineIds(
       draft.productLines,
       serviceLines.length > 0 ? Math.max(...serviceLines.map((l) => l.id)) + 1 : 1,
     );
@@ -595,7 +583,7 @@ export class AchatApi {
       ...demoAvoirsFournisseur[idx],
       factureLiee: draft.factureLiee,
       fournisseur: draft.fournisseur,
-      montant: computeAvoirFournisseurMontant(totals),
+      montant: computeMontant(totals),
       statut: draft.statut,
       dateReception: draft.dateReception,
       serviceLines,
@@ -619,19 +607,19 @@ export class AchatApi {
   }
 
   addRetourFournisseur(draft: RetourFournisseurDraft): Observable<RetourFournisseur> {
-    const serviceLines = assignRetourFournisseurLineIds(draft.serviceLines, 1);
-    const productLines = assignRetourFournisseurLineIds(
+    const serviceLines = assignLineIds(draft.serviceLines, 1);
+    const productLines = assignLineIds(
       draft.productLines,
       serviceLines.length > 0 ? Math.max(...serviceLines.map((l) => l.id)) + 1 : 1,
     );
     const totals = { serviceLines, productLines };
     const retourFournisseur: RetourFournisseur = {
       id: Math.max(...demoRetoursFournisseur.map((r) => r.id), 0) + 1,
-      numero: nextRetourFournisseurNumber(demoRetoursFournisseur),
+      numero: nextNumber(demoRetoursFournisseur, 'RETF-S'),
       fournisseur: draft.fournisseur,
       factureLiee: draft.factureLiee,
       motif: draft.motif,
-      montant: computeRetourFournisseurMontant(totals),
+      montant: computeMontant(totals),
       statut: draft.statut,
       dateCreation: draft.dateCreation || new Date().toISOString().split('T')[0],
       serviceLines,
@@ -647,8 +635,8 @@ export class AchatApi {
     if (idx === -1) {
       throw new Error('Retour fournisseur introuvable');
     }
-    const serviceLines = assignRetourFournisseurLineIds(draft.serviceLines, 1);
-    const productLines = assignRetourFournisseurLineIds(
+    const serviceLines = assignLineIds(draft.serviceLines, 1);
+    const productLines = assignLineIds(
       draft.productLines,
       serviceLines.length > 0 ? Math.max(...serviceLines.map((l) => l.id)) + 1 : 1,
     );
@@ -658,7 +646,7 @@ export class AchatApi {
       fournisseur: draft.fournisseur,
       factureLiee: draft.factureLiee,
       motif: draft.motif,
-      montant: computeRetourFournisseurMontant(totals),
+      montant: computeMontant(totals),
       statut: draft.statut,
       dateCreation: draft.dateCreation,
       serviceLines,

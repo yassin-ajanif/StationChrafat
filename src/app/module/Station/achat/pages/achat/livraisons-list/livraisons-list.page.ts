@@ -4,11 +4,17 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
 import {
-  RECEPTION_STATUT_KEYS,
   Reception,
   ReceptionDraft,
   ReceptionStatut,
-} from '../../../models/achat';
+} from '../../../state/store';
+
+const RECEPTION_STATUT_KEYS: Record<ReceptionStatut, string> = {
+  planifiee: 'achat.reception.statusPlanifiee',
+  en_cours: 'achat.reception.statusEnCours',
+  recue: 'achat.reception.statusRecue',
+  annulee: 'achat.reception.statusAnnulee',
+};
 import { AchatActions } from '../../../state/achat.actions';
 import {
   selectReceptions,

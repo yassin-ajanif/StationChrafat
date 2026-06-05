@@ -4,21 +4,39 @@ import { LocaleCurrencyPipe, TranslatePipe } from '../../../../../../../../core/
 import { BonRecapPaymentsComponent } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import { DocumentLinesTableComponent } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
 import { PaymentSplit, isPaymentSplitBalanced } from '../../../../../../shared/models/common/payment-split.model';
-import {
-  DEVIS_ACHAT_STATUT_KEYS,
-  DevisAchat,
-  DevisAchatDraft,
-  DevisAchatLineTableRow,
-  DevisAchatStatut,
-  buildDevisAchatLineDrafts,
-  computeDraftDevisAchatProductsTotal,
-  computeDraftDevisAchatServicesTotal,
-  computeDraftDevisAchatTotal,
-  createEmptyDocumentLineTableRow,
-  documentLineToTableRow,
-  emptyPaymentSplit,
-  isDevisAchatFormValid,
-} from '../../../../../models/achat';
+import { computeDocumentLineTableTotalTTC, createEmptyDocumentLineTableRow, documentLineToTableRow, filledDocumentLineTableRows, isDocumentLineTableRowEmpty, isDocumentLineTableRowFilled, parseDocumentLineDrafts } from '../../../../../../shared/models/common/document-line.model';
+import { DevisAchat, DevisAchatDraft, DevisAchatLineTableRow, DevisAchatStatut } from '../../../../../state/store';
+
+const DEVIS_ACHAT_STATUT_KEYS: Record<DevisAchatStatut, string> = {
+  brouillon: 'achat.devis.statusBrouillon',
+  envoye: 'achat.devis.statusEnvoye',
+  accepte: 'achat.devis.statusAccepte',
+  refuse: 'achat.devis.statusRefuse',
+};
+
+function rowsAreValid(rows: DevisAchatLineTableRow[]): boolean {
+  return rows.every(
+    (row) => isDocumentLineTableRowEmpty(row) || isDocumentLineTableRowFilled(row),
+  );
+}
+
+function isDevisAchatFormValid(input: {
+  fournisseur: string;
+  serviceRows: DevisAchatLineTableRow[];
+  productRows: DevisAchatLineTableRow[];
+}): boolean {
+  if (input.fournisseur.trim().length === 0) {
+    return false;
+  }
+  if (filledDocumentLineTableRows(input.serviceRows).length === 0) {
+    return false;
+  }
+  return rowsAreValid(input.serviceRows) && rowsAreValid(input.productRows);
+}
+
+function emptyPaymentSplit(): PaymentSplit {
+  return { cash: 0, tpe: 0, bons: 0 };
+}
 
 const DEFAULT_SERVICE_ROWS = 1;
 const DEFAULT_PRODUCT_ROWS = 1;
@@ -53,10 +71,10 @@ export class DevisAchatFormDialogComponent {
   readonly serviceRows = signal<DevisAchatLineTableRow[]>([]);
   readonly productRows = signal<DevisAchatLineTableRow[]>([]);
 
-  readonly serviceTotal = computed(() => computeDraftDevisAchatServicesTotal(this.serviceRows()));
-  readonly productTotal = computed(() => computeDraftDevisAchatProductsTotal(this.productRows()));
+  readonly serviceTotal = computed(() => computeDocumentLineTableTotalTTC(this.serviceRows()));
+  readonly productTotal = computed(() => computeDocumentLineTableTotalTTC(this.productRows()));
   readonly devisTotal = computed(() =>
-    computeDraftDevisAchatTotal(this.serviceRows(), this.productRows()),
+    computeDocumentLineTableTotalTTC(this.serviceRows()) + computeDocumentLineTableTotalTTC(this.productRows()),
   );
 
   readonly canSave = computed(
@@ -193,7 +211,10 @@ export class DevisAchatFormDialogComponent {
     if (!this.canSave()) {
       return;
     }
-    const lines = buildDevisAchatLineDrafts(this.serviceRows(), this.productRows());
+    const lines = {
+      serviceLines: parseDocumentLineDrafts(this.serviceRows()),
+      productLines: parseDocumentLineDrafts(this.productRows()),
+    };
     this.saved.emit({
       fournisseur: this.fournisseur().trim(),
       statut: this.statut(),

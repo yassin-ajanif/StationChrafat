@@ -4,11 +4,17 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
 import {
-  DEVIS_ACHAT_STATUT_KEYS,
   DevisAchat,
   DevisAchatDraft,
   DevisAchatStatut,
-} from '../../../models/achat';
+} from '../../../state/store';
+
+const DEVIS_ACHAT_STATUT_KEYS: Record<DevisAchatStatut, string> = {
+  brouillon: 'achat.devis.statusBrouillon',
+  envoye: 'achat.devis.statusEnvoye',
+  accepte: 'achat.devis.statusAccepte',
+  refuse: 'achat.devis.statusRefuse',
+};
 import { AchatActions } from '../../../state/achat.actions';
 import {
   selectDevisAchat,

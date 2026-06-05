@@ -1,5 +1,5 @@
 import { createFeature, createReducer, on } from '@ngrx/store';
-import { AvoirFournisseur, CommandeAchat, DevisAchat, FactureFournisseur, Reception, RetourFournisseur } from '../models/achat';
+import { AvoirFournisseur, CommandeAchat, DevisAchat, FactureFournisseur, Reception, RetourFournisseur } from './store';
 import { AchatActions } from './achat.actions';
 
 export interface AchatState {

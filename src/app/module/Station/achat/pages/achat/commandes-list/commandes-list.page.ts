@@ -4,11 +4,18 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
 import {
-  COMMANDE_ACHAT_STATUT_KEYS,
   CommandeAchat,
   CommandeAchatDraft,
   CommandeAchatStatut,
-} from '../../../models/achat';
+} from '../../../state/store';
+
+const COMMANDE_ACHAT_STATUT_KEYS: Record<CommandeAchatStatut, string> = {
+  en_attente: 'achat.commande.statusEnAttente',
+  confirmee: 'achat.commande.statusConfirmee',
+  en_cours: 'achat.commande.statusEnCours',
+  recue: 'achat.commande.statusRecue',
+  annulee: 'achat.commande.statusAnnulee',
+};
 import { AchatActions } from '../../../state/achat.actions';
 import {
   selectCommandesAchat,

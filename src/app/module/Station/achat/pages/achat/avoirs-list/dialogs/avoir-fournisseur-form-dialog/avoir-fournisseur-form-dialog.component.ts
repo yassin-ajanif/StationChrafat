@@ -4,21 +4,38 @@ import { LocaleCurrencyPipe, TranslatePipe } from '../../../../../../../../core/
 import { BonRecapPaymentsComponent } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import { DocumentLinesTableComponent } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
 import { PaymentSplit, isPaymentSplitBalanced } from '../../../../../../shared/models/common/payment-split.model';
-import {
-  AVOIR_FOURNISSEUR_STATUT_KEYS,
-  AvoirFournisseur,
-  AvoirFournisseurDraft,
-  AvoirFournisseurLineTableRow,
-  AvoirFournisseurStatut,
-  buildAvoirFournisseurLineDrafts,
-  computeDraftAvoirFournisseurProductsTotal,
-  computeDraftAvoirFournisseurServicesTotal,
-  computeDraftAvoirFournisseurTotal,
-  createEmptyDocumentLineTableRow,
-  documentLineToTableRow,
-  emptyPaymentSplit,
-  isAvoirFournisseurFormValid,
-} from '../../../../../models/achat';
+import { computeDocumentLineTableTotalTTC, createEmptyDocumentLineTableRow, documentLineToTableRow, filledDocumentLineTableRows, isDocumentLineTableRowEmpty, isDocumentLineTableRowFilled, parseDocumentLineDrafts } from '../../../../../../shared/models/common/document-line.model';
+import { AvoirFournisseur, AvoirFournisseurDraft, AvoirFournisseurLineTableRow, AvoirFournisseurStatut } from '../../../../../state/store';
+
+const AVOIR_FOURNISSEUR_STATUT_KEYS: Record<AvoirFournisseurStatut, string> = {
+  brouillon: 'achat.avoir.statusBrouillon',
+  recu: 'achat.avoir.statusRecu',
+  applique: 'achat.avoir.statusApplique',
+};
+
+function rowsAreValid(rows: AvoirFournisseurLineTableRow[]): boolean {
+  return rows.every(
+    (row) => isDocumentLineTableRowEmpty(row) || isDocumentLineTableRowFilled(row),
+  );
+}
+
+function isAvoirFournisseurFormValid(input: {
+  fournisseur: string;
+  serviceRows: AvoirFournisseurLineTableRow[];
+  productRows: AvoirFournisseurLineTableRow[];
+}): boolean {
+  if (input.fournisseur.trim().length === 0) {
+    return false;
+  }
+  if (filledDocumentLineTableRows(input.serviceRows).length === 0) {
+    return false;
+  }
+  return rowsAreValid(input.serviceRows) && rowsAreValid(input.productRows);
+}
+
+function emptyPaymentSplit(): PaymentSplit {
+  return { cash: 0, tpe: 0, bons: 0 };
+}
 
 const DEFAULT_SERVICE_ROWS = 1;
 const DEFAULT_PRODUCT_ROWS = 1;
@@ -53,10 +70,10 @@ export class AvoirFournisseurFormDialogComponent {
   readonly serviceRows = signal<AvoirFournisseurLineTableRow[]>([]);
   readonly productRows = signal<AvoirFournisseurLineTableRow[]>([]);
 
-  readonly serviceTotal = computed(() => computeDraftAvoirFournisseurServicesTotal(this.serviceRows()));
-  readonly productTotal = computed(() => computeDraftAvoirFournisseurProductsTotal(this.productRows()));
+  readonly serviceTotal = computed(() => computeDocumentLineTableTotalTTC(this.serviceRows()));
+  readonly productTotal = computed(() => computeDocumentLineTableTotalTTC(this.productRows()));
   readonly avoirTotal = computed(() =>
-    computeDraftAvoirFournisseurTotal(this.serviceRows(), this.productRows()),
+    computeDocumentLineTableTotalTTC(this.serviceRows()) + computeDocumentLineTableTotalTTC(this.productRows()),
   );
 
   readonly canSave = computed(
@@ -193,7 +210,10 @@ export class AvoirFournisseurFormDialogComponent {
     if (!this.canSave()) {
       return;
     }
-    const lines = buildAvoirFournisseurLineDrafts(this.serviceRows(), this.productRows());
+    const lines = {
+      serviceLines: parseDocumentLineDrafts(this.serviceRows()),
+      productLines: parseDocumentLineDrafts(this.productRows()),
+    };
     this.saved.emit({
       factureLiee: this.factureLiee().trim(),
       fournisseur: this.fournisseur().trim(),

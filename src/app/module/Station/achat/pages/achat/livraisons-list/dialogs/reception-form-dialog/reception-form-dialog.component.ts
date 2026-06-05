@@ -4,21 +4,39 @@ import { LocaleCurrencyPipe, TranslatePipe } from '../../../../../../../../core/
 import { BonRecapPaymentsComponent } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import { DocumentLinesTableComponent } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
 import { PaymentSplit, isPaymentSplitBalanced } from '../../../../../../shared/models/common/payment-split.model';
-import {
-  RECEPTION_STATUT_KEYS,
-  Reception,
-  ReceptionDraft,
-  ReceptionLineTableRow,
-  ReceptionStatut,
-  buildReceptionLineDrafts,
-  computeDraftReceptionProductsTotal,
-  computeDraftReceptionServicesTotal,
-  computeDraftReceptionTotal,
-  createEmptyDocumentLineTableRow,
-  documentLineToTableRow,
-  emptyPaymentSplit,
-  isReceptionFormValid,
-} from '../../../../../models/achat';
+import { computeDocumentLineTableTotalTTC, createEmptyDocumentLineTableRow, documentLineToTableRow, filledDocumentLineTableRows, isDocumentLineTableRowEmpty, isDocumentLineTableRowFilled, parseDocumentLineDrafts } from '../../../../../../shared/models/common/document-line.model';
+import { Reception, ReceptionDraft, ReceptionLineTableRow, ReceptionStatut } from '../../../../../state/store';
+
+const RECEPTION_STATUT_KEYS: Record<ReceptionStatut, string> = {
+  planifiee: 'achat.reception.statusPlanifiee',
+  en_cours: 'achat.reception.statusEnCours',
+  recue: 'achat.reception.statusRecue',
+  annulee: 'achat.reception.statusAnnulee',
+};
+
+function rowsAreValid(rows: ReceptionLineTableRow[]): boolean {
+  return rows.every(
+    (row) => isDocumentLineTableRowEmpty(row) || isDocumentLineTableRowFilled(row),
+  );
+}
+
+function isReceptionFormValid(input: {
+  fournisseur: string;
+  serviceRows: ReceptionLineTableRow[];
+  productRows: ReceptionLineTableRow[];
+}): boolean {
+  if (input.fournisseur.trim().length === 0) {
+    return false;
+  }
+  if (filledDocumentLineTableRows(input.serviceRows).length === 0) {
+    return false;
+  }
+  return rowsAreValid(input.serviceRows) && rowsAreValid(input.productRows);
+}
+
+function emptyPaymentSplit(): PaymentSplit {
+  return { cash: 0, tpe: 0, bons: 0 };
+}
 
 const DEFAULT_SERVICE_ROWS = 1;
 const DEFAULT_PRODUCT_ROWS = 1;
@@ -54,10 +72,10 @@ export class ReceptionFormDialogComponent {
   readonly serviceRows = signal<ReceptionLineTableRow[]>([]);
   readonly productRows = signal<ReceptionLineTableRow[]>([]);
 
-  readonly serviceTotal = computed(() => computeDraftReceptionServicesTotal(this.serviceRows()));
-  readonly productTotal = computed(() => computeDraftReceptionProductsTotal(this.productRows()));
+  readonly serviceTotal = computed(() => computeDocumentLineTableTotalTTC(this.serviceRows()));
+  readonly productTotal = computed(() => computeDocumentLineTableTotalTTC(this.productRows()));
   readonly receptionTotal = computed(() =>
-    computeDraftReceptionTotal(this.serviceRows(), this.productRows()),
+    computeDocumentLineTableTotalTTC(this.serviceRows()) + computeDocumentLineTableTotalTTC(this.productRows()),
   );
 
   readonly canSave = computed(
@@ -196,7 +214,10 @@ export class ReceptionFormDialogComponent {
     if (!this.canSave()) {
       return;
     }
-    const lines = buildReceptionLineDrafts(this.serviceRows(), this.productRows());
+    const lines = {
+      serviceLines: parseDocumentLineDrafts(this.serviceRows()),
+      productLines: parseDocumentLineDrafts(this.productRows()),
+    };
     this.saved.emit({
       fournisseur: this.fournisseur().trim(),
       dateReception: this.dateReception(),

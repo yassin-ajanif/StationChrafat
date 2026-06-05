@@ -4,21 +4,39 @@ import { ButtonComponent } from '../../../../../../../../shared/components/butto
 import { BonRecapPaymentsComponent } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import { DocumentLinesTableComponent } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
 import { PaymentSplit, isPaymentSplitBalanced } from '../../../../../../shared/models/common/payment-split.model';
-import {
-  RETOUR_FOURNISSEUR_STATUT_KEYS,
-  RetourFournisseur,
-  RetourFournisseurDraft,
-  RetourFournisseurLineTableRow,
-  RetourFournisseurStatut,
-  buildRetourFournisseurLineDrafts,
-  computeDraftRetourFournisseurProductsTotal,
-  computeDraftRetourFournisseurServicesTotal,
-  computeDraftRetourFournisseurTotal,
-  createEmptyDocumentLineTableRow,
-  documentLineToTableRow,
-  emptyPaymentSplit,
-  isRetourFournisseurFormValid,
-} from '../../../../../models/achat';
+import { computeDocumentLineTableTotalTTC, createEmptyDocumentLineTableRow, documentLineToTableRow, filledDocumentLineTableRows, isDocumentLineTableRowEmpty, isDocumentLineTableRowFilled, parseDocumentLineDrafts } from '../../../../../../shared/models/common/document-line.model';
+import { RetourFournisseur, RetourFournisseurDraft, RetourFournisseurLineTableRow, RetourFournisseurStatut } from '../../../../../state/store';
+
+const RETOUR_FOURNISSEUR_STATUT_KEYS: Record<RetourFournisseurStatut, string> = {
+  en_attente: 'achat.retour.statusEnAttente',
+  envoye: 'achat.retour.statusEnvoye',
+  recu: 'achat.retour.statusRecu',
+  refuse: 'achat.retour.statusRefuse',
+};
+
+function rowsAreValid(rows: RetourFournisseurLineTableRow[]): boolean {
+  return rows.every(
+    (row) => isDocumentLineTableRowEmpty(row) || isDocumentLineTableRowFilled(row),
+  );
+}
+
+function isRetourFournisseurFormValid(input: {
+  fournisseur: string;
+  serviceRows: RetourFournisseurLineTableRow[];
+  productRows: RetourFournisseurLineTableRow[];
+}): boolean {
+  if (input.fournisseur.trim().length === 0) {
+    return false;
+  }
+  if (filledDocumentLineTableRows(input.serviceRows).length === 0) {
+    return false;
+  }
+  return rowsAreValid(input.serviceRows) && rowsAreValid(input.productRows);
+}
+
+function emptyPaymentSplit(): PaymentSplit {
+  return { cash: 0, tpe: 0, bons: 0 };
+}
 
 const DEFAULT_SERVICE_ROWS = 1;
 const DEFAULT_PRODUCT_ROWS = 1;
@@ -54,9 +72,9 @@ export class RetourFournisseurFormDialogComponent {
   readonly serviceRows = signal<RetourFournisseurLineTableRow[]>([]);
   readonly productRows = signal<RetourFournisseurLineTableRow[]>([]);
 
-  readonly serviceTotal = computed(() => computeDraftRetourFournisseurServicesTotal(this.serviceRows()));
-  readonly productTotal = computed(() => computeDraftRetourFournisseurProductsTotal(this.productRows()));
-  readonly retourTotal = computed(() => computeDraftRetourFournisseurTotal(this.serviceRows(), this.productRows()));
+  readonly serviceTotal = computed(() => computeDocumentLineTableTotalTTC(this.serviceRows()));
+  readonly productTotal = computed(() => computeDocumentLineTableTotalTTC(this.productRows()));
+  readonly retourTotal = computed(() => computeDocumentLineTableTotalTTC(this.serviceRows()) + computeDocumentLineTableTotalTTC(this.productRows()));
 
   readonly canSave = computed(
     () =>
@@ -194,7 +212,10 @@ export class RetourFournisseurFormDialogComponent {
     if (!this.canSave()) {
       return;
     }
-    const lines = buildRetourFournisseurLineDrafts(this.serviceRows(), this.productRows());
+    const lines = {
+      serviceLines: parseDocumentLineDrafts(this.serviceRows()),
+      productLines: parseDocumentLineDrafts(this.productRows()),
+    };
     this.saved.emit({
       fournisseur: this.fournisseur().trim(),
       factureLiee: this.factureLiee().trim(),

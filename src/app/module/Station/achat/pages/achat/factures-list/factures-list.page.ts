@@ -4,11 +4,17 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
 import {
-  FACTURE_FOURNISSEUR_STATUT_KEYS,
   FactureFournisseur,
   FactureFournisseurDraft,
   FactureFournisseurStatut,
-} from '../../../models/achat';
+} from '../../../state/store';
+
+const FACTURE_FOURNISSEUR_STATUT_KEYS: Record<FactureFournisseurStatut, string> = {
+  brouillon: 'achat.facture.statusBrouillon',
+  recue: 'achat.facture.statusRecue',
+  payee: 'achat.facture.statusPayee',
+  en_retard: 'achat.facture.statusEnRetard',
+};
 import { AchatActions } from '../../../state/achat.actions';
 import {
   selectFacturesFournisseur,

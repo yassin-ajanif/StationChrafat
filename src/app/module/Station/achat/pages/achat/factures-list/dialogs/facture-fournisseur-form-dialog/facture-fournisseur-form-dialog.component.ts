@@ -4,21 +4,39 @@ import { LocaleCurrencyPipe, TranslatePipe } from '../../../../../../../../core/
 import { BonRecapPaymentsComponent } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import { DocumentLinesTableComponent } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
 import { PaymentSplit, isPaymentSplitBalanced } from '../../../../../../shared/models/common/payment-split.model';
-import {
-  FACTURE_FOURNISSEUR_STATUT_KEYS,
-  FactureFournisseur,
-  FactureFournisseurDraft,
-  FactureFournisseurLineTableRow,
-  FactureFournisseurStatut,
-  buildFactureFournisseurLineDrafts,
-  computeDraftFactureFournisseurProductsTotal,
-  computeDraftFactureFournisseurServicesTotal,
-  computeDraftFactureFournisseurTotal,
-  createEmptyDocumentLineTableRow,
-  documentLineToTableRow,
-  emptyPaymentSplit,
-  isFactureFournisseurFormValid,
-} from '../../../../../models/achat';
+import { computeDocumentLineTableTotalTTC, createEmptyDocumentLineTableRow, documentLineToTableRow, filledDocumentLineTableRows, isDocumentLineTableRowEmpty, isDocumentLineTableRowFilled, parseDocumentLineDrafts } from '../../../../../../shared/models/common/document-line.model';
+import { FactureFournisseur, FactureFournisseurDraft, FactureFournisseurLineTableRow, FactureFournisseurStatut } from '../../../../../state/store';
+
+const FACTURE_FOURNISSEUR_STATUT_KEYS: Record<FactureFournisseurStatut, string> = {
+  brouillon: 'achat.facture.statusBrouillon',
+  recue: 'achat.facture.statusRecue',
+  payee: 'achat.facture.statusPayee',
+  en_retard: 'achat.facture.statusEnRetard',
+};
+
+function rowsAreValid(rows: FactureFournisseurLineTableRow[]): boolean {
+  return rows.every(
+    (row) => isDocumentLineTableRowEmpty(row) || isDocumentLineTableRowFilled(row),
+  );
+}
+
+function isFactureFournisseurFormValid(input: {
+  fournisseur: string;
+  serviceRows: FactureFournisseurLineTableRow[];
+  productRows: FactureFournisseurLineTableRow[];
+}): boolean {
+  if (input.fournisseur.trim().length === 0) {
+    return false;
+  }
+  if (filledDocumentLineTableRows(input.serviceRows).length === 0) {
+    return false;
+  }
+  return rowsAreValid(input.serviceRows) && rowsAreValid(input.productRows);
+}
+
+function emptyPaymentSplit(): PaymentSplit {
+  return { cash: 0, tpe: 0, bons: 0 };
+}
 
 const DEFAULT_SERVICE_ROWS = 1;
 const DEFAULT_PRODUCT_ROWS = 1;
@@ -53,10 +71,10 @@ export class FactureFournisseurFormDialogComponent {
   readonly serviceRows = signal<FactureFournisseurLineTableRow[]>([]);
   readonly productRows = signal<FactureFournisseurLineTableRow[]>([]);
 
-  readonly serviceTotal = computed(() => computeDraftFactureFournisseurServicesTotal(this.serviceRows()));
-  readonly productTotal = computed(() => computeDraftFactureFournisseurProductsTotal(this.productRows()));
+  readonly serviceTotal = computed(() => computeDocumentLineTableTotalTTC(this.serviceRows()));
+  readonly productTotal = computed(() => computeDocumentLineTableTotalTTC(this.productRows()));
   readonly factureTotal = computed(() =>
-    computeDraftFactureFournisseurTotal(this.serviceRows(), this.productRows()),
+    computeDocumentLineTableTotalTTC(this.serviceRows()) + computeDocumentLineTableTotalTTC(this.productRows()),
   );
 
   readonly canSave = computed(
@@ -193,7 +211,10 @@ export class FactureFournisseurFormDialogComponent {
     if (!this.canSave()) {
       return;
     }
-    const lines = buildFactureFournisseurLineDrafts(this.serviceRows(), this.productRows());
+    const lines = {
+      serviceLines: parseDocumentLineDrafts(this.serviceRows()),
+      productLines: parseDocumentLineDrafts(this.productRows()),
+    };
     this.saved.emit({
       fournisseur: this.fournisseur().trim(),
       statut: this.statut(),
