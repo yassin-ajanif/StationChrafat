@@ -4,21 +4,39 @@ import { ButtonComponent } from '../../../../../../../../shared/components/butto
 import { BonRecapPaymentsComponent } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import { DocumentLinesTableComponent } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
 import { PaymentSplit, isPaymentSplitBalanced } from '../../../../../../shared/models/common/payment-split.model';
-import {
-  RETOUR_STATUT_KEYS,
-  Retour,
-  RetourDraft,
-  RetourLineTableRow,
-  RetourStatut,
-  buildRetourLineDrafts,
-  computeDraftRetourProductsTotal,
-  computeDraftRetourServicesTotal,
-  computeDraftRetourTotal,
-  createEmptyDocumentLineTableRow,
-  documentLineToTableRow,
-  emptyPaymentSplit,
-  isRetourFormValid,
-} from '../../../../../models/ventes';
+import { computeDocumentLineTableTotalTTC, createEmptyDocumentLineTableRow, documentLineToTableRow, filledDocumentLineTableRows, isDocumentLineTableRowEmpty, isDocumentLineTableRowFilled, parseDocumentLineDrafts } from '../../../../../../shared/models/common/document-line.model';
+import { Retour, RetourDraft, RetourLineTableRow, RetourStatut } from '../../../../../state/store';
+
+const RETOUR_STATUT_KEYS: Record<RetourStatut, string> = {
+  en_attente: 'ventes.retour.statusEnAttente',
+  recu: 'ventes.retour.statusRecu',
+  traite: 'ventes.retour.statusTraite',
+  refuse: 'ventes.retour.statusRefuse',
+};
+
+function rowsAreValid(rows: RetourLineTableRow[]): boolean {
+  return rows.every(
+    (row) => isDocumentLineTableRowEmpty(row) || isDocumentLineTableRowFilled(row),
+  );
+}
+
+function isRetourFormValid(input: {
+  client: string;
+  serviceRows: RetourLineTableRow[];
+  productRows: RetourLineTableRow[];
+}): boolean {
+  if (input.client.trim().length === 0) {
+    return false;
+  }
+  if (filledDocumentLineTableRows(input.serviceRows).length === 0) {
+    return false;
+  }
+  return rowsAreValid(input.serviceRows) && rowsAreValid(input.productRows);
+}
+
+function emptyPaymentSplit(): PaymentSplit {
+  return { cash: 0, tpe: 0, bons: 0 };
+}
 
 const DEFAULT_SERVICE_ROWS = 1;
 const DEFAULT_PRODUCT_ROWS = 1;
@@ -54,9 +72,9 @@ export class RetourFormDialogComponent {
   readonly serviceRows = signal<RetourLineTableRow[]>([]);
   readonly productRows = signal<RetourLineTableRow[]>([]);
 
-  readonly serviceTotal = computed(() => computeDraftRetourServicesTotal(this.serviceRows()));
-  readonly productTotal = computed(() => computeDraftRetourProductsTotal(this.productRows()));
-  readonly retourTotal = computed(() => computeDraftRetourTotal(this.serviceRows(), this.productRows()));
+  readonly serviceTotal = computed(() => computeDocumentLineTableTotalTTC(this.serviceRows()));
+  readonly productTotal = computed(() => computeDocumentLineTableTotalTTC(this.productRows()));
+  readonly retourTotal = computed(() => computeDocumentLineTableTotalTTC(this.serviceRows()) + computeDocumentLineTableTotalTTC(this.productRows()));
 
   readonly canSave = computed(
     () =>
@@ -194,7 +212,10 @@ export class RetourFormDialogComponent {
     if (!this.canSave()) {
       return;
     }
-    const lines = buildRetourLineDrafts(this.serviceRows(), this.productRows());
+    const lines = {
+      serviceLines: parseDocumentLineDrafts(this.serviceRows()),
+      productLines: parseDocumentLineDrafts(this.productRows()),
+    };
     this.saved.emit({
       client: this.client().trim(),
       factureLiee: this.factureLiee().trim(),

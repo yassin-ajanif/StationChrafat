@@ -3,7 +3,14 @@ import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../..
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
-import { RETOUR_STATUT_KEYS, Retour, RetourDraft, RetourStatut } from '../../../models/ventes';
+import { Retour, RetourDraft, RetourStatut } from '../../../state/store';
+
+const RETOUR_STATUT_KEYS: Record<RetourStatut, string> = {
+  en_attente: 'ventes.retour.statusEnAttente',
+  recu: 'ventes.retour.statusRecu',
+  traite: 'ventes.retour.statusTraite',
+  refuse: 'ventes.retour.statusRefuse',
+};
 import { VentesActions } from '../../../state/ventes.actions';
 import {
   selectRetours,

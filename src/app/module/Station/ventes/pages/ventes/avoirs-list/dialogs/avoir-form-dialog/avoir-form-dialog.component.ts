@@ -4,21 +4,38 @@ import { ButtonComponent } from '../../../../../../../../shared/components/butto
 import { BonRecapPaymentsComponent } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import { DocumentLinesTableComponent } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
 import { PaymentSplit, isPaymentSplitBalanced } from '../../../../../../shared/models/common/payment-split.model';
-import {
-  AVOIR_STATUT_KEYS,
-  Avoir,
-  AvoirDraft,
-  AvoirLineTableRow,
-  AvoirStatut,
-  buildAvoirLineDrafts,
-  computeDraftAvoirProductsTotal,
-  computeDraftAvoirServicesTotal,
-  computeDraftAvoirTotal,
-  createEmptyDocumentLineTableRow,
-  documentLineToTableRow,
-  emptyPaymentSplit,
-  isAvoirFormValid,
-} from '../../../../../models/ventes';
+import { computeDocumentLineTableTotalTTC, createEmptyDocumentLineTableRow, documentLineToTableRow, filledDocumentLineTableRows, isDocumentLineTableRowEmpty, isDocumentLineTableRowFilled, parseDocumentLineDrafts } from '../../../../../../shared/models/common/document-line.model';
+import { Avoir, AvoirDraft, AvoirLineTableRow, AvoirStatut } from '../../../../../state/store';
+
+const AVOIR_STATUT_KEYS: Record<AvoirStatut, string> = {
+  brouillon: 'ventes.avoir.statusBrouillon',
+  emis: 'ventes.avoir.statusEmis',
+  applique: 'ventes.avoir.statusApplique',
+};
+
+function rowsAreValid(rows: AvoirLineTableRow[]): boolean {
+  return rows.every(
+    (row) => isDocumentLineTableRowEmpty(row) || isDocumentLineTableRowFilled(row),
+  );
+}
+
+function isAvoirFormValid(input: {
+  client: string;
+  serviceRows: AvoirLineTableRow[];
+  productRows: AvoirLineTableRow[];
+}): boolean {
+  if (input.client.trim().length === 0) {
+    return false;
+  }
+  if (filledDocumentLineTableRows(input.serviceRows).length === 0) {
+    return false;
+  }
+  return rowsAreValid(input.serviceRows) && rowsAreValid(input.productRows);
+}
+
+function emptyPaymentSplit(): PaymentSplit {
+  return { cash: 0, tpe: 0, bons: 0 };
+}
 
 const DEFAULT_SERVICE_ROWS = 1;
 const DEFAULT_PRODUCT_ROWS = 1;
@@ -53,9 +70,9 @@ export class AvoirFormDialogComponent {
   readonly serviceRows = signal<AvoirLineTableRow[]>([]);
   readonly productRows = signal<AvoirLineTableRow[]>([]);
 
-  readonly serviceTotal = computed(() => computeDraftAvoirServicesTotal(this.serviceRows()));
-  readonly productTotal = computed(() => computeDraftAvoirProductsTotal(this.productRows()));
-  readonly avoirTotal = computed(() => computeDraftAvoirTotal(this.serviceRows(), this.productRows()));
+  readonly serviceTotal = computed(() => computeDocumentLineTableTotalTTC(this.serviceRows()));
+  readonly productTotal = computed(() => computeDocumentLineTableTotalTTC(this.productRows()));
+  readonly avoirTotal = computed(() => computeDocumentLineTableTotalTTC(this.serviceRows()) + computeDocumentLineTableTotalTTC(this.productRows()));
 
   readonly canSave = computed(
     () =>
@@ -191,7 +208,10 @@ export class AvoirFormDialogComponent {
     if (!this.canSave()) {
       return;
     }
-    const lines = buildAvoirLineDrafts(this.serviceRows(), this.productRows());
+    const lines = {
+      serviceLines: parseDocumentLineDrafts(this.serviceRows()),
+      productLines: parseDocumentLineDrafts(this.productRows()),
+    };
     this.saved.emit({
       factureLiee: this.factureLiee().trim(),
       client: this.client().trim(),

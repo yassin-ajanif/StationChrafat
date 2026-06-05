@@ -3,7 +3,13 @@ import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../..
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
-import { AVOIR_STATUT_KEYS, Avoir, AvoirDraft, AvoirStatut } from '../../../models/ventes';
+import { Avoir, AvoirDraft, AvoirStatut } from '../../../state/store';
+
+const AVOIR_STATUT_KEYS: Record<AvoirStatut, string> = {
+  brouillon: 'ventes.avoir.statusBrouillon',
+  emis: 'ventes.avoir.statusEmis',
+  applique: 'ventes.avoir.statusApplique',
+};
 import { VentesActions } from '../../../state/ventes.actions';
 import {
   selectAvoirs,

@@ -4,21 +4,39 @@ import { ButtonComponent } from '../../../../../../../../shared/components/butto
 import { BonRecapPaymentsComponent } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import { DocumentLinesTableComponent } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
 import { PaymentSplit, isPaymentSplitBalanced } from '../../../../../../shared/models/common/payment-split.model';
-import {
-  LIVRAISON_STATUT_KEYS,
-  Livraison,
-  LivraisonDraft,
-  LivraisonLineTableRow,
-  LivraisonStatut,
-  buildLivraisonLineDrafts,
-  computeDraftLivraisonProductsTotal,
-  computeDraftLivraisonServicesTotal,
-  computeDraftLivraisonTotal,
-  createEmptyDocumentLineTableRow,
-  documentLineToTableRow,
-  emptyPaymentSplit,
-  isLivraisonFormValid,
-} from '../../../../../models/ventes';
+import { computeDocumentLineTableTotalTTC, createEmptyDocumentLineTableRow, documentLineToTableRow, filledDocumentLineTableRows, isDocumentLineTableRowEmpty, isDocumentLineTableRowFilled, parseDocumentLineDrafts } from '../../../../../../shared/models/common/document-line.model';
+import { Livraison, LivraisonDraft, LivraisonLineTableRow, LivraisonStatut } from '../../../../../state/store';
+
+const LIVRAISON_STATUT_KEYS: Record<LivraisonStatut, string> = {
+  planifiee: 'ventes.livraison.statusPlanifiee',
+  en_cours: 'ventes.livraison.statusEnCours',
+  livree: 'ventes.livraison.statusLivree',
+  annulee: 'ventes.livraison.statusAnnulee',
+};
+
+function rowsAreValid(rows: LivraisonLineTableRow[]): boolean {
+  return rows.every(
+    (row) => isDocumentLineTableRowEmpty(row) || isDocumentLineTableRowFilled(row),
+  );
+}
+
+function isLivraisonFormValid(input: {
+  client: string;
+  serviceRows: LivraisonLineTableRow[];
+  productRows: LivraisonLineTableRow[];
+}): boolean {
+  if (input.client.trim().length === 0) {
+    return false;
+  }
+  if (filledDocumentLineTableRows(input.serviceRows).length === 0) {
+    return false;
+  }
+  return rowsAreValid(input.serviceRows) && rowsAreValid(input.productRows);
+}
+
+function emptyPaymentSplit(): PaymentSplit {
+  return { cash: 0, tpe: 0, bons: 0 };
+}
 
 const DEFAULT_SERVICE_ROWS = 1;
 const DEFAULT_PRODUCT_ROWS = 1;
@@ -54,10 +72,10 @@ export class LivraisonFormDialogComponent {
   readonly serviceRows = signal<LivraisonLineTableRow[]>([]);
   readonly productRows = signal<LivraisonLineTableRow[]>([]);
 
-  readonly serviceTotal = computed(() => computeDraftLivraisonServicesTotal(this.serviceRows()));
-  readonly productTotal = computed(() => computeDraftLivraisonProductsTotal(this.productRows()));
+  readonly serviceTotal = computed(() => computeDocumentLineTableTotalTTC(this.serviceRows()));
+  readonly productTotal = computed(() => computeDocumentLineTableTotalTTC(this.productRows()));
   readonly livraisonTotal = computed(() =>
-    computeDraftLivraisonTotal(this.serviceRows(), this.productRows()),
+    computeDocumentLineTableTotalTTC(this.serviceRows()) + computeDocumentLineTableTotalTTC(this.productRows()),
   );
 
   readonly canSave = computed(
@@ -196,7 +214,10 @@ export class LivraisonFormDialogComponent {
     if (!this.canSave()) {
       return;
     }
-    const lines = buildLivraisonLineDrafts(this.serviceRows(), this.productRows());
+    const lines = {
+      serviceLines: parseDocumentLineDrafts(this.serviceRows()),
+      productLines: parseDocumentLineDrafts(this.productRows()),
+    };
     this.saved.emit({
       client: this.client().trim(),
       dateLivraison: this.dateLivraison(),

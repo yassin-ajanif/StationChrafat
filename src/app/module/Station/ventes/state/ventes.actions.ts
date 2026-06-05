@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
-import { Avoir, AvoirDraft, Commande, CommandeDraft, Devis, DevisDraft, Facture, FactureDraft, Livraison, LivraisonDraft, Retour, RetourDraft } from '../models/ventes';
+import { Avoir, AvoirDraft, Commande, CommandeDraft, Devis, DevisDraft, Facture, FactureDraft, Livraison, LivraisonDraft, Retour, RetourDraft } from './store';
 
 export const VentesActions = createActionGroup({
   source: 'Ventes',

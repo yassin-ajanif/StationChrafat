@@ -4,21 +4,39 @@ import { ButtonComponent } from '../../../../../../../../shared/components/butto
 import { BonRecapPaymentsComponent } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import { DocumentLinesTableComponent } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
 import { PaymentSplit, isPaymentSplitBalanced } from '../../../../../../shared/models/common/payment-split.model';
-import {
-  Devis,
-  DevisDraft,
-  DevisLineTableRow,
-  DevisStatut,
-  STATUT_KEYS,
-  buildDevisLineDrafts,
-  computeDraftDevisProductsTotal,
-  computeDraftDevisServicesTotal,
-  computeDraftDevisTotal,
-  createEmptyDocumentLineTableRow,
-  documentLineToTableRow,
-  emptyPaymentSplit,
-  isDevisFormValid,
-} from '../../../../../models/ventes';
+import { computeDocumentLineTableTotalTTC, createEmptyDocumentLineTableRow, documentLineToTableRow, filledDocumentLineTableRows, isDocumentLineTableRowEmpty, isDocumentLineTableRowFilled, parseDocumentLineDrafts } from '../../../../../../shared/models/common/document-line.model';
+import { Devis, DevisDraft, DevisLineTableRow, DevisStatut } from '../../../../../state/store';
+
+const STATUT_KEYS: Record<DevisStatut, string> = {
+  brouillon: 'ventes.devis.statusBrouillon',
+  envoye: 'ventes.devis.statusEnvoye',
+  accepte: 'ventes.devis.statusAccepte',
+  refuse: 'ventes.devis.statusRefuse',
+};
+
+function rowsAreValid(rows: DevisLineTableRow[]): boolean {
+  return rows.every(
+    (row) => isDocumentLineTableRowEmpty(row) || isDocumentLineTableRowFilled(row),
+  );
+}
+
+function isDevisFormValid(input: {
+  client: string;
+  serviceRows: DevisLineTableRow[];
+  productRows: DevisLineTableRow[];
+}): boolean {
+  if (input.client.trim().length === 0) {
+    return false;
+  }
+  if (filledDocumentLineTableRows(input.serviceRows).length === 0) {
+    return false;
+  }
+  return rowsAreValid(input.serviceRows) && rowsAreValid(input.productRows);
+}
+
+function emptyPaymentSplit(): PaymentSplit {
+  return { cash: 0, tpe: 0, bons: 0 };
+}
 
 const DEFAULT_SERVICE_ROWS = 1;
 const DEFAULT_PRODUCT_ROWS = 1;
@@ -53,10 +71,10 @@ export class DevisFormDialogComponent {
   readonly serviceRows = signal<DevisLineTableRow[]>([]);
   readonly productRows = signal<DevisLineTableRow[]>([]);
 
-  readonly serviceTotal = computed(() => computeDraftDevisServicesTotal(this.serviceRows()));
-  readonly productTotal = computed(() => computeDraftDevisProductsTotal(this.productRows()));
+  readonly serviceTotal = computed(() => computeDocumentLineTableTotalTTC(this.serviceRows()));
+  readonly productTotal = computed(() => computeDocumentLineTableTotalTTC(this.productRows()));
   readonly devisTotal = computed(() =>
-    computeDraftDevisTotal(this.serviceRows(), this.productRows()),
+    computeDocumentLineTableTotalTTC(this.serviceRows()) + computeDocumentLineTableTotalTTC(this.productRows()),
   );
 
   readonly canSave = computed(
@@ -193,7 +211,10 @@ export class DevisFormDialogComponent {
     if (!this.canSave()) {
       return;
     }
-    const lines = buildDevisLineDrafts(this.serviceRows(), this.productRows());
+    const lines = {
+      serviceLines: parseDocumentLineDrafts(this.serviceRows()),
+      productLines: parseDocumentLineDrafts(this.productRows()),
+    };
     this.saved.emit({
       client: this.client().trim(),
       statut: this.statut(),

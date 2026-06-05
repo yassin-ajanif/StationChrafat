@@ -3,12 +3,15 @@ import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../..
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
-import {
-  COMMANDE_STATUT_KEYS,
-  Commande,
-  CommandeDraft,
-  CommandeStatut,
-} from '../../../models/ventes';
+import { Commande, CommandeDraft, CommandeStatut } from '../../../state/store';
+
+const COMMANDE_STATUT_KEYS: Record<CommandeStatut, string> = {
+  en_attente: 'ventes.commande.statusEnAttente',
+  confirmee: 'ventes.commande.statusConfirmee',
+  en_cours: 'ventes.commande.statusEnCours',
+  livree: 'ventes.commande.statusLivree',
+  annulee: 'ventes.commande.statusAnnulee',
+};
 import { VentesActions } from '../../../state/ventes.actions';
 import {
   selectCommandes,

@@ -3,12 +3,14 @@ import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../..
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
-import {
-  FACTURE_STATUT_KEYS,
-  Facture,
-  FactureDraft,
-  FactureStatut,
-} from '../../../models/ventes';
+import { Facture, FactureDraft, FactureStatut } from '../../../state/store';
+
+const FACTURE_STATUT_KEYS: Record<FactureStatut, string> = {
+  brouillon: 'ventes.facture.statusBrouillon',
+  emise: 'ventes.facture.statusEmise',
+  payee: 'ventes.facture.statusPayee',
+  en_retard: 'ventes.facture.statusEnRetard',
+};
 import { VentesActions } from '../../../state/ventes.actions';
 import {
   selectFactures,

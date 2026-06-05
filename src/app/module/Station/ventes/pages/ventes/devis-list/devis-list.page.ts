@@ -4,7 +4,14 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
 import { DevisFormDialogComponent } from './dialogs/devis-form-dialog/devis-form-dialog.component';
-import { Devis, DevisDraft, DevisStatut, STATUT_KEYS } from '../../../models/ventes';
+import { Devis, DevisDraft, DevisStatut } from '../../../state/store';
+
+const STATUT_KEYS: Record<DevisStatut, string> = {
+  brouillon: 'ventes.devis.statusBrouillon',
+  envoye: 'ventes.devis.statusEnvoye',
+  accepte: 'ventes.devis.statusAccepte',
+  refuse: 'ventes.devis.statusRefuse',
+};
 import { VentesActions } from '../../../state/ventes.actions';
 import {
   selectDevis,

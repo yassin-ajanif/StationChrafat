@@ -3,12 +3,14 @@ import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../..
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
-import {
-  LIVRAISON_STATUT_KEYS,
-  Livraison,
-  LivraisonDraft,
-  LivraisonStatut,
-} from '../../../models/ventes';
+import { Livraison, LivraisonDraft, LivraisonStatut } from '../../../state/store';
+
+const LIVRAISON_STATUT_KEYS: Record<LivraisonStatut, string> = {
+  planifiee: 'ventes.livraison.statusPlanifiee',
+  en_cours: 'ventes.livraison.statusEnCours',
+  livree: 'ventes.livraison.statusLivree',
+  annulee: 'ventes.livraison.statusAnnulee',
+};
 import { VentesActions } from '../../../state/ventes.actions';
 import {
   selectLivraisons,

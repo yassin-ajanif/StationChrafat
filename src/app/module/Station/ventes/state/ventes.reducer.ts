@@ -1,5 +1,5 @@
 import { createFeature, createReducer, on } from '@ngrx/store';
-import { Avoir, Commande, Devis, Facture, Livraison, Retour } from '../models/ventes';
+import { Avoir, Commande, Devis, Facture, Livraison, Retour } from './store';
 import { VentesActions } from './ventes.actions';
 
 export interface VentesState {
