@@ -1,6 +1,6 @@
 import { createFeature, createReducer, on } from '@ngrx/store';
-import { StockOverview } from '../models/stock.model';
-import { StockActions } from './stock.actions';
+import { StockOverview } from '../store';
+import { StockActions } from '../actions';
 
 export interface StockState {
   overview: StockOverview | null;

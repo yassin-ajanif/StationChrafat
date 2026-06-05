@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { delay, Observable, of } from 'rxjs';
-import { StockGestionSummary } from '../models/stock-gestion-summary.model';
-import { StockGestionTab } from '../models/stock-gestion-tab.model';
-import { StockProduct } from '../models/stock-product.model';
+import { StockGestionSummary, StockGestionTab, StockProduct } from '../state/store';
 
 const SEED_SUMMARIES: StockGestionSummary[] = [
   { id: 1, label: 'Stock Carburant', valueDh: 1_456_200, trendPercent: 12, accent: 'carburant' },

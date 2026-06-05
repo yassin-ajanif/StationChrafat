@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { delay, Observable, of } from 'rxjs';
-import { CanopyFuelType, NozzleLiveStatus, StockOverview } from '../models/stock.model';
+import type { CanopyFuelType, NozzleLiveStatus, StockOverview } from '../state/store';
 
 interface NozzleSeed {
   pumpLabel: string;

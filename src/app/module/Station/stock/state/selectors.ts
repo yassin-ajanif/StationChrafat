@@ -1,6 +1,11 @@
 import { createSelector } from '@ngrx/store';
-import { stockGestionFeature } from './stock-gestion.reducer';
+import { stockFeature } from './reducers/stock.reducer';
+import { stockGestionFeature } from './reducers/stock-gestion.reducer';
 
+// Stock (pistolets-cuves)
+export const { selectOverview, selectLoading: selectStockLoading, selectError: selectStockError } = stockFeature;
+
+// Stock Gestion
 const {
   selectSummaries,
   selectAllProducts,
@@ -8,8 +13,8 @@ const {
   selectSearchQuery,
   selectCurrentPage,
   selectPageSize,
-  selectLoading,
-  selectError,
+  selectLoading: selectGestionLoading,
+  selectError: selectGestionError,
 } = stockGestionFeature;
 
 export {
@@ -18,8 +23,8 @@ export {
   selectSearchQuery,
   selectCurrentPage,
   selectPageSize,
-  selectLoading,
-  selectError,
+  selectGestionLoading,
+  selectGestionError,
 };
 
 export const selectFilteredProducts = createSelector(

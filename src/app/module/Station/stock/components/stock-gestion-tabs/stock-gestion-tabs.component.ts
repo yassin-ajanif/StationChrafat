@@ -1,6 +1,6 @@
 import { Component, input, output } from '@angular/core';
 import { TranslatePipe } from '../../../../../core/i18n'
-import { StockGestionTab } from '../../models/stock-gestion-tab.model';
+import { StockGestionTab } from '../../state/store';
 
 @Component({
   selector: 'app-stock-gestion-tabs',

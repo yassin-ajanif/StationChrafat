@@ -1,7 +1,14 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
-import { StockGestionSummary } from '../models/stock-gestion-summary.model';
-import { StockGestionTab } from '../models/stock-gestion-tab.model';
-import { StockProduct } from '../models/stock-product.model';
+import { StockOverview, StockGestionSummary, StockGestionTab, StockProduct } from './store';
+
+export const StockActions = createActionGroup({
+  source: 'Stock',
+  events: {
+    'Load': emptyProps(),
+    'Load Success': props<{ overview: StockOverview }>(),
+    'Load Failure': props<{ error: string }>(),
+  },
+});
 
 export const StockGestionActions = createActionGroup({
   source: 'StockGestion',

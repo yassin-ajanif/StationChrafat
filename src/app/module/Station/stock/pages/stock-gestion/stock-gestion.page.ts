@@ -5,21 +5,21 @@ import { StockGestionKpiCardsComponent } from '../../components/stock-gestion-kp
 import { StockGestionTabsComponent } from '../../components/stock-gestion-tabs/stock-gestion-tabs.component';
 import { StockGestionToolbarComponent } from '../../components/stock-gestion-toolbar/stock-gestion-toolbar.component';
 import { StockProductTableComponent } from '../../components/stock-product-table/stock-product-table.component';
-import { StockGestionTab } from '../../models/stock-gestion-tab.model';
-import { StockGestionActions } from '../../state/stock-gestion.actions';
+import { StockGestionTab } from '../../state/store';
+import { StockGestionActions } from '../../state/actions';
 import {
   selectActiveTab,
   selectCurrentPage,
-  selectError,
+  selectGestionError,
   selectFilteredProducts,
-  selectLoading,
+  selectGestionLoading,
   selectPageSize,
   selectPaginatedProducts,
   selectSearchQuery,
   selectSummaries,
   selectTotalPages,
   selectVisiblePages,
-} from '../../state/stock-gestion.selectors';
+} from '../../state/selectors';
 
 @Component({
   selector: 'app-stock-gestion-page',
@@ -31,8 +31,8 @@ import {
 export class StockGestionPage implements OnInit {
   private readonly store = inject(Store);
 
-  readonly loading = this.store.selectSignal(selectLoading);
-  readonly error = this.store.selectSignal(selectError);
+  readonly loading = this.store.selectSignal(selectGestionLoading);
+  readonly error = this.store.selectSignal(selectGestionError);
   readonly summaries = this.store.selectSignal(selectSummaries);
   readonly activeTab = this.store.selectSignal(selectActiveTab);
   readonly searchQuery = this.store.selectSignal(selectSearchQuery);

@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
 import { LocaleNumberPipe, TranslatePipe } from '../../../../../core/i18n'
-import { StockProduct } from '../../models/stock-product.model';
+import { StockProduct } from '../../state/store';
 
 @Component({
   selector: 'app-stock-product-table',

@@ -1,8 +1,6 @@
 import { createFeature, createReducer, on } from '@ngrx/store';
-import { StockGestionSummary } from '../models/stock-gestion-summary.model';
-import { StockGestionTab } from '../models/stock-gestion-tab.model';
-import { StockProduct } from '../models/stock-product.model';
-import { StockGestionActions } from './stock-gestion.actions';
+import { StockGestionSummary, StockGestionTab, StockProduct } from '../store';
+import { StockGestionActions } from '../actions';
 
 export interface StockGestionState {
   summaries: StockGestionSummary[];

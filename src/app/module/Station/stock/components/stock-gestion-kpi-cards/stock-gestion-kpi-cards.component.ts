@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
 import { LocaleCurrencyPipe, TranslatePipe } from '../../../../../core/i18n'
-import { StockGestionSummary } from '../../models/stock-gestion-summary.model';
+import { StockGestionSummary } from '../../state/store';
 
 @Component({
   selector: 'app-stock-gestion-kpi-cards',
