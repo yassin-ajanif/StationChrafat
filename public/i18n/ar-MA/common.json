@@ -101,6 +101,13 @@
   "pump": {
     "hs": "خ.م"
   },
+  "formValidation": {
+    "clientRequired": "أدخل اسم الزبون.",
+    "supplierRequired": "أدخل اسم المورد.",
+    "documentLineRequired": "أضف سطر خدمة أو منتج واحداً على الأقل (التسمية، الكمية، السعر).",
+    "incompleteLine": "أكمل أو امسح الأسطر غير المكتملة (زر ×).",
+    "paymentNotBalanced": "وزّع المبالغ المُحصّلة لموازنة الإجمالي."
+  },
   "confirm": {
     "deleteArticle": "حذف هذا المنتج من الكتالوج؟",
     "deleteDevis": "حذف هذا العرض؟",

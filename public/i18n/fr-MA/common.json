@@ -101,6 +101,13 @@
   "pump": {
     "hs": "HS"
   },
+  "formValidation": {
+    "clientRequired": "Indiquez le client.",
+    "supplierRequired": "Indiquez le fournisseur.",
+    "documentLineRequired": "Ajoutez au moins une ligne service ou produit complète (désignation, quantité, prix).",
+    "incompleteLine": "Complétez ou effacez les lignes incomplètes (bouton ×).",
+    "paymentNotBalanced": "Répartissez les encaissements pour équilibrer le total."
+  },
   "confirm": {
     "deleteArticle": "Supprimer cet article du catalogue ?",
     "deleteDevis": "Supprimer ce devis ?",

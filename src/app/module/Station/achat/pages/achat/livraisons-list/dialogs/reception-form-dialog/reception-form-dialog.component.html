@@ -17,8 +17,11 @@
       <div class="max-h-[70vh] overflow-y-auto px-6 py-5">
         <div class="mb-6 grid gap-4 sm:grid-cols-2">
           <div>
-            <label class="erp-dialog__label" for="dialog-reception-fournisseur">{{ 'common.table.supplier' | translate }}</label>
-            <input id="dialog-reception-fournisseur" type="text" class="erp-dialog__input" [placeholder]="'common.placeholders.companyName' | translate" [value]="fournisseur()" (input)="fournisseur.set($any($event.target).value)" />
+            <label class="erp-dialog__label" for="dialog-reception-fournisseur">
+              {{ 'common.table.supplier' | translate }}
+              <span class="text-primary" aria-hidden="true">*</span>
+            </label>
+            <input id="dialog-reception-fournisseur" type="text" class="erp-dialog__input" required [placeholder]="'common.placeholders.companyName' | translate" [value]="fournisseur()" (input)="fournisseur.set($any($event.target).value)" />
           </div>
           <div>
             <label class="erp-dialog__label" for="dialog-reception-statut">{{ 'common.table.status' | translate }}</label>
@@ -46,10 +49,19 @@
         <app-bon-recap-payments inputIdPrefix="reception" [serviceTotal]="serviceTotal()" [productTotal]="productTotal()" [bonTotal]="receptionTotal()" [payments]="payments()" (paymentsChange)="payments.set($event)" />
       </div>
       <footer class="flex flex-wrap items-center justify-between gap-4 border-t border-outline-variant px-6 py-4">
-        <p class="text-sm text-on-surface-variant">
-          {{ 'achat.reception.total' | translate }}
-          <span class="font-bold tabular-nums text-on-surface">{{ receptionTotal() | localeCurrency }}</span>
-        </p>
+        <div class="min-w-[12rem] flex-1">
+          <p class="text-sm text-on-surface-variant">
+            {{ 'achat.reception.total' | translate }}
+            <span class="font-bold tabular-nums text-on-surface">{{ receptionTotal() | localeCurrency }}</span>
+          </p>
+          @if (!canSave() && saveBlockers().length > 0) {
+            <ul class="mt-2 list-disc space-y-0.5 pl-4 text-sm text-primary" role="status">
+              @for (key of saveBlockers(); track key) {
+                <li>{{ key | translate }}</li>
+              }
+            </ul>
+          }
+        </div>
         <app-button variant="secondary" (pressed)="cancel()">{{ 'common.actions.cancel' | translate }}</app-button>
         <app-button variant="primary" [disabled]="!canSave()" (pressed)="save()">
           @if (isEditMode()) {

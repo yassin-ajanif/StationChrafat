@@ -27,7 +27,10 @@ function isAvoirFormValid(input: {
   if (input.client.trim().length === 0) {
     return false;
   }
-  if (filledDocumentLineTableRows(input.serviceRows).length === 0) {
+  const filledLines =
+    filledDocumentLineTableRows(input.serviceRows).length +
+    filledDocumentLineTableRows(input.productRows).length;
+  if (filledLines === 0) {
     return false;
   }
   return rowsAreValid(input.serviceRows) && rowsAreValid(input.productRows);
@@ -73,6 +76,31 @@ export class AvoirFormDialogComponent {
   readonly serviceTotal = computed(() => computeDocumentLineTableTotalTTC(this.serviceRows()));
   readonly productTotal = computed(() => computeDocumentLineTableTotalTTC(this.productRows()));
   readonly avoirTotal = computed(() => computeDocumentLineTableTotalTTC(this.serviceRows()) + computeDocumentLineTableTotalTTC(this.productRows()));
+
+  readonly saveBlockers = computed(() => {
+    const blockers: string[] = [];
+    const client = this.client();
+    const serviceRows = this.serviceRows();
+    const productRows = this.productRows();
+
+    if (client.trim().length === 0) {
+      blockers.push('common.formValidation.clientRequired');
+    }
+    if (
+      filledDocumentLineTableRows(serviceRows).length +
+        filledDocumentLineTableRows(productRows).length ===
+      0
+    ) {
+      blockers.push('common.formValidation.documentLineRequired');
+    }
+    if (!rowsAreValid(serviceRows) || !rowsAreValid(productRows)) {
+      blockers.push('common.formValidation.incompleteLine');
+    }
+    if (!isPaymentSplitBalanced(this.payments(), this.avoirTotal())) {
+      blockers.push('common.formValidation.paymentNotBalanced');
+    }
+    return blockers;
+  });
 
   readonly canSave = computed(
     () =>

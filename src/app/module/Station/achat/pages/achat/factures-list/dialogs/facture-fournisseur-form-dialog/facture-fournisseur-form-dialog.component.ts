@@ -28,7 +28,10 @@ function isFactureFournisseurFormValid(input: {
   if (input.fournisseur.trim().length === 0) {
     return false;
   }
-  if (filledDocumentLineTableRows(input.serviceRows).length === 0) {
+  const filledLines =
+    filledDocumentLineTableRows(input.serviceRows).length +
+    filledDocumentLineTableRows(input.productRows).length;
+  if (filledLines === 0) {
     return false;
   }
   return rowsAreValid(input.serviceRows) && rowsAreValid(input.productRows);
@@ -76,6 +79,31 @@ export class FactureFournisseurFormDialogComponent {
   readonly factureTotal = computed(() =>
     computeDocumentLineTableTotalTTC(this.serviceRows()) + computeDocumentLineTableTotalTTC(this.productRows()),
   );
+
+  readonly saveBlockers = computed(() => {
+    const blockers: string[] = [];
+    const fournisseur = this.fournisseur();
+    const serviceRows = this.serviceRows();
+    const productRows = this.productRows();
+
+    if (fournisseur.trim().length === 0) {
+      blockers.push('common.formValidation.supplierRequired');
+    }
+    if (
+      filledDocumentLineTableRows(serviceRows).length +
+        filledDocumentLineTableRows(productRows).length ===
+      0
+    ) {
+      blockers.push('common.formValidation.documentLineRequired');
+    }
+    if (!rowsAreValid(serviceRows) || !rowsAreValid(productRows)) {
+      blockers.push('common.formValidation.incompleteLine');
+    }
+    if (!isPaymentSplitBalanced(this.payments(), this.factureTotal())) {
+      blockers.push('common.formValidation.paymentNotBalanced');
+    }
+    return blockers;
+  });
 
   readonly canSave = computed(
     () =>
