@@ -197,8 +197,16 @@ function nozzleQuantity(line: NozzleIndexLine): number {
   return Math.max(0, line.indexEntree - line.indexSortie - line.tankReturn);
 }
 
-function unitPriceTtcToHt(ttc: number): number {
-  return roundMoney(ttc / (1 + FUEL_VAT_PERCENT / 100));
+function nozzleLineAmountTtc(line: NozzleIndexLine): number {
+  return roundMoney(nozzleQuantity(line) * line.unitPrice);
+}
+
+/** HT unit price so document-line TTC math matches the step-2 nozzle total. */
+function unitPriceHtForTargetTtc(quantity: number, amountTtc: number, vatPercent: number): number {
+  if (quantity <= 0) {
+    return 0;
+  }
+  return amountTtc / (1 + vatPercent / 100) / quantity;
 }
 
 function buildFuelLivraisonsFromStep2(
@@ -243,23 +251,29 @@ function buildFuelLivraisonsFromStep2(
 
     const fuels = new Map<
       string,
-      { fuelCode: string; fuelLabel: string; quantity: number; unitPriceTtc: number }
+      { fuelCode: string; fuelLabel: string; quantity: number; amountTtc: number }
     >();
 
     for (const line of nozzleLines) {
       const quantity = nozzleQuantity(line);
+      const lineAmount = nozzleLineAmountTtc(line);
       const existing = fuels.get(line.fuelCode);
       if (existing) {
         existing.quantity = roundMoney(existing.quantity + quantity);
+        existing.amountTtc = roundMoney(existing.amountTtc + lineAmount);
       } else {
         fuels.set(line.fuelCode, {
           fuelCode: line.fuelCode,
           fuelLabel: line.fuelLabel,
           quantity,
-          unitPriceTtc: line.unitPrice,
+          amountTtc: lineAmount,
         });
       }
     }
+
+    const montant = roundMoney(
+      nozzleLines.reduce((sum, line) => sum + nozzleLineAmountTtc(line), 0),
+    );
 
     const previous = existingFuelByOperator.get(bombisteId);
     let numero = previous?.livraison.numero ?? '';
@@ -276,13 +290,12 @@ function buildFuelLivraisonsFromStep2(
       designation: fuel.fuelLabel,
       quantity: fuel.quantity,
       unit: 'L',
-      unitPriceHT: unitPriceTtcToHt(fuel.unitPriceTtc),
+      unitPriceHT: unitPriceHtForTargetTtc(fuel.quantity, fuel.amountTtc, FUEL_VAT_PERCENT),
       discountPercent: 0,
       vatPercent: FUEL_VAT_PERCENT,
     }));
 
     const payments = paymentsByBombiste.get(bombisteId) ?? emptyPaymentSplit();
-    const montant = roundMoney(computeDocumentLinesTotalTTC(productLines));
 
     fuelItems.push({
       operatorId: bombisteId,
