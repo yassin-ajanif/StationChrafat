@@ -1,9 +1,10 @@
-﻿import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal } from '@angular/core';
 import { ButtonComponent } from '../../../../../../../../shared/components/button/button.component';
 import { LocaleCurrencyPipe, TranslatePipe } from '../../../../../../../../core/i18n'
 import { BonRecapPaymentsComponent } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import { DocumentLinesTableComponent } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
-import { PaymentSplit, isPaymentSplitBalanced, computeDocumentLineTableTotalTTC, createEmptyDocumentLineTableRow, documentLineToTableRow, filledDocumentLineTableRows, isDocumentLineTableRowEmpty, isDocumentLineTableRowFilled, parseDocumentLineDrafts } from '../../../../../../shared/components/bon-dialog/bon-dialog.component';
+import { PaymentSplit, isPaymentSplitBalanced } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
+import { computeDocumentLineTableTotalTTC, createEmptyDocumentLineTableRow, documentLineToTableRow, filledDocumentLineTableRows, isDocumentLineTableRowEmpty, isDocumentLineTableRowFilled, parseDocumentLineDrafts } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
 import { CommandeAchat, CommandeAchatDraft, CommandeAchatLineTableRow, CommandeAchatStatut } from '../../../../../state/store';
 
 const COMMANDE_ACHAT_STATUT_KEYS: Record<CommandeAchatStatut, string> = {

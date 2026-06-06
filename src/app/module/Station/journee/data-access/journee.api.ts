@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { delay, of } from 'rxjs';
-import { StationBon } from '../../shared/components/bon-dialog/bon-dialog.component';
+import { StationBon } from '../state/journee.store';
 import {
   ENCAISSEMENT_DIVERS_CLIENT_ID,
   DepenseLine,
@@ -12,7 +12,7 @@ import {
   Operator,
   ShiftSlot,
 } from '../state/journee.store';
-import { emptyPaymentSplit } from '../../shared/components/bon-dialog/bon-dialog.component';
+import { emptyPaymentSplit } from '../../shared/components/bon-recap-payments/bon-recap-payments.component';
 
 @Injectable({ providedIn: 'root' })
 export class JourneeApi {

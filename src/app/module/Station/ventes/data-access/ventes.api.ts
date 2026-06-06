@@ -20,7 +20,7 @@ import {
   computeMontant,
   nextNumber,
 } from './ventes.utils';
-import { computeDocumentLinesTotalHT } from '../../shared/components/bon-dialog/bon-dialog.component';
+import { computeDocumentLinesTotalHT } from '../../shared/components/document-lines-table/document-lines-table.component';
 
 function randomDelay(): number {
   return 200 + Math.floor(Math.random() * 300);

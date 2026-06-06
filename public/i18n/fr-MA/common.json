@@ -25,6 +25,7 @@
   },
   "table": {
     "num": "N°",
+    "total": "Total",
     "actions": "Actions",
     "client": "Client",
     "supplier": "Fournisseur",

@@ -1,4 +1,4 @@
-import { computeDocumentLinesTotalTTC, type DocumentLine, type DocumentLineDraft } from '../../shared/components/bon-dialog/bon-dialog.component';
+import { computeDocumentLinesTotalTTC, type DocumentLine, type DocumentLineDraft } from '../../shared/components/document-lines-table/document-lines-table.component';
 
 export const DEFAULT_TVA = 20;
 

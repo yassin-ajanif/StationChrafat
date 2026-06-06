@@ -1,10 +1,35 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { LocaleCurrencyPipe, LocaleNumberPipe, TranslatePipe } from '../../../../../core/i18n';
-import {
-  PaymentSplit,
-  computePaymentDifference,
-  computePaymentTotal,
-} from '../bon-dialog/bon-dialog.component';
+import { roundMoney } from '../document-lines-table/document-lines-table.component';
+
+export interface PaymentSplit {
+  cash: number;
+  tpe: number;
+  bons: number;
+}
+
+export function emptyPaymentSplit(): PaymentSplit {
+  return { cash: 0, tpe: 0, bons: 0 };
+}
+
+export function computePaymentTotal(payments: PaymentSplit): number {
+  return roundMoney(payments.cash + payments.tpe + payments.bons);
+}
+
+export function computePaymentDifference(payments: PaymentSplit, expectedAmount: number): number {
+  return roundMoney(computePaymentTotal(payments) - roundMoney(expectedAmount));
+}
+
+export function paymentDifferenceLabel(difference: number): string {
+  if (roundMoney(difference) === 0) {
+    return 'Équilibré';
+  }
+  return difference > 0 ? 'Surplus' : 'Manque';
+}
+
+export function isPaymentSplitBalanced(payments: PaymentSplit, expectedAmount: number): boolean {
+  return computePaymentDifference(payments, expectedAmount) === 0;
+}
 
 @Component({
   selector: 'app-bon-recap-payments',

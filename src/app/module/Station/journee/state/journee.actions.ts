@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
-import { StationBonDraftInput } from '../../shared/components/bon-dialog/bon-dialog.component';
+import { StationBonDraftInput } from './journee.store';
 import {
   BonsStep3,
   ConfigurationStep1,

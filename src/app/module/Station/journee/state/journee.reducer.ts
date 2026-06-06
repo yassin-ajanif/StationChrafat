@@ -1,5 +1,5 @@
 import { createFeature, createReducer, on } from '@ngrx/store';
-import { emptyPaymentSplit } from '../../shared/components/bon-dialog/bon-dialog.component';
+import { emptyPaymentSplit } from '../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import {
   DEFAULT_DEPENSE_PAYMENT_MODE,
   DepenseLine,

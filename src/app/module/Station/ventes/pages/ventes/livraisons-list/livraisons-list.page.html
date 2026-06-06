@@ -83,8 +83,8 @@
 <app-livraison-form-dialog
   [open]="showDialog()"
   variant="ventes"
-  [editLivraison]="editingLivraisonValue()"
-  (saved)="onSaved($event)"
+  [editVentes]="editingLivraisonValue()"
+  (ventesSaved)="onSaved($event)"
   (closed)="closeDialog()"
 />
 

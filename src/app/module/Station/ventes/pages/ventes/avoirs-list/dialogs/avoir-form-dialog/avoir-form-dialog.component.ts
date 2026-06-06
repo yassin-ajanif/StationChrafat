@@ -3,7 +3,8 @@ import { LocaleCurrencyPipe, TranslatePipe } from '../../../../../../../../core/
 import { ButtonComponent } from '../../../../../../../../shared/components/button/button.component';
 import { BonRecapPaymentsComponent } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import { DocumentLinesTableComponent } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
-import { PaymentSplit, isPaymentSplitBalanced, computeDocumentLineTableTotalTTC, createEmptyDocumentLineTableRow, documentLineToTableRow, filledDocumentLineTableRows, isDocumentLineTableRowEmpty, isDocumentLineTableRowFilled, parseDocumentLineDrafts } from '../../../../../../shared/components/bon-dialog/bon-dialog.component';
+import { PaymentSplit, isPaymentSplitBalanced } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
+import { computeDocumentLineTableTotalTTC, createEmptyDocumentLineTableRow, documentLineToTableRow, filledDocumentLineTableRows, isDocumentLineTableRowEmpty, isDocumentLineTableRowFilled, parseDocumentLineDrafts } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
 import { Avoir, AvoirDraft, AvoirLineTableRow, AvoirStatut } from '../../../../../state/store';
 
 const AVOIR_STATUT_KEYS: Record<AvoirStatut, string> = {

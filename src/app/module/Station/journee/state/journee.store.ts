@@ -1,6 +1,75 @@
-import { StationBon, PaymentSplit } from '../../shared/components/bon-dialog/bon-dialog.component';
+import type { DocumentLine, DocumentLineDraft, DocumentLineTableRow } from '../../shared/components/document-lines-table/document-lines-table.component';
+import type { PaymentSplit } from '../../shared/components/bon-recap-payments/bon-recap-payments.component';
 
 export type { PaymentSplit };
+
+// ---------------------------------------------------------------------------
+// Station bon (bons-step3)
+// ---------------------------------------------------------------------------
+
+export type StationBonStatut = 'planifiee' | 'en_cours' | 'livree' | 'annulee';
+
+export type StationBonLine = DocumentLine;
+export type StationBonLineDraft = DocumentLineDraft;
+export type StationBonLineTableRow = DocumentLineTableRow;
+
+export interface StationBon {
+  id: number;
+  bonNumber: string;
+  partnerRef: string;
+  chefVidangeLavageId: number;
+  operatorId: number;
+  dateLivraison: string;
+  statut: StationBonStatut;
+  adresse: string;
+  description: string;
+  serviceLines: StationBonLine[];
+  productLines: StationBonLine[];
+  payments: PaymentSplit;
+  fuelTransmittedFromNozzles?: boolean;
+}
+
+export interface StationBonDraftInput {
+  bonNumber: string;
+  partnerRef: string;
+  chefVidangeLavageId: number;
+  operatorId: number;
+  dateLivraison: string;
+  statut: StationBonStatut;
+  adresse: string;
+  description: string;
+  serviceLines: StationBonLineDraft[];
+  productLines: StationBonLineDraft[];
+  payments: PaymentSplit;
+}
+
+/** Dialog edit payload for the station (journee) variant. */
+export interface StationBonFormEditValue {
+  bonNumber: string;
+  operatorId: number;
+  client: string;
+  dateLivraison: string;
+  statut: StationBonStatut;
+  adresse: string;
+  description: string;
+  serviceLines: StationBonLine[];
+  productLines: StationBonLine[];
+  payments: PaymentSplit;
+}
+
+/** Dialog save payload for the station (journee) variant — chef is attached by the page. */
+export interface StationBonFormDraft {
+  bonNumber: string;
+  operatorId: number;
+  client: string;
+  dateLivraison: string;
+  statut: StationBonStatut;
+  adresse: string;
+  description: string;
+  serviceLines: StationBonLineDraft[];
+  productLines: StationBonLineDraft[];
+  payments: PaymentSplit;
+}
 
 // ---------------------------------------------------------------------------
 // Shared — list & KPIs (outside wizard draft)
@@ -126,6 +195,26 @@ export const initialBonsStep3 = (): BonsStep3 => ({
   chefId: null,
   items: [],
 });
+
+export interface JourneeBonsStepConfig {
+  title: string;
+  description: string;
+  backLink: readonly string[];
+  nextLink: readonly string[];
+  guardRedirectIfNoDraft?: readonly string[];
+  chefSelectLabel: string;
+  headerIcon: string;
+}
+
+export const JOURNEE_BON_CONFIG: JourneeBonsStepConfig = {
+  title: 'journee.bons.title',
+  description: 'journee.bons.description',
+  backLink: ['/journees', 'nouvelle', 'index-pistoles-step2'],
+  nextLink: ['/journees', 'nouvelle', 'encaissements-step5'],
+  guardRedirectIfNoDraft: ['/journees', 'nouvelle', 'configuration-step1'],
+  chefSelectLabel: 'journee.bons.chefLabel',
+  headerIcon: '📋',
+};
 
 // ---------------------------------------------------------------------------
 // Part 4 — encaissements-step4

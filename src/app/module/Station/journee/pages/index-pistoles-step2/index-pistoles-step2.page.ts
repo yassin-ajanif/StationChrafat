@@ -9,8 +9,8 @@ import {
   emptyPaymentSplit,
   isPaymentSplitBalanced,
   paymentDifferenceLabel as formatPaymentDifference,
-  roundMoney,
-} from '../../../shared/components/bon-dialog/bon-dialog.component';
+} from '../../../shared/components/bon-recap-payments/bon-recap-payments.component';
+import { roundMoney } from '../../../shared/components/document-lines-table/document-lines-table.component';
 import {
   BombisteNozzlePayment,
   NozzleBombisteGroup,
