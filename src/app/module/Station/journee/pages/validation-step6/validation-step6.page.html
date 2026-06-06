@@ -8,120 +8,40 @@
     </p>
   </header>
 
-  @if (loadError(); as err) {
-    <p class="mb-4 text-center text-sm text-primary" role="alert">{{ err }}</p>
-  }
   @if (submitError(); as err) {
     <p class="mb-4 text-center text-sm text-primary" role="alert">{{ err }}</p>
   }
 
-  @if (loading()) {
-    <p class="py-16 text-center text-on-surface-variant">{{ 'journee.validation.loading' | translate }}</p>
-  } @else if (summary(); as s) {
-    <div class="validation-step6__summary-grid mb-6 grid gap-6 md:grid-cols-2">
-      <section class="validation-step6__card" aria-label="{{ 'journee.validation.revenueTitle' | translate }}">
-        <h2 class="validation-step6__card-title">{{ 'journee.validation.revenueTitle' | translate }}</h2>
-        <div class="validation-step6__row">
-          <span class="validation-step6__row-label">{{ 'journee.validation.fuel' | translate }}</span>
-          <span class="validation-step6__row-value">
-            {{ s.revenue.fuelSales | localeCurrency }}
-          </span>
-        </div>
-        <div class="validation-step6__row">
-          <span class="validation-step6__row-label">{{ 'journee.validation.shop' | translate }}</span>
-          <span class="validation-step6__row-value">
-            {{ s.revenue.shopProducts | localeCurrency }}
-          </span>
-        </div>
-        <div class="validation-step6__row">
-          <span class="validation-step6__row-label">{{ 'journee.validation.services' | translate }}</span>
-          <span class="validation-step6__row-value">
-            {{ s.revenue.services | localeCurrency }}
-          </span>
-        </div>
-        <div class="validation-step6__gross-total">
-          <span class="validation-step6__gross-total-label">{{ 'journee.validation.gross' | translate }}</span>
-          <span class="validation-step6__gross-total-value">
-            {{ s.revenue.grossTotal | localeCurrency }}
-          </span>
-        </div>
-      </section>
-
-      <section class="validation-step6__card" aria-label="{{ 'journee.validation.cashTitle' | translate }}">
-        <h2 class="validation-step6__card-title">{{ 'journee.validation.cashTitle' | translate }}</h2>
-        <div class="validation-step6__row">
-          <span class="validation-step6__row-label">{{ 'journee.validation.nonCash' | translate }}</span>
-          <span class="validation-step6__row-value validation-step6__row-value--negative">
-            -{{ s.cashMovements.nonCashCollections | localeCurrency }}
-          </span>
-        </div>
-        <div class="validation-step6__row">
-          <span class="validation-step6__row-label">{{ 'journee.validation.expenses' | translate }}</span>
-          <span class="validation-step6__row-value validation-step6__row-value--negative">
-            -{{ s.cashMovements.authorizedExpenses | localeCurrency }}
-          </span>
-        </div>
-        <div class="validation-step6__row">
-          <span class="validation-step6__row-label">{{ 'journee.validation.debtSettlements' | translate }}</span>
-          <span class="validation-step6__row-value validation-step6__row-value--positive">
-            +{{ s.cashMovements.debtSettlements | localeCurrency }}
-          </span>
-        </div>
-        <div class="validation-step6__row">
-          <span class="validation-step6__row-label">{{ 'journee.validation.cardRecharges' | translate }}</span>
-          <span class="validation-step6__row-value validation-step6__row-value--positive">
-            +{{ s.cashMovements.cardRecharges | localeCurrency }}
-          </span>
-        </div>
-      </section>
-    </div>
-
-    <section class="validation-step6__remittance mb-8" [attr.aria-label]="'journee.validation.remittanceKicker' | translate">
-      <div class="validation-step6__remittance-copy">
-        <p class="validation-step6__remittance-kicker">{{ 'journee.validation.remittanceKicker' | translate }}</p>
-        <p class="validation-step6__remittance-label">
-          {{ 'journee.validation.remittanceLabel' | translate: { operatorName: s.remittanceOperatorName } }}
-        </p>
-      </div>
-      <p class="validation-step6__remittance-amount">
-        {{ s.netCashToRemit | localeCurrency }}
-      </p>
+  @if (canSubmit()) {
+    <section
+      class="validation-step6__ready mb-8 rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest p-6 text-center"
+      role="status"
+    >
+      <p class="text-on-surface">{{ 'journee.validation.ready' | translate }}</p>
     </section>
-
-    <section class="validation-step6__detail mb-8" [attr.aria-label]="'journee.validation.nonCashDetail' | translate">
-      <h2 class="validation-step6__detail-title">{{ 'journee.validation.nonCashDetail' | translate }}</h2>
-      @if (s.nonCashDetails.length === 0) {
-        <p class="text-sm text-on-surface-variant">{{ 'journee.validation.nonCashEmpty' | translate }}</p>
-      } @else {
-        <div class="validation-step6__table-wrap overflow-hidden rounded-[var(--radius-card)] border border-outline-variant shadow-sm">
-          <table class="validation-step6__detail-table w-full border-collapse text-sm">
-            <thead>
-              <tr class="bg-table-header">
-                <th class="px-4 py-3.5 text-left font-display text-xs font-bold uppercase tracking-wide text-white">
-                  {{ 'journee.validation.paymentType' | translate }}
-                </th>
-                <th class="px-4 py-3.5 text-left font-display text-xs font-bold uppercase tracking-wide text-white">
-                  {{ 'journee.validation.reference' | translate }}
-                </th>
-                <th class="px-4 py-3.5 text-right font-display text-xs font-bold uppercase tracking-wide text-white">
-                  Montant
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (row of s.nonCashDetails; track row.paymentType) {
-                <tr class="border-t border-outline-variant/40 bg-surface-container-lowest">
-                  <td class="px-4 py-3.5 font-medium text-on-surface">{{ row.paymentType }}</td>
-                  <td class="px-4 py-3.5 text-on-surface-variant">{{ row.reference }}</td>
-                  <td class="px-4 py-3.5 text-right font-semibold tabular-nums text-on-surface">
-                    {{ row.amount | localeCurrency }}
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      }
+  } @else {
+    <section
+      class="validation-step6__issues mb-8 rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest p-6"
+      role="status"
+    >
+      <h2 class="validation-step6__issues-title font-display text-lg uppercase text-on-surface">
+        {{ 'journee.validation.incompleteTitle' | translate }}
+      </h2>
+      <p class="mt-2 text-sm text-on-surface-variant">
+        {{ 'journee.validation.incompleteHint' | translate }}
+      </p>
+      <ul class="mt-4 space-y-2">
+        @for (step of invalidSteps(); track step.path) {
+          <li>
+            <a
+              [routerLink]="['/journees', 'nouvelle', step.path]"
+              class="text-primary underline underline-offset-2"
+            >
+              {{ step.labelKey | translate }}
+            </a>
+          </li>
+        }
+      </ul>
     </section>
   }
 
@@ -135,7 +55,7 @@
     <app-button
       variant="primary"
       class="validation-step6__footer-submit"
-      [disabled]="loading() || submitting() || summary() == null"
+      [disabled]="!canSubmit() || submitting()"
       [loading]="submitting()"
       (pressed)="submit()"
     >

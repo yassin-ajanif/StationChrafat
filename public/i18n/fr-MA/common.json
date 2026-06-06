@@ -72,6 +72,8 @@
   "bon": {
     "number": "N° bon",
     "clientPlate": "Client / plaque",
+    "operator": "Opérateur",
+    "operatorPlaceholder": "Sélectionner l'opérateur…",
     "servAmount": "Serv. (DH)",
     "partnerPlaceholder": "Plaque ou nom",
     "new": "Nouveau bon station",

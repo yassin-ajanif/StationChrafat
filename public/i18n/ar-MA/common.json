@@ -72,6 +72,8 @@
   "bon": {
     "number": "رقم الوصل",
     "clientPlate": "الزبون / اللوحة",
+    "operator": "المشغّل",
+    "operatorPlaceholder": "اختر المشغّل…",
     "servAmount": "خدمات (درهم)",
     "partnerPlaceholder": "اللوحة أو الاسم",
     "new": "وصل محطة جديد",

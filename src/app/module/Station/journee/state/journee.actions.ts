@@ -1,18 +1,21 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
-import { StationBon, StationBonDraftInput } from '../../shared/models/bon';
+import { StationBonDraftInput } from '../../shared/components/bon-dialog/bon-dialog.component';
 import {
+  BonsStep3,
+  ConfigurationStep1,
   DepenseLine,
   DepenseLinePatch,
+  DepensesStep6,
   EncaissementClientOption,
   EncaissementLine,
   EncaissementLinePatch,
-  JourneeDraftConfig,
+  EncaissementsStep4,
+  IndexPistolesStep2,
   JourneeKpis,
   JourneeSummary,
   NozzleIndexLine,
   Operator,
   ShiftSlot,
-  ValidationExtras,
 } from './journee.store';
 
 export const JourneeActions = createActionGroup({
@@ -30,7 +33,12 @@ export const JourneeActions = createActionGroup({
     'Load Operators Success': props<{ operators: Operator[] }>(),
     'Load Operators Failure': props<{ error: string }>(),
 
-    'Set Draft Config': props<{ config: Partial<JourneeDraftConfig> }>(),
+    'Patch Configuration Step1': props<{ patch: Partial<ConfigurationStep1> }>(),
+    'Patch Index Pistoles Step2': props<{ patch: Partial<IndexPistolesStep2> }>(),
+    'Patch Bons Step3': props<{ patch: Partial<BonsStep3> }>(),
+    'Patch Encaissements Step4': props<{ patch: Partial<EncaissementsStep4> }>(),
+    'Patch Depenses Step6': props<{ patch: Partial<DepensesStep6> }>(),
+
     'Start Journee': props<{
       chefDePisteId: number;
       shiftSlot: ShiftSlot;
@@ -87,10 +95,6 @@ export const JourneeActions = createActionGroup({
     'Add Depense Line': emptyProps(),
     'Update Depense Line': props<{ id: number; patch: DepenseLinePatch }>(),
     'Remove Depense Line': props<{ id: number }>(),
-
-    'Load Validation Extras': emptyProps(),
-    'Load Validation Extras Success': props<{ extras: ValidationExtras }>(),
-    'Load Validation Extras Failure': props<{ error: string }>(),
 
     'Submit Journee': emptyProps(),
     'Submit Journee Success': emptyProps(),

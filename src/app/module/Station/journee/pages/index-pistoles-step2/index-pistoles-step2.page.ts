@@ -1,23 +1,33 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { LocaleNumberPipe, LocaleCurrencyPipe, TranslatePipe } from '../../../../../core/i18n'
 import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
-import { paymentDifferenceLabel as formatPaymentDifference } from '../../../shared/models/common/payment-split.model';
 import {
+  computePaymentDifference,
+  computePaymentTotal,
+  emptyPaymentSplit,
+  isPaymentSplitBalanced,
+  paymentDifferenceLabel as formatPaymentDifference,
+  roundMoney,
+} from '../../../shared/components/bon-dialog/bon-dialog.component';
+import {
+  BombisteNozzlePayment,
   NozzleBombisteGroup,
   NozzleIndexLine,
-  isLineValid,
+  NozzleLineWithTotals,
 } from '../../state/journee.store';
 import { JourneeActions } from '../../state/journee.actions';
 import {
   selectAvailableNozzleBombistes,
-  selectCanProceedNozzleStep,
-  selectDraft,
-  selectNozzleBombisteGroups,
+  selectIndexPistolesStep2,
+  selectJourneeDraftId,
+  selectNozzleIndexes,
   selectNozzleIndexesError,
   selectNozzleIndexesLoading,
+  selectOperators,
   selectOperatorsLoading,
+  selectSelectedNozzleBombisteIds,
 } from '../../state/journee.selectors';
 
 @Component({
@@ -38,15 +48,40 @@ export class IndexPistolesStep2Page implements OnInit {
   private readonly nextLink = ['/journees', 'nouvelle', 'bons-step3'];
   private readonly guardRedirect = ['/journees', 'nouvelle', 'configuration-step1'];
 
-  readonly draft = this.store.selectSignal(selectDraft);
-  readonly bombisteGroups = this.store.selectSignal(selectNozzleBombisteGroups);
+  readonly journeeId = this.store.selectSignal(selectJourneeDraftId);
+  readonly indexPistolesStep2 = this.store.selectSignal(selectIndexPistolesStep2);
+  readonly lines = this.store.selectSignal(selectNozzleIndexes);
+  readonly selectedBombisteIds = this.store.selectSignal(selectSelectedNozzleBombisteIds);
+  readonly operators = this.store.selectSignal(selectOperators);
   readonly availableBombistes = this.store.selectSignal(selectAvailableNozzleBombistes);
   readonly loading = this.store.selectSignal(selectNozzleIndexesLoading);
   readonly operatorsLoading = this.store.selectSignal(selectOperatorsLoading);
   readonly loadError = this.store.selectSignal(selectNozzleIndexesError);
-  readonly canProceed = this.store.selectSignal(selectCanProceedNozzleStep);
 
   readonly pendingBombisteId = signal<number | null>(null);
+
+  readonly bombisteGroups = computed(() =>
+    buildNozzleBombisteGroups(
+      this.lines(),
+      this.selectedBombisteIds(),
+      new Map(this.operators().map((operator) => [operator.id, operator.name])),
+      new Map(this.indexPistolesStep2().bombistePayments.map((entry) => [entry.bombisteId, entry])),
+    ),
+  );
+
+  readonly stepIsValid = computed(() => {
+    const selectedIds = this.selectedBombisteIds();
+    if (selectedIds.length === 0) {
+      return false;
+    }
+    const relevant = this.lines().filter((line) => selectedIds.includes(line.bombisteId));
+    if (relevant.length === 0 || !relevant.every(isNozzleLineValid)) {
+      return false;
+    }
+    return this.bombisteGroups().every((group) =>
+      isPaymentSplitBalanced(group.payments, group.totals.amount),
+    );
+  });
 
   readonly sessionTotals = computed(() => {
     const groups = this.bombisteGroups();
@@ -56,8 +91,16 @@ export class IndexPistolesStep2Page implements OnInit {
     };
   });
 
+  constructor() {
+    effect(() => {
+      this.store.dispatch(
+        JourneeActions.patchIndexPistolesStep2({ patch: { isValid: this.stepIsValid() } }),
+      );
+    });
+  }
+
   ngOnInit(): void {
-    if (this.draft().id == null) {
+    if (this.journeeId() == null) {
       void this.router.navigate(this.guardRedirect);
       return;
     }
@@ -108,9 +151,6 @@ export class IndexPistolesStep2Page implements OnInit {
   }
 
   onNext(): void {
-    if (!this.canProceed()) {
-      return;
-    }
     void this.router.navigate(this.nextLink);
   }
 
@@ -119,7 +159,7 @@ export class IndexPistolesStep2Page implements OnInit {
   }
 
   lineInvalid(line: NozzleIndexLine): boolean {
-    return !isLineValid(line);
+    return !isNozzleLineValid(line);
   }
 
   exportCsv(): void {
@@ -164,4 +204,67 @@ export class IndexPistolesStep2Page implements OnInit {
   print(): void {
     window.print();
   }
+}
+
+function computeLineQuantity(line: NozzleIndexLine): number {
+  if (line.status === 'offline' || line.indexEntree == null || line.indexSortie == null) {
+    return 0;
+  }
+  const raw = line.indexEntree - line.indexSortie - line.tankReturn;
+  return Math.max(0, raw);
+}
+
+function computeLineTotal(line: NozzleIndexLine): number {
+  return roundMoney(computeLineQuantity(line) * line.unitPrice);
+}
+
+function mapLinesWithTotals(lines: NozzleIndexLine[]): NozzleLineWithTotals[] {
+  return lines.map((line) => ({
+    line,
+    quantity: computeLineQuantity(line),
+    total: computeLineTotal(line),
+  }));
+}
+
+function isNozzleLineValid(line: NozzleIndexLine): boolean {
+  if (line.status === 'offline') {
+    return true;
+  }
+  if (
+    line.indexEntree == null ||
+    line.indexSortie == null ||
+    Number.isNaN(line.indexEntree) ||
+    Number.isNaN(line.indexSortie)
+  ) {
+    return false;
+  }
+  return line.indexEntree >= line.indexSortie + line.tankReturn;
+}
+
+function buildNozzleBombisteGroups(
+  lines: NozzleIndexLine[],
+  selectedBombisteIds: number[],
+  operatorNameById: Map<number, string>,
+  paymentsByBombisteId: Map<number, BombisteNozzlePayment>,
+): NozzleBombisteGroup[] {
+  return selectedBombisteIds.map((bombisteId) => {
+    const groupLines = lines.filter((line) => line.bombisteId === bombisteId);
+    const rows = mapLinesWithTotals(groupLines);
+    const active = rows.filter(({ line }) => line.status === 'active');
+    const amount = roundMoney(active.reduce((sum, row) => sum + row.total, 0));
+    const payments = paymentsByBombisteId.get(bombisteId) ?? emptyPaymentSplit();
+
+    return {
+      bombisteId,
+      bombisteName: operatorNameById.get(bombisteId) ?? `Bombiste #${bombisteId}`,
+      rows,
+      totals: {
+        liters: active.reduce((sum, row) => sum + row.quantity, 0),
+        amount,
+      },
+      payments,
+      paymentTotal: computePaymentTotal(payments),
+      paymentDifference: computePaymentDifference(payments, amount),
+    };
+  });
 }

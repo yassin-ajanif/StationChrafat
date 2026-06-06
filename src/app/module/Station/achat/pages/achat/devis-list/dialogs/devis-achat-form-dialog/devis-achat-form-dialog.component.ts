@@ -3,8 +3,7 @@ import { ButtonComponent } from '../../../../../../../../shared/components/butto
 import { LocaleCurrencyPipe, TranslatePipe } from '../../../../../../../../core/i18n'
 import { BonRecapPaymentsComponent } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import { DocumentLinesTableComponent } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
-import { PaymentSplit, isPaymentSplitBalanced } from '../../../../../../shared/models/common/payment-split.model';
-import { computeDocumentLineTableTotalTTC, createEmptyDocumentLineTableRow, documentLineToTableRow, filledDocumentLineTableRows, isDocumentLineTableRowEmpty, isDocumentLineTableRowFilled, parseDocumentLineDrafts } from '../../../../../../shared/models/common/document-line.model';
+import { PaymentSplit, isPaymentSplitBalanced, computeDocumentLineTableTotalTTC, createEmptyDocumentLineTableRow, documentLineToTableRow, filledDocumentLineTableRows, isDocumentLineTableRowEmpty, isDocumentLineTableRowFilled, parseDocumentLineDrafts } from '../../../../../../shared/components/bon-dialog/bon-dialog.component';
 import { DevisAchat, DevisAchatDraft, DevisAchatLineTableRow, DevisAchatStatut } from '../../../../../state/store';
 
 const DEVIS_ACHAT_STATUT_KEYS: Record<DevisAchatStatut, string> = {

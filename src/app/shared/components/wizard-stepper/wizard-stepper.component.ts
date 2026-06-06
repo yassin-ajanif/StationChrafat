@@ -13,6 +13,7 @@ import { JourneeWizardStep } from '../../../module/Station/journee/journee-wizar
 export class WizardStepperComponent {
   readonly steps = input.required<readonly JourneeWizardStep[]>();
   readonly currentPath = input.required<string>();
+  readonly stepValidityByPath = input<Record<string, boolean>>({});
   /** Hide step labels (validation recap layout). */
   readonly compact = input(false);
 
@@ -23,6 +24,21 @@ export class WizardStepperComponent {
   isCompleted(step: JourneeWizardStep): boolean {
     const current = this.steps().find((s) => s.path === this.currentPath());
     return current != null && step.order < current.order;
+  }
+
+  isStepValid(step: JourneeWizardStep): boolean {
+    return this.stepValidityByPath()[step.path] ?? true;
+  }
+
+  showCheckmark(step: JourneeWizardStep): boolean {
+    return this.isCompleted(step) && this.isStepValid(step);
+  }
+
+  showInvalidMark(step: JourneeWizardStep): boolean {
+    if (this.isCompleted(step)) {
+      return !this.isStepValid(step);
+    }
+    return this.isActive(step) && !this.isStepValid(step);
   }
 
   formatOrder(step: JourneeWizardStep): string {

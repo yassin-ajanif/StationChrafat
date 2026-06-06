@@ -9,11 +9,14 @@
         [routerLink]="['/journees', 'nouvelle', step.path]"
         class="wizard-stepper__link"
         [class.wizard-stepper__link--active]="isActive(step)"
-        [class.wizard-stepper__link--completed]="isCompleted(step)"
+        [class.wizard-stepper__link--completed]="isCompleted(step) && isStepValid(step)"
+        [class.wizard-stepper__link--invalid]="showInvalidMark(step)"
       >
         <span class="wizard-stepper__badge">
-          @if (isCompleted(step)) {
+          @if (showCheckmark(step)) {
             <span aria-hidden="true">✓</span>
+          } @else if (showInvalidMark(step)) {
+            <span class="wizard-stepper__invalid-mark" aria-hidden="true">✕</span>
           } @else {
             {{ formatOrder(step) }}
           }

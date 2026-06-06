@@ -11,7 +11,7 @@ import {
   computeLineAmountTTC,
   defaultDocumentLineVisibility,
   filledDocumentLineTableRows,
-} from '../../models/common/document-line.model';
+} from '../bon-dialog/bon-dialog.component';
 
 @Component({
   selector: 'app-document-lines-table',

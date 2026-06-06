@@ -44,7 +44,19 @@
     @apply border-outline-variant bg-surface-container-lowest text-on-surface;
   }
 
+  &__link--invalid &__badge {
+    @apply border-primary bg-surface-container-lowest text-primary;
+  }
+
+  &__invalid-mark {
+    @apply text-base font-bold leading-none text-primary;
+  }
+
   &__link--active &__badge {
     @apply border-primary bg-primary text-on-primary;
+  }
+
+  &__link--active.wizard-stepper__link--invalid &__badge {
+    @apply border-primary bg-surface-container-lowest text-primary;
   }
 }

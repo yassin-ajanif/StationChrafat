@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { delay, of } from 'rxjs';
-import { StationBon } from '../../shared/models/bon';
+import { StationBon } from '../../shared/components/bon-dialog/bon-dialog.component';
 import {
   ENCAISSEMENT_DIVERS_CLIENT_ID,
   DepenseLine,
@@ -11,9 +11,8 @@ import {
   NozzleIndexLine,
   Operator,
   ShiftSlot,
-  ValidationExtras,
-  emptyPaymentSplit,
 } from '../state/journee.store';
+import { emptyPaymentSplit } from '../../shared/components/bon-dialog/bon-dialog.component';
 
 @Injectable({ providedIn: 'root' })
 export class JourneeApi {
@@ -197,6 +196,11 @@ export class JourneeApi {
         bonNumber: 'LAV-8801',
         partnerRef: '12345-A-12',
         chefVidangeLavageId: 2,
+        operatorId: 2,
+        dateLivraison: new Date().toISOString().split('T')[0],
+        statut: 'planifiee',
+        adresse: 'Station-service',
+        description: '',
         serviceLines: [
           {
             id: 1,
@@ -228,6 +232,11 @@ export class JourneeApi {
         bonNumber: 'LAV-8802',
         partnerRef: '67890-B-34',
         chefVidangeLavageId: 3,
+        operatorId: 3,
+        dateLivraison: new Date().toISOString().split('T')[0],
+        statut: 'planifiee',
+        adresse: 'Station-service',
+        description: '',
         serviceLines: [
           {
             id: 3,
@@ -258,6 +267,11 @@ export class JourneeApi {
         bonNumber: 'VID-8901',
         partnerRef: '12345-A-12',
         chefVidangeLavageId: 2,
+        operatorId: 2,
+        dateLivraison: new Date().toISOString().split('T')[0],
+        statut: 'planifiee',
+        adresse: 'Station-service',
+        description: '',
         serviceLines: [
           {
             id: 5,
@@ -299,6 +313,11 @@ export class JourneeApi {
         bonNumber: 'VID-8902',
         partnerRef: '67890-B-34',
         chefVidangeLavageId: 3,
+        operatorId: 3,
+        dateLivraison: new Date().toISOString().split('T')[0],
+        statut: 'planifiee',
+        adresse: 'Station-service',
+        description: '',
         serviceLines: [
           {
             id: 8,
@@ -398,15 +417,6 @@ export class JourneeApi {
       },
     ];
     return of(lines).pipe(delay(300));
-  }
-
-  getValidationExtras() {
-    const extras: ValidationExtras = {
-      shopProducts: 8_126.47,
-      debtSettlements: 1_200,
-      cardRecharges: 1_100,
-    };
-    return of(extras).pipe(delay(250));
   }
 
   submitJournee(journeeId: number) {

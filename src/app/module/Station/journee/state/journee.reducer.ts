@@ -1,18 +1,34 @@
 import { createFeature, createReducer, on } from '@ngrx/store';
+import { emptyPaymentSplit } from '../../shared/components/bon-dialog/bon-dialog.component';
 import {
+  DEFAULT_DEPENSE_PAYMENT_MODE,
+  DepenseLine,
   EncaissementClientOption,
+  EncaissementLine,
+  initialJourneeDraft,
   JourneeDraft,
   JourneeKpis,
   JourneeSummary,
   Operator,
-  ValidationExtras,
-  createEmptyDepenseLine,
-  createEmptyEncaissementLine,
-  emptyBombisteNozzlePayment,
-  emptyPaymentSplit,
 } from './journee.store';
 import { JourneeActions } from './journee.actions';
 
+function createEmptyEncaissementLine(id: number): EncaissementLine {
+  return { id, clientId: null, paymentMode: '', amount: 0, note: '' };
+}
+
+function createEmptyDepenseLine(id: number): DepenseLine {
+  return {
+    id,
+    expenseType: '',
+    description: '',
+    amount: 0,
+    paymentMode: DEFAULT_DEPENSE_PAYMENT_MODE,
+    note: '',
+  };
+}
+
+const emptyDraft = (): JourneeDraft => initialJourneeDraft();
 
 export interface JourneeState {
   journees: JourneeSummary[];
@@ -34,28 +50,9 @@ export interface JourneeState {
   encaissementsError: string | null;
   depensesLoading: boolean;
   depensesError: string | null;
-  validationExtras: ValidationExtras | null;
-  validationExtrasLoading: boolean;
-  validationExtrasError: string | null;
   submittingJournee: boolean;
   submitJourneeError: string | null;
 }
-
-const emptyDraft = (): JourneeDraft => ({
-  id: null,
-  config: {
-    chefDePisteId: null,
-    shiftSlot: null,
-    openedAt: new Date().toISOString(),
-  },
-  selectedNozzleBombisteIds: [],
-  nozzleBombistePayments: [],
-  stationBonsChefId: null,
-  nozzleIndexes: [],
-  stationBons: [],
-  encaissements: [],
-  depenses: [],
-});
 
 export const initialJourneeState: JourneeState = {
   journees: [],
@@ -77,9 +74,6 @@ export const initialJourneeState: JourneeState = {
   encaissementsError: null,
   depensesLoading: false,
   depensesError: null,
-  validationExtras: null,
-  validationExtrasLoading: false,
-  validationExtrasError: null,
   submittingJournee: false,
   submitJourneeError: null,
 };
@@ -121,13 +115,45 @@ export const journeeFeature = createFeature({
     })),
     on(JourneeActions.loadOperatorsFailure, (state) => ({ ...state, operatorsLoading: false })),
 
-    on(JourneeActions.setDraftConfig, (state, { config }) => ({
+    on(JourneeActions.patchConfigurationStep1, (state, { patch }) => ({
       ...state,
       draft: {
         ...state.draft,
-        config: { ...state.draft.config, ...config },
+        configurationStep1: { ...state.draft.configurationStep1, ...patch },
       },
       startError: null,
+    })),
+
+    on(JourneeActions.patchIndexPistolesStep2, (state, { patch }) => ({
+      ...state,
+      draft: {
+        ...state.draft,
+        indexPistolesStep2: { ...state.draft.indexPistolesStep2, ...patch },
+      },
+    })),
+
+    on(JourneeActions.patchBonsStep3, (state, { patch }) => ({
+      ...state,
+      draft: {
+        ...state.draft,
+        bonsStep3: { ...state.draft.bonsStep3, ...patch },
+      },
+    })),
+
+    on(JourneeActions.patchEncaissementsStep4, (state, { patch }) => ({
+      ...state,
+      draft: {
+        ...state.draft,
+        encaissementsStep4: { ...state.draft.encaissementsStep4, ...patch },
+      },
+    })),
+
+    on(JourneeActions.patchDepensesStep6, (state, { patch }) => ({
+      ...state,
+      draft: {
+        ...state.draft,
+        depensesStep6: { ...state.draft.depensesStep6, ...patch },
+      },
     })),
 
     on(JourneeActions.startJournee, (state) => ({
@@ -140,8 +166,12 @@ export const journeeFeature = createFeature({
       startingJournee: false,
       draft: {
         ...state.draft,
-        id,
-        config: { ...state.draft.config, openedAt },
+        configurationStep1: {
+          ...state.draft.configurationStep1,
+          journeeId: id,
+          openedAt,
+          isValid: true,
+        },
       },
     })),
     on(JourneeActions.startJourneeFailure, (state, { error }) => ({
@@ -158,7 +188,6 @@ export const journeeFeature = createFeature({
       encaissementClientsError: null,
       encaissementsError: null,
       depensesError: null,
-      validationExtrasError: null,
       submitJourneeError: null,
     })),
 
@@ -168,8 +197,9 @@ export const journeeFeature = createFeature({
       nozzleIndexesError: null,
     })),
     on(JourneeActions.loadNozzleIndexesSuccess, (state, { lines }) => {
+      const step2 = state.draft.indexPistolesStep2;
       const merged = lines.map((line) => {
-        const existing = state.draft.nozzleIndexes.find((l) => l.id === line.id);
+        const existing = step2.lines.find((l) => l.id === line.id);
         if (!existing) {
           return line;
         }
@@ -182,7 +212,10 @@ export const journeeFeature = createFeature({
       return {
         ...state,
         nozzleIndexesLoading: false,
-        draft: { ...state.draft, nozzleIndexes: merged },
+        draft: {
+          ...state.draft,
+          indexPistolesStep2: { ...step2, lines: merged },
+        },
       };
     }),
     on(JourneeActions.loadNozzleIndexesFailure, (state, { error }) => ({
@@ -194,10 +227,10 @@ export const journeeFeature = createFeature({
     on(JourneeActions.transmitFuelSalesToStationBons, (state) => state),
 
     on(JourneeActions.addStationBon, (state, { bon }) => {
-      const nextBonId =
-        state.draft.stationBons.reduce((max, b) => Math.max(max, b.id), 0) + 1;
+      const items = state.draft.bonsStep3.items;
+      const nextBonId = items.reduce((max, b) => Math.max(max, b.id), 0) + 1;
       let nextLineId =
-        state.draft.stationBons.reduce(
+        items.reduce(
           (max, b) =>
             Math.max(
               max,
@@ -221,29 +254,38 @@ export const journeeFeature = createFeature({
         ...state,
         draft: {
           ...state.draft,
-          stationBons: [
-            ...state.draft.stationBons,
-            {
-              id: nextBonId,
-              bonNumber: bon.bonNumber.trim(),
-              partnerRef: bon.partnerRef.trim(),
-              chefVidangeLavageId: bon.chefVidangeLavageId,
-              serviceLines: bon.serviceLines.map(mapLine),
-              productLines: bon.productLines.map(mapLine),
-              payments: bon.payments ?? emptyPaymentSplit(),
-            },
-          ],
+          bonsStep3: {
+            ...state.draft.bonsStep3,
+            items: [
+              ...items,
+              {
+                id: nextBonId,
+                bonNumber: bon.bonNumber.trim(),
+                partnerRef: bon.partnerRef.trim(),
+                chefVidangeLavageId: bon.chefVidangeLavageId,
+                operatorId: bon.operatorId,
+                dateLivraison: bon.dateLivraison,
+                statut: bon.statut,
+                adresse: bon.adresse.trim(),
+                description: bon.description.trim(),
+                serviceLines: bon.serviceLines.map(mapLine),
+                productLines: bon.productLines.map(mapLine),
+                payments: bon.payments ?? emptyPaymentSplit(),
+              },
+            ],
+          },
         },
       };
     }),
 
     on(JourneeActions.updateStationBon, (state, { id, bon }) => {
-      const existing = state.draft.stationBons.find((b) => b.id === id);
+      const items = state.draft.bonsStep3.items;
+      const existing = items.find((b) => b.id === id);
       if (!existing) {
         return state;
       }
       let nextLineId =
-        state.draft.stationBons.reduce(
+        items.reduce(
           (max, b) =>
             Math.max(
               max,
@@ -271,23 +313,31 @@ export const journeeFeature = createFeature({
         ...state,
         draft: {
           ...state.draft,
-          stationBons: state.draft.stationBons.map((b) =>
-            b.id === id
-              ? {
-                  ...b,
-                  bonNumber: bon.bonNumber.trim(),
-                  partnerRef: bon.partnerRef.trim(),
-                  chefVidangeLavageId: bon.chefVidangeLavageId,
-                  serviceLines: bon.serviceLines.map((line, index) =>
-                    mapLine(line, index, existing.serviceLines),
-                  ),
-                  productLines: bon.productLines.map((line, index) =>
-                    mapLine(line, index, existing.productLines),
-                  ),
-                  payments: bon.payments ?? emptyPaymentSplit(),
-                }
-              : b,
-          ),
+          bonsStep3: {
+            ...state.draft.bonsStep3,
+            items: items.map((b) =>
+              b.id === id
+                ? {
+                    ...b,
+                    bonNumber: bon.bonNumber.trim(),
+                    partnerRef: bon.partnerRef.trim(),
+                    chefVidangeLavageId: bon.chefVidangeLavageId,
+                    operatorId: bon.operatorId,
+                    dateLivraison: bon.dateLivraison,
+                    statut: bon.statut,
+                    adresse: bon.adresse.trim(),
+                    description: bon.description.trim(),
+                    serviceLines: bon.serviceLines.map((line, index) =>
+                      mapLine(line, index, existing.serviceLines),
+                    ),
+                    productLines: bon.productLines.map((line, index) =>
+                      mapLine(line, index, existing.productLines),
+                    ),
+                    payments: bon.payments ?? emptyPaymentSplit(),
+                  }
+                : b,
+            ),
+          },
         },
       };
     }),
@@ -296,7 +346,10 @@ export const journeeFeature = createFeature({
       ...state,
       draft: {
         ...state.draft,
-        stationBons: state.draft.stationBons.filter((b) => b.id !== id),
+        bonsStep3: {
+          ...state.draft.bonsStep3,
+          items: state.draft.bonsStep3.items.filter((b) => b.id !== id),
+        },
       },
     })),
 
@@ -304,7 +357,10 @@ export const journeeFeature = createFeature({
       ...state,
       draft: {
         ...state.draft,
-        stationBonsChefId: chefVidangeLavageId,
+        bonsStep3: {
+          ...state.draft.bonsStep3,
+          chefId: chefVidangeLavageId,
+        },
       },
     })),
 
@@ -330,12 +386,15 @@ export const journeeFeature = createFeature({
       encaissementsError: null,
     })),
     on(JourneeActions.loadEncaissementsSuccess, (state, { lines }) => {
-      const merged =
-        state.draft.encaissements.length > 0 ? state.draft.encaissements : lines;
+      const step4 = state.draft.encaissementsStep4;
+      const merged = step4.lines.length > 0 ? step4.lines : lines;
       return {
         ...state,
         encaissementsLoading: false,
-        draft: { ...state.draft, encaissements: merged },
+        draft: {
+          ...state.draft,
+          encaissementsStep4: { ...step4, lines: merged },
+        },
       };
     }),
     on(JourneeActions.loadEncaissementsFailure, (state, { error }) => ({
@@ -345,16 +404,16 @@ export const journeeFeature = createFeature({
     })),
 
     on(JourneeActions.addEncaissementLine, (state) => {
-      const nextId =
-        state.draft.encaissements.reduce((max, line) => Math.max(max, line.id), 0) + 1;
+      const lines = state.draft.encaissementsStep4.lines;
+      const nextId = lines.reduce((max, line) => Math.max(max, line.id), 0) + 1;
       return {
         ...state,
         draft: {
           ...state.draft,
-          encaissements: [
-            ...state.draft.encaissements,
-            createEmptyEncaissementLine(nextId),
-          ],
+          encaissementsStep4: {
+            ...state.draft.encaissementsStep4,
+            lines: [...lines, createEmptyEncaissementLine(nextId)],
+          },
         },
       };
     }),
@@ -363,9 +422,12 @@ export const journeeFeature = createFeature({
       ...state,
       draft: {
         ...state.draft,
-        encaissements: state.draft.encaissements.map((line) =>
-          line.id === id ? { ...line, ...patch } : line,
-        ),
+        encaissementsStep4: {
+          ...state.draft.encaissementsStep4,
+          lines: state.draft.encaissementsStep4.lines.map((line) =>
+            line.id === id ? { ...line, ...patch } : line,
+          ),
+        },
       },
     })),
 
@@ -373,7 +435,10 @@ export const journeeFeature = createFeature({
       ...state,
       draft: {
         ...state.draft,
-        encaissements: state.draft.encaissements.filter((line) => line.id !== id),
+        encaissementsStep4: {
+          ...state.draft.encaissementsStep4,
+          lines: state.draft.encaissementsStep4.lines.filter((line) => line.id !== id),
+        },
       },
     })),
 
@@ -383,11 +448,15 @@ export const journeeFeature = createFeature({
       depensesError: null,
     })),
     on(JourneeActions.loadDepensesSuccess, (state, { lines }) => {
-      const merged = state.draft.depenses.length > 0 ? state.draft.depenses : lines;
+      const step6 = state.draft.depensesStep6;
+      const merged = step6.lines.length > 0 ? step6.lines : lines;
       return {
         ...state,
         depensesLoading: false,
-        draft: { ...state.draft, depenses: merged },
+        draft: {
+          ...state.draft,
+          depensesStep6: { ...step6, lines: merged },
+        },
       };
     }),
     on(JourneeActions.loadDepensesFailure, (state, { error }) => ({
@@ -397,13 +466,16 @@ export const journeeFeature = createFeature({
     })),
 
     on(JourneeActions.addDepenseLine, (state) => {
-      const nextId =
-        state.draft.depenses.reduce((max, line) => Math.max(max, line.id), 0) + 1;
+      const lines = state.draft.depensesStep6.lines;
+      const nextId = lines.reduce((max, line) => Math.max(max, line.id), 0) + 1;
       return {
         ...state,
         draft: {
           ...state.draft,
-          depenses: [...state.draft.depenses, createEmptyDepenseLine(nextId)],
+          depensesStep6: {
+            ...state.draft.depensesStep6,
+            lines: [...lines, createEmptyDepenseLine(nextId)],
+          },
         },
       };
     }),
@@ -412,9 +484,12 @@ export const journeeFeature = createFeature({
       ...state,
       draft: {
         ...state.draft,
-        depenses: state.draft.depenses.map((line) =>
-          line.id === id ? { ...line, ...patch } : line,
-        ),
+        depensesStep6: {
+          ...state.draft.depensesStep6,
+          lines: state.draft.depensesStep6.lines.map((line) =>
+            line.id === id ? { ...line, ...patch } : line,
+          ),
+        },
       },
     })),
 
@@ -422,23 +497,11 @@ export const journeeFeature = createFeature({
       ...state,
       draft: {
         ...state.draft,
-        depenses: state.draft.depenses.filter((line) => line.id !== id),
+        depensesStep6: {
+          ...state.draft.depensesStep6,
+          lines: state.draft.depensesStep6.lines.filter((line) => line.id !== id),
+        },
       },
-    })),
-
-    on(JourneeActions.loadValidationExtras, (state) => ({
-      ...state,
-      validationExtrasLoading: true,
-      validationExtrasError: null,
-    })),
-    on(JourneeActions.loadValidationExtrasSuccess, (state, { extras }) => ({
-      ...state,
-      validationExtrasLoading: false,
-      validationExtras: extras,
-    })),
-    on(JourneeActions.loadValidationExtrasFailure, (state) => ({
-      ...state,
-      validationExtrasLoading: false,
     })),
 
     on(JourneeActions.submitJournee, (state) => ({
@@ -450,7 +513,6 @@ export const journeeFeature = createFeature({
       ...state,
       submittingJournee: false,
       draft: emptyDraft(),
-      validationExtras: null,
     })),
     on(JourneeActions.submitJourneeFailure, (state, { error }) => ({
       ...state,
@@ -462,38 +524,40 @@ export const journeeFeature = createFeature({
       ...state,
       draft: {
         ...state.draft,
-        nozzleIndexes: state.draft.nozzleIndexes.map((line) => {
-          if (line.id !== lineId) {
-            return line;
-          }
-          return {
-            ...line,
-            ...(indexEntree !== undefined && { indexEntree }),
-            ...(indexSortie !== undefined && { indexSortie }),
-          };
-        }),
+        indexPistolesStep2: {
+          ...state.draft.indexPistolesStep2,
+          lines: state.draft.indexPistolesStep2.lines.map((line) => {
+            if (line.id !== lineId) {
+              return line;
+            }
+            return {
+              ...line,
+              ...(indexEntree !== undefined && { indexEntree }),
+              ...(indexSortie !== undefined && { indexSortie }),
+            };
+          }),
+        },
       },
     })),
 
     on(JourneeActions.addNozzleBombiste, (state, { bombisteId }) => {
-      const selected = state.draft.selectedNozzleBombisteIds;
+      const step2 = state.draft.indexPistolesStep2;
+      const selected = step2.selectedBombisteIds;
       if (selected.includes(bombisteId)) {
         return state;
       }
-      const hasPayment = state.draft.nozzleBombistePayments.some(
-        (entry) => entry.bombisteId === bombisteId,
-      );
+      const hasPayment = step2.bombistePayments.some((entry) => entry.bombisteId === bombisteId);
       return {
         ...state,
         draft: {
           ...state.draft,
-          selectedNozzleBombisteIds: [...selected, bombisteId],
-          nozzleBombistePayments: hasPayment
-            ? state.draft.nozzleBombistePayments
-            : [
-                ...state.draft.nozzleBombistePayments,
-                { bombisteId, ...emptyBombisteNozzlePayment() },
-              ],
+          indexPistolesStep2: {
+            ...step2,
+            selectedBombisteIds: [...selected, bombisteId],
+            bombistePayments: hasPayment
+              ? step2.bombistePayments
+              : [...step2.bombistePayments, { bombisteId, ...emptyPaymentSplit() }],
+          },
         },
       };
     }),
@@ -502,36 +566,38 @@ export const journeeFeature = createFeature({
       ...state,
       draft: {
         ...state.draft,
-        selectedNozzleBombisteIds: state.draft.selectedNozzleBombisteIds.filter(
-          (id) => id !== bombisteId,
-        ),
-        nozzleBombistePayments: state.draft.nozzleBombistePayments.filter(
-          (entry) => entry.bombisteId !== bombisteId,
-        ),
+        indexPistolesStep2: {
+          ...state.draft.indexPistolesStep2,
+          selectedBombisteIds: state.draft.indexPistolesStep2.selectedBombisteIds.filter(
+            (id) => id !== bombisteId,
+          ),
+          bombistePayments: state.draft.indexPistolesStep2.bombistePayments.filter(
+            (entry) => entry.bombisteId !== bombisteId,
+          ),
+        },
       },
     })),
 
     on(JourneeActions.updateNozzleBombistePayment, (state, { bombisteId, cash, tpe, bons }) => {
-      const existing = state.draft.nozzleBombistePayments.find(
-        (entry) => entry.bombisteId === bombisteId,
-      );
+      const step2 = state.draft.indexPistolesStep2;
+      const existing = step2.bombistePayments.find((entry) => entry.bombisteId === bombisteId);
       const nextEntry = {
         bombisteId,
         cash: cash ?? existing?.cash ?? 0,
         tpe: tpe ?? existing?.tpe ?? 0,
         bons: bons ?? existing?.bons ?? 0,
       };
-      const nozzleBombistePayments = existing
-        ? state.draft.nozzleBombistePayments.map((entry) =>
+      const bombistePayments = existing
+        ? step2.bombistePayments.map((entry) =>
             entry.bombisteId === bombisteId ? nextEntry : entry,
           )
-        : [...state.draft.nozzleBombistePayments, nextEntry];
+        : [...step2.bombistePayments, nextEntry];
 
       return {
         ...state,
         draft: {
           ...state.draft,
-          nozzleBombistePayments,
+          indexPistolesStep2: { ...step2, bombistePayments },
         },
       };
     }),

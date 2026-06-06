@@ -155,37 +155,19 @@ export class JourneeEffects {
     ),
   );
 
-  loadValidationExtras$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(JourneeActions.loadValidationExtras),
-      switchMap(() =>
-        this.api.getValidationExtras().pipe(
-          map((extras) => JourneeActions.loadValidationExtrasSuccess({ extras })),
-          catchError((err) =>
-            of(
-              JourneeActions.loadValidationExtrasFailure({
-                error: err?.message ?? 'Erreur chargement validation',
-              }),
-            ),
-          ),
-        ),
-      ),
-    ),
-  );
-
   submitJournee$ = createEffect(() =>
     this.actions$.pipe(
       ofType(JourneeActions.submitJournee),
       withLatestFrom(this.store.select(selectDraft)),
       switchMap(([, draft]) => {
-        if (draft.id == null) {
+        if (draft.configurationStep1.journeeId == null) {
           return of(
             JourneeActions.submitJourneeFailure({
               error: 'Journée non démarrée',
             }),
           );
         }
-        return this.api.submitJournee(draft.id).pipe(
+        return this.api.submitJournee(draft.configurationStep1.journeeId).pipe(
           map(() => JourneeActions.submitJourneeSuccess()),
           catchError((err) =>
             of(

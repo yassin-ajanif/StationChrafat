@@ -1,8 +1,9 @@
 import { DatePipe } from '@angular/common';
 import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../../../../core/i18n'
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
+import { LivraisonFormDialogComponent, LivraisonFormEditValue, LivraisonFormDraft } from '../../../../shared/components/dialogs/livraison-form-dialog/livraison-form-dialog.component';
 import { Livraison, LivraisonDraft, LivraisonStatut } from '../../../state/store';
 
 const LIVRAISON_STATUT_KEYS: Record<LivraisonStatut, string> = {
@@ -18,7 +19,6 @@ import {
   selectLivraisonsLoading,
   selectLivraisonsSaving,
 } from '../../../state/ventes.selectors';
-import { LivraisonFormDialogComponent } from './dialogs/livraison-form-dialog/livraison-form-dialog.component';
 
 @Component({
   selector: 'app-erp-livraisons-list-page',
@@ -40,6 +40,21 @@ export class LivraisonsListPage implements OnInit {
   readonly showDialog = signal(false);
   readonly editingLivraison = signal<Livraison | null>(null);
 
+  readonly editingLivraisonValue = computed<LivraisonFormEditValue | null>(() => {
+    const l = this.editingLivraison();
+    if (!l) return null;
+    return {
+      client: l.client,
+      dateLivraison: l.dateLivraison,
+      statut: l.statut,
+      adresse: l.adresse,
+      description: l.description,
+      serviceLines: l.serviceLines,
+      productLines: l.productLines,
+      payments: l.payments,
+    };
+  });
+
   ngOnInit(): void {
     this.store.dispatch(VentesActions.loadLivraisons());
   }
@@ -54,12 +69,22 @@ export class LivraisonsListPage implements OnInit {
     this.showDialog.set(true);
   }
 
-  onSaved(draft: LivraisonDraft): void {
+  onSaved(draft: LivraisonFormDraft): void {
+    const livraisonDraft: LivraisonDraft = {
+      client: draft.client,
+      dateLivraison: draft.dateLivraison,
+      statut: draft.statut,
+      adresse: draft.adresse,
+      description: draft.description,
+      serviceLines: draft.serviceLines,
+      productLines: draft.productLines,
+      payments: draft.payments,
+    };
     const editing = this.editingLivraison();
     if (editing) {
-      this.store.dispatch(VentesActions.updateLivraison({ id: editing.id, draft }));
+      this.store.dispatch(VentesActions.updateLivraison({ id: editing.id, draft: livraisonDraft }));
     } else {
-      this.store.dispatch(VentesActions.addLivraison({ draft }));
+      this.store.dispatch(VentesActions.addLivraison({ draft: livraisonDraft }));
     }
     this.showDialog.set(false);
     this.editingLivraison.set(null);

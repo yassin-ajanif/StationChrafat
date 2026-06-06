@@ -16,13 +16,12 @@
         <select
           id="chef-de-piste"
           class="configuration-step1__select"
-          [value]="chefId() ?? ''"
           (change)="onChefChange($event)"
-          [disabled]="operatorsLoading()"
+          [disabled]="operatorsLoading() && operators().length === 0"
         >
-          <option value="">{{ 'journee.step1.chefPlaceholder' | translate }}</option>
+          <option value="" [selected]="chefId() == null">{{ 'journee.step1.chefPlaceholder' | translate }}</option>
           @for (op of operators(); track op.id) {
-            <option [value]="op.id">{{ op.name }}</option>
+            <option [value]="op.id" [selected]="chefId() === op.id">{{ op.name }}</option>
           }
         </select>
         <p class="configuration-step1__hint">{{ 'journee.step1.chefHint' | translate }}</p>

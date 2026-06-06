@@ -314,7 +314,7 @@
     </a>
     <app-button
       variant="primary"
-      [disabled]="!canProceed() || loading()"
+      [disabled]="loading()"
       (pressed)="onNext()"
     >
       Suivant →

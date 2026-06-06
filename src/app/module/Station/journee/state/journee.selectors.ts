@@ -1,16 +1,6 @@
 import { createSelector } from '@ngrx/store';
-import { computeStationBonsTotal, canProceedBonsStep } from '../../shared/models/bon';
-import {
-  buildJourneeValidationSummary,
-  buildNozzleBombisteGroups,
-  canProceedDepensesStep,
-  canProceedEncaissementsStep,
-  canProceedNozzleStep,
-  computeDepensesTotal,
-  computeEncaissementsTotal,
-  computeSessionSummary,
-  mapLinesWithTotals,
-} from './journee.store';
+import { JOURNEE_WIZARD_STEPS } from '../journee-wizard.steps';
+import { JourneeDraft } from './journee.store';
 import { journeeFeature } from './journee.reducer';
 
 export const {
@@ -34,19 +24,37 @@ export const {
   selectEncaissementsError,
   selectDepensesLoading,
   selectDepensesError,
-  selectValidationExtras,
-  selectValidationExtrasLoading,
-  selectValidationExtrasError,
   selectSubmittingJournee,
   selectSubmitJourneeError,
 } = journeeFeature;
 
-export const selectStationBons = createSelector(selectDraft, (draft) => draft.stationBons);
-
-export const selectStationBonsChefId = createSelector(
+export const selectConfigurationStep1 = createSelector(
   selectDraft,
-  (draft) => draft.stationBonsChefId,
+  (draft) => draft.configurationStep1,
 );
+
+export const selectIndexPistolesStep2 = createSelector(
+  selectDraft,
+  (draft) => draft.indexPistolesStep2,
+);
+
+export const selectBonsStep3 = createSelector(selectDraft, (draft) => draft.bonsStep3);
+
+export const selectEncaissementsStep4 = createSelector(
+  selectDraft,
+  (draft) => draft.encaissementsStep4,
+);
+
+export const selectDepensesStep6 = createSelector(selectDraft, (draft) => draft.depensesStep6);
+
+export const selectJourneeDraftId = createSelector(
+  selectConfigurationStep1,
+  (step) => step.journeeId,
+);
+
+export const selectStationBons = createSelector(selectBonsStep3, (step) => step.items);
+
+export const selectStationBonsChefId = createSelector(selectBonsStep3, (step) => step.chefId);
 
 export const selectFilteredStationBons = createSelector(
   selectStationBons,
@@ -55,46 +63,18 @@ export const selectFilteredStationBons = createSelector(
     chefId == null ? [] : bons.filter((bon) => bon.chefVidangeLavageId === chefId),
 );
 
-export const selectStationBonsTotal = createSelector(selectStationBons, (bons) =>
-  computeStationBonsTotal(bons),
-);
-
-export const selectCanProceedBonsStep = createSelector(selectStationBons, (bons) =>
-  canProceedBonsStep(bons),
-);
-
 export const selectEncaissements = createSelector(
-  selectDraft,
-  (draft) => draft.encaissements,
+  selectEncaissementsStep4,
+  (step) => step.lines,
 );
 
-export const selectEncaissementsTotal = createSelector(selectEncaissements, (lines) =>
-  computeEncaissementsTotal(lines),
-);
+export const selectDepenses = createSelector(selectDepensesStep6, (step) => step.lines);
 
-export const selectCanProceedEncaissementsStep = createSelector(
-  selectEncaissements,
-  (lines) => canProceedEncaissementsStep(lines),
-);
-
-export const selectDepenses = createSelector(selectDraft, (draft) => draft.depenses);
-
-export const selectDepensesTotal = createSelector(selectDepenses, (lines) =>
-  computeDepensesTotal(lines),
-);
-
-export const selectCanProceedDepensesStep = createSelector(selectDepenses, (lines) =>
-  canProceedDepensesStep(lines),
-);
-
-export const selectNozzleIndexes = createSelector(
-  selectDraft,
-  (draft) => draft.nozzleIndexes,
-);
+export const selectNozzleIndexes = createSelector(selectIndexPistolesStep2, (step) => step.lines);
 
 export const selectSelectedNozzleBombisteIds = createSelector(
-  selectDraft,
-  (draft) => draft.selectedNozzleBombisteIds,
+  selectIndexPistolesStep2,
+  (step) => step.selectedBombisteIds,
 );
 
 export const selectAvailableNozzleBombistes = createSelector(
@@ -109,83 +89,44 @@ export const selectAvailableNozzleBombistes = createSelector(
   },
 );
 
-export const selectNozzleLinesWithTotals = createSelector(selectNozzleIndexes, (lines) =>
-  mapLinesWithTotals(lines),
+const DRAFT_STEP_KEYS: (keyof JourneeDraft)[] = [
+  'configurationStep1',
+  'indexPistolesStep2',
+  'bonsStep3',
+  'encaissementsStep4',
+  'depensesStep6',
+];
+
+export const selectCanSubmitJournee = createSelector(selectDraft, (draft) =>
+  DRAFT_STEP_KEYS.every((key) => draft[key].isValid),
 );
 
-export const selectNozzleBombisteGroups = createSelector(
-  selectNozzleIndexes,
-  selectSelectedNozzleBombisteIds,
-  selectOperators,
+export interface InvalidWizardStep {
+  order: number;
+  path: string;
+  labelKey: string;
+}
+
+export const selectInvalidWizardSteps = createSelector(
   selectDraft,
-  (lines, selectedIds, operators, draft) => {
-    const operatorNameById = new Map(operators.map((operator) => [operator.id, operator.name]));
-    const paymentsByBombisteId = new Map(
-      draft.nozzleBombistePayments.map((entry) => [entry.bombisteId, entry]),
-    );
-    return buildNozzleBombisteGroups(lines, selectedIds, operatorNameById, paymentsByBombisteId);
-  },
+  (draft): InvalidWizardStep[] =>
+    JOURNEE_WIZARD_STEPS.filter((step, index) => {
+      const key = DRAFT_STEP_KEYS[index];
+      return key != null && !draft[key].isValid;
+    }).map((step) => ({
+      order: step.order,
+      path: step.path,
+      labelKey: step.labelKey,
+    })),
 );
 
-export const selectNozzleSessionSummary = createSelector(
-  selectNozzleIndexes,
-  selectSelectedNozzleBombisteIds,
-  (lines, selectedIds) => {
-    const relevant =
-      selectedIds.length === 0
-        ? []
-        : lines.filter((line) => selectedIds.includes(line.bombisteId));
-    return computeSessionSummary(relevant);
-  },
-);
-
-export const selectCanProceedNozzleStep = createSelector(
-  selectNozzleIndexes,
-  selectSelectedNozzleBombisteIds,
-  (lines, selectedIds) => canProceedNozzleStep(lines, selectedIds),
-);
-
-export const selectJourneeValidationSummary = createSelector(
+export const selectWizardStepValidityByPath = createSelector(
   selectDraft,
-  selectOperators,
-  selectValidationExtras,
-  selectNozzleSessionSummary,
-  selectNozzleBombisteGroups,
-  selectStationBons,
-  selectStationBonsTotal,
-  selectEncaissementsTotal,
-  selectDepensesTotal,
-  (
-    draft,
-    operators,
-    extras,
-    nozzleSummary,
-    bombisteGroups,
-    stationBons,
-    bonsTotal,
-    encTotal,
-    depTotal,
-  ) => {
-    if (!extras) {
-      return null;
-    }
-    return buildJourneeValidationSummary({
-      fuelSales: nozzleSummary.totalAmount,
-      fuelSalesByBombiste: bombisteGroups.map((group) => ({
-        bombisteId: group.bombisteId,
-        bombisteName: group.bombisteName,
-        liters: group.totals.liters,
-        salesTotal: group.totals.amount,
-        payments: group.payments,
-      })),
-      stationBons,
-      servicesTotal: bonsTotal,
-      encaissementsTotal: encTotal,
-      depensesTotal: depTotal,
-      encaissements: draft.encaissements,
-      extras,
-      operators,
-      chefDePisteId: draft.config.chefDePisteId,
-    });
-  },
+  (draft): Record<string, boolean> => ({
+    'configuration-step1': draft.configurationStep1.isValid,
+    'index-pistoles-step2': draft.indexPistolesStep2.isValid,
+    'bons-step3': draft.bonsStep3.isValid,
+    'encaissements-step4': draft.encaissementsStep4.isValid,
+    'depenses-step6': draft.depensesStep6.isValid,
+  }),
 );

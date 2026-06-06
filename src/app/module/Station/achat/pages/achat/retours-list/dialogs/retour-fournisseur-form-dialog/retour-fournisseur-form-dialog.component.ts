@@ -3,8 +3,7 @@ import { LocaleCurrencyPipe, TranslatePipe } from '../../../../../../../../core/
 import { ButtonComponent } from '../../../../../../../../shared/components/button/button.component';
 import { BonRecapPaymentsComponent } from '../../../../../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import { DocumentLinesTableComponent } from '../../../../../../shared/components/document-lines-table/document-lines-table.component';
-import { PaymentSplit, isPaymentSplitBalanced } from '../../../../../../shared/models/common/payment-split.model';
-import { computeDocumentLineTableTotalTTC, createEmptyDocumentLineTableRow, documentLineToTableRow, filledDocumentLineTableRows, isDocumentLineTableRowEmpty, isDocumentLineTableRowFilled, parseDocumentLineDrafts } from '../../../../../../shared/models/common/document-line.model';
+import { PaymentSplit, isPaymentSplitBalanced, computeDocumentLineTableTotalTTC, createEmptyDocumentLineTableRow, documentLineToTableRow, filledDocumentLineTableRows, isDocumentLineTableRowEmpty, isDocumentLineTableRowFilled, parseDocumentLineDrafts } from '../../../../../../shared/components/bon-dialog/bon-dialog.component';
 import { RetourFournisseur, RetourFournisseurDraft, RetourFournisseurLineTableRow, RetourFournisseurStatut } from '../../../../../state/store';
 
 const RETOUR_FOURNISSEUR_STATUT_KEYS: Record<RetourFournisseurStatut, string> = {

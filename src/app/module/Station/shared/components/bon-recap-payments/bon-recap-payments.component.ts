@@ -4,7 +4,7 @@ import {
   PaymentSplit,
   computePaymentDifference,
   computePaymentTotal,
-} from '../../models/common/payment-split.model';
+} from '../bon-dialog/bon-dialog.component';
 
 @Component({
   selector: 'app-bon-recap-payments',

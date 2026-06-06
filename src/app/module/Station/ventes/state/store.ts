@@ -1,5 +1,4 @@
-import type { DocumentLine, DocumentLineDraft, DocumentLineTableRow } from '../../shared/models/common/document-line.model';
-import type { PaymentSplit } from '../../shared/models/common/payment-split.model';
+import type { DocumentLine, DocumentLineDraft, DocumentLineTableRow, PaymentSplit } from '../../shared/components/bon-dialog/bon-dialog.component';
 
 export type DevisStatut = 'brouillon' | 'envoye' | 'accepte' | 'refuse';
 export type CommandeStatut = 'en_attente' | 'confirmee' | 'en_cours' | 'livree' | 'annulee';

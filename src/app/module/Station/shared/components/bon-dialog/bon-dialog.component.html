@@ -16,9 +16,17 @@
         <div>
           <h2 id="bon-dialog-title" class="font-display text-xl font-bold uppercase text-on-surface">
             @if (isEditMode()) {
-              {{ 'common.bon.edit' | translate }}
+              @if (isStation()) {
+                {{ 'common.bon.edit' | translate }}
+              } @else {
+                {{ 'ventes.livraison.dialogEdit' | translate }}
+              }
             } @else {
-              {{ 'common.bon.new' | translate }}
+              @if (isStation()) {
+                {{ 'common.bon.new' | translate }}
+              } @else {
+                {{ 'ventes.livraison.dialogNew' | translate }}
+              }
             }
           </h2>
           <p class="mt-1 text-sm text-on-surface-variant">
@@ -37,25 +45,103 @@
 
       <div class="max-h-[70vh] overflow-y-auto px-6 py-5">
         <div class="mb-6 grid gap-4 sm:grid-cols-2">
+          @if (isStation()) {
+            <div>
+              <label class="bon-dialog__label" for="dialog-bon-number">
+                {{ 'common.bon.number' | translate }}
+                <span class="text-primary" aria-hidden="true">*</span>
+              </label>
+              <input
+                id="dialog-bon-number"
+                type="text"
+                class="bon-dialog__input"
+                required
+                [value]="bonNumber()"
+                (input)="bonNumber.set($any($event.target).value)"
+              />
+            </div>
+            <div>
+              <label class="bon-dialog__label" for="dialog-operator">
+                {{ 'common.bon.operator' | translate }}
+                <span class="text-primary" aria-hidden="true">*</span>
+              </label>
+              <select
+                id="dialog-operator"
+                class="bon-dialog__input"
+                (change)="onOperatorChange($event)"
+                [disabled]="operatorsLoading()"
+                required
+              >
+                <option value="" [selected]="operatorId() == null">{{ 'common.bon.operatorPlaceholder' | translate }}</option>
+                @for (op of operators(); track op.id) {
+                  <option [value]="op.id" [selected]="operatorId() === op.id">{{ op.name }}</option>
+                }
+              </select>
+            </div>
+          }
+
           <div>
-            <label class="bon-dialog__label" for="dialog-bon-number">{{ 'common.bon.number' | translate }}</label>
+            <label class="bon-dialog__label" for="dialog-livraison-client">
+              @if (isStation()) {
+                {{ 'common.bon.clientPlate' | translate }}
+              } @else {
+                {{ 'common.table.client' | translate }}
+              }
+              <span class="text-primary" aria-hidden="true">*</span>
+            </label>
             <input
-              id="dialog-bon-number"
+              id="dialog-livraison-client"
               type="text"
               class="bon-dialog__input"
-              [value]="bonNumber()"
-              (input)="bonNumber.set($any($event.target).value)"
+              required
+              [placeholder]="isStation() ? ('common.bon.partnerPlaceholder' | translate) : ('common.placeholders.companyName' | translate)"
+              [value]="client()"
+              (input)="client.set($any($event.target).value)"
             />
           </div>
           <div>
-            <label class="bon-dialog__label" for="dialog-partner-ref">{{ 'common.bon.clientPlate' | translate }}</label>
+            <label class="bon-dialog__label" for="dialog-livraison-statut">{{ 'common.table.status' | translate }}</label>
+            <select
+              id="dialog-livraison-statut"
+              class="bon-dialog__input"
+              [value]="statut()"
+              (change)="statut.set($any($event.target).value)"
+            >
+              @for (s of statutOptions; track s) {
+                <option [value]="s">{{ statutKeys[s] | translate }}</option>
+              }
+            </select>
+          </div>
+          <div>
+            <label class="bon-dialog__label" for="dialog-livraison-date">{{ 'ventes.livraison.colDate' | translate }}</label>
             <input
-              id="dialog-partner-ref"
+              id="dialog-livraison-date"
+              type="date"
+              class="bon-dialog__input"
+              [value]="dateLivraison()"
+              (input)="dateLivraison.set($any($event.target).value)"
+            />
+          </div>
+          <div>
+            <label class="bon-dialog__label" for="dialog-livraison-adresse">{{ 'ventes.livraison.colAdresse' | translate }}</label>
+            <input
+              id="dialog-livraison-adresse"
               type="text"
               class="bon-dialog__input"
-              [placeholder]="'common.bon.partnerPlaceholder' | translate"
-              [value]="partnerRef()"
-              (input)="partnerRef.set($any($event.target).value)"
+              [placeholder]="'ventes.livraison.adressePlaceholder' | translate"
+              [value]="adresse()"
+              (input)="adresse.set($any($event.target).value)"
+            />
+          </div>
+          <div class="sm:col-span-2">
+            <label class="bon-dialog__label" for="dialog-livraison-description">{{ 'ventes.commande.description' | translate }}</label>
+            <input
+              id="dialog-livraison-description"
+              type="text"
+              class="bon-dialog__input"
+              [placeholder]="'common.placeholders.subjectComment' | translate"
+              [value]="description()"
+              (input)="description.set($any($event.target).value)"
             />
           </div>
         </div>
@@ -83,26 +169,41 @@
         </section>
 
         <app-bon-recap-payments
-          inputIdPrefix="station-bon"
+          [inputIdPrefix]="isStation() ? 'station-bon' : 'livraison-ventes'"
           [serviceTotal]="serviceTotal()"
           [productTotal]="productTotal()"
-          [bonTotal]="bonTotal()"
+          [bonTotal]="formTotal()"
           [payments]="payments()"
           (paymentsChange)="payments.set($event)"
         />
       </div>
 
       <footer class="flex flex-wrap items-center justify-between gap-4 border-t border-outline-variant px-6 py-4">
-        <p class="text-sm text-on-surface-variant">
-          {{ 'common.bon.billable' | translate }}
-          <span class="font-bold tabular-nums text-on-surface">{{ bonTotal() | localeCurrency }}</span>
-        </p>
+        <div class="min-w-[12rem] flex-1">
+          <p class="text-sm text-on-surface-variant">
+            @if (isStation()) {
+              {{ 'common.bon.billable' | translate }}
+            } @else {
+              {{ 'ventes.livraison.total' | translate }}
+            }
+            <span class="font-bold tabular-nums text-on-surface">{{ formTotal() | localeCurrency }}</span>
+          </p>
+          @if (!canSave() && saveBlockers().length > 0) {
+            <ul class="mt-2 list-disc space-y-0.5 pl-4 text-sm text-primary" role="status">
+              @for (key of saveBlockers(); track key) {
+                <li>{{ key | translate }}</li>
+              }
+            </ul>
+          }
+        </div>
         <app-button variant="secondary" (pressed)="cancel()">{{ 'common.actions.cancel' | translate }}</app-button>
         <app-button variant="primary" [disabled]="!canSave()" (pressed)="save()">
           @if (isEditMode()) {
             {{ 'common.actions.saveChanges' | translate }}
-          } @else {
+          } @else if (isStation()) {
             {{ 'common.bon.save' | translate }}
+          } @else {
+            {{ 'ventes.livraison.save' | translate }}
           }
         </app-button>
       </footer>

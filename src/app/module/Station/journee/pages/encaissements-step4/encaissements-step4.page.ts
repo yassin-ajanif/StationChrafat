@@ -1,26 +1,23 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, computed, effect, inject } from '@angular/core';
 import { LocaleNumberPipe, TranslatePipe } from '../../../../../core/i18n'
 import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
 import {
+  EncaissementClientOption,
+  EncaissementLine,
   PAYMENT_MODES,
   PaymentMode,
-  isEncaissementLineEmpty,
-  parsePaymentMode,
-  resolveClientBalance,
 } from '../../state/journee.store';
 import { JourneeActions } from '../../state/journee.actions';
 import {
-  selectCanProceedEncaissementsStep,
-  selectDraft,
   selectEncaissementClients,
   selectEncaissementClientsError,
   selectEncaissementClientsLoading,
   selectEncaissements,
   selectEncaissementsError,
   selectEncaissementsLoading,
-  selectEncaissementsTotal,
+  selectJourneeDraftId,
 } from '../../state/journee.selectors';
 
 @Component({
@@ -34,22 +31,35 @@ export class EncaissementsStep5Page implements OnInit {
   private readonly store = inject(Store);
   private readonly router = inject(Router);
 
-  readonly draft = this.store.selectSignal(selectDraft);
+  readonly journeeId = this.store.selectSignal(selectJourneeDraftId);
   readonly lines = this.store.selectSignal(selectEncaissements);
   readonly clients = this.store.selectSignal(selectEncaissementClients);
-  readonly total = this.store.selectSignal(selectEncaissementsTotal);
+  readonly total = computed(() =>
+    this.lines()
+      .filter(isEncaissementLineFilled)
+      .reduce((sum, line) => sum + line.amount, 0),
+  );
   readonly loading = this.store.selectSignal(selectEncaissementsLoading);
   readonly clientsLoading = this.store.selectSignal(selectEncaissementClientsLoading);
   readonly loadError = this.store.selectSignal(selectEncaissementsError);
   readonly clientsError = this.store.selectSignal(selectEncaissementClientsError);
-  readonly canProceed = this.store.selectSignal(selectCanProceedEncaissementsStep);
 
   readonly paymentModes = PAYMENT_MODES;
 
-  readonly resolveClientBalance = resolveClientBalance;
+  readonly stepIsValid = computed(() =>
+    this.lines().every((line) => isEncaissementLineFilled(line) || isEncaissementLineEmpty(line)),
+  );
+
+  constructor() {
+    effect(() => {
+      this.store.dispatch(
+        JourneeActions.patchEncaissementsStep4({ patch: { isValid: this.stepIsValid() } }),
+      );
+    });
+  }
 
   ngOnInit(): void {
-    if (this.draft().id == null) {
+    if (this.journeeId() == null) {
       void this.router.navigate(['/journees', 'nouvelle', 'configuration-step1']);
       return;
     }
@@ -99,14 +109,35 @@ export class EncaissementsStep5Page implements OnInit {
     this.store.dispatch(JourneeActions.removeEncaissementLine({ id: lineId }));
   }
 
-  canRemoveLine(line: { id: number; clientId: number | null; paymentMode: PaymentMode | ''; amount: number; note: string }): boolean {
+  canRemoveLine(line: EncaissementLine): boolean {
     return !isEncaissementLineEmpty(line);
   }
 
-  next(): void {
-    if (!this.canProceed()) {
-      return;
+  resolveClientBalance(clientId: number | null, clients: EncaissementClientOption[]): number | null {
+    if (clientId == null) {
+      return null;
     }
+    return clients.find((client) => client.id === clientId)?.currentBalance ?? null;
+  }
+
+  next(): void {
     void this.router.navigate(['/journees', 'nouvelle', 'depenses-step6']);
   }
+}
+
+function isEncaissementLineFilled(line: EncaissementLine): boolean {
+  return line.clientId != null && line.paymentMode !== '' && line.amount > 0;
+}
+
+function isEncaissementLineEmpty(line: EncaissementLine): boolean {
+  return (
+    line.clientId == null &&
+    line.paymentMode === '' &&
+    line.amount === 0 &&
+    line.note.trim() === ''
+  );
+}
+
+function parsePaymentMode(value: string): PaymentMode | '' {
+  return (PAYMENT_MODES as readonly string[]).includes(value) ? (value as PaymentMode) : '';
 }
