@@ -135,6 +135,6 @@ export const selectWizardStepValidityByPath = createSelector(
     'index-pistoles-step2': draft.indexPistolesStep2.isValid,
     'bons-step3': draft.bonsStep3.isValid,
     'encaissements-step4': draft.encaissementsStep4.isValid,
-    'depenses-step6': draft.depensesStep6.isValid,
+    'depenses-step5': draft.depensesStep6.isValid,
   }),
 );

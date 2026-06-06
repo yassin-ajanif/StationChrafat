@@ -191,11 +191,17 @@
     </table>
   </section>
 
-  <footer class="mt-8 flex flex-wrap justify-between gap-4">
-    <a routerLink="/journees/nouvelle/bon-vidange-step4">
+  <footer class="mt-8 flex flex-wrap items-center gap-4">
+    <a routerLink="/journees/nouvelle/bons-step3">
       <app-button variant="secondary">← Retour</app-button>
     </a>
-    <app-button variant="primary" [disabled]="loading() || clientsLoading()" (pressed)="next()">
+    <app-wizard-step-errors [errors]="stepValidationErrors()" />
+    <app-button
+      variant="primary"
+      class="ml-auto"
+      [disabled]="loading() || clientsLoading()"
+      (pressed)="next()"
+    >
       Suivant →
     </app-button>
   </footer>

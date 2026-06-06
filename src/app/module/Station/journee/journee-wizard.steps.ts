@@ -11,7 +11,7 @@ export const JOURNEE_WIZARD_STEPS: readonly JourneeWizardStep[] = [
   { id: 'index-pistoles-step2', path: 'index-pistoles-step2', labelKey: 'journee.wizard.steps.carburant', order: 2 },
   { id: 'bons-step3', path: 'bons-step3', labelKey: 'journee.wizard.steps.bonsStation', order: 3 },
   { id: 'encaissements-step4', path: 'encaissements-step4', labelKey: 'journee.wizard.steps.encaissements', order: 4 },
-  { id: 'depenses-step6', path: 'depenses-step6', labelKey: 'journee.wizard.steps.depenses', order: 5 },
+  { id: 'depenses-step5', path: 'depenses-step5', labelKey: 'journee.wizard.steps.depenses', order: 5 },
   { id: 'validation-step6', path: 'validation-step6', labelKey: 'journee.wizard.steps.validation', order: 6 },
 ] as const;
 

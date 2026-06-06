@@ -46,12 +46,14 @@
     }
   </div>
 
-  <footer class="configuration-step1__footer mt-8 flex flex-wrap justify-between gap-4">
+  <footer class="configuration-step1__footer mt-8 flex flex-wrap items-center gap-4">
     <a routerLink="/journees">
       <app-button variant="secondary">{{ 'common.actions.cancel' | translate }}</app-button>
     </a>
+    <app-wizard-step-errors [errors]="stepValidationErrors()" />
     <app-button
       variant="primary"
+      class="ml-auto"
       [disabled]="!canStart()"
       [loading]="startingJournee()"
       (pressed)="start()"

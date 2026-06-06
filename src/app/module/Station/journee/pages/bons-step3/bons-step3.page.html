@@ -118,11 +118,12 @@
     (closed)="closeDialog()"
   />
 
-  <footer class="mt-4 flex flex-wrap justify-between gap-4">
+  <footer class="mt-4 flex flex-wrap items-center gap-4">
     <a [routerLink]="config.backLink">
       <app-button variant="secondary">{{ 'common.actions.back' | translate }}</app-button>
     </a>
-    <app-button variant="primary" (pressed)="onNext()">
+    <app-wizard-step-errors [errors]="stepValidationErrors()" />
+    <app-button variant="primary" class="ml-auto" (pressed)="onNext()">
       {{ 'common.actions.next' | translate }}
     </app-button>
   </footer>

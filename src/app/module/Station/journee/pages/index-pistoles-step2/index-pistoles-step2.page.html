@@ -308,12 +308,14 @@
     }
   }
 
-  <footer class="no-print mt-8 flex flex-wrap justify-between gap-4">
+  <footer class="no-print mt-8 flex flex-wrap items-center gap-4">
     <a [routerLink]="backLink">
       <app-button variant="secondary">← Retour</app-button>
     </a>
+    <app-wizard-step-errors [errors]="stepValidationErrors()" />
     <app-button
       variant="primary"
+      class="ml-auto"
       [disabled]="loading()"
       (pressed)="onNext()"
     >

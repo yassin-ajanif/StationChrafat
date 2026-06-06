@@ -115,8 +115,28 @@
     "ready": "Toutes les étapes sont complètes. Vous pouvez soumettre la journée.",
     "incompleteTitle": "Étapes à compléter",
     "incompleteHint": "Corrigez les étapes suivantes avant de soumettre la journée.",
+    "stepErrorsTitle": "Points à corriger",
     "back": "Revenir au formulaire",
-    "submit": "Soumettre la journée"
+    "submit": "Soumettre la journée",
+    "errors": {
+      "incompleteLine": "Ligne {{line}} : complétez tous les champs obligatoires ou supprimez la ligne.",
+      "step1": {
+        "journeeNotStarted": "Démarrez la journée pour valider cette étape.",
+        "chefRequired": "Sélectionnez le chef de piste.",
+        "shiftRequired": "Choisissez une plage horaire (shift)."
+      },
+      "step2": {
+        "noBombiste": "Ajoutez au moins un bombiste.",
+        "noNozzleLines": "Aucun pistolet assigné aux bombistes sélectionnés.",
+        "invalidIndex": "{{bombiste}} — {{pump}} ({{fuel}}) : l'index entrée doit être supérieur ou égal à l'index sortie.",
+        "unbalancedPayment": "{{name}} : la répartition des encaissements ne correspond pas au total carburant."
+      },
+      "step3": {
+        "noBons": "Aucun bon station. Les bons carburant sont générés depuis l'étape carburant vendue.",
+        "chefRequired": "Sélectionnez le responsable vidange / lavage pour les bons manuels.",
+        "unbalancedPayment": "Bon {{numero}} : la répartition des paiements ne correspond pas au total."
+      }
+    }
   },
   "bons": {
     "title": "Bons station",

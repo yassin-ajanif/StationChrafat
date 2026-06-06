@@ -4,6 +4,10 @@ import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
 import {
+  WizardStepErrorsComponent,
+  type WizardStepError,
+} from '../../../../../shared/components/wizard-step-errors/wizard-step-errors.component';
+import {
   EncaissementClientOption,
   EncaissementLine,
   PAYMENT_MODES,
@@ -23,7 +27,7 @@ import {
 @Component({
   selector: 'app-encaissements-step4-page',
   standalone: true,
-  imports: [RouterLink, ButtonComponent, LocaleNumberPipe, TranslatePipe],
+  imports: [RouterLink, ButtonComponent, WizardStepErrorsComponent, LocaleNumberPipe, TranslatePipe],
   templateUrl: './encaissements-step4.page.html',
   styleUrl: './encaissements-step4.page.scss',
 })
@@ -46,9 +50,20 @@ export class EncaissementsStep5Page implements OnInit {
 
   readonly paymentModes = PAYMENT_MODES;
 
-  readonly stepIsValid = computed(() =>
-    this.lines().every((line) => isEncaissementLineFilled(line) || isEncaissementLineEmpty(line)),
-  );
+  readonly stepIsValid = computed(() => this.stepValidationErrors().length === 0);
+
+  readonly stepValidationErrors = computed((): WizardStepError[] => {
+    const errors: WizardStepError[] = [];
+    this.lines().forEach((line, index) => {
+      if (!isEncaissementLineFilled(line) && !isEncaissementLineEmpty(line)) {
+        errors.push({
+          key: 'journee.validation.errors.incompleteLine',
+          params: { line: index + 1 },
+        });
+      }
+    });
+    return errors;
+  });
 
   constructor() {
     effect(() => {
@@ -121,7 +136,7 @@ export class EncaissementsStep5Page implements OnInit {
   }
 
   next(): void {
-    void this.router.navigate(['/journees', 'nouvelle', 'depenses-step6']);
+    void this.router.navigate(['/journees', 'nouvelle', 'depenses-step5']);
   }
 }
 

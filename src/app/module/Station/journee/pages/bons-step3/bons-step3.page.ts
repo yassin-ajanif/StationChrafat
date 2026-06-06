@@ -12,6 +12,10 @@ import {
 } from '../../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import { LivraisonFormDialogComponent } from '../../../shared/components/dialogs/livraison-form-dialog/livraison-form-dialog.component';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
+import {
+  WizardStepErrorsComponent,
+  type WizardStepError,
+} from '../../../../../shared/components/wizard-step-errors/wizard-step-errors.component';
 import { JourneeActions } from '../../state/journee.actions';
 import {
   JOURNEE_BON_CONFIG,
@@ -37,7 +41,14 @@ import {
 @Component({
   selector: 'app-bons-step3-page',
   standalone: true,
-  imports: [ButtonComponent, LivraisonFormDialogComponent, RouterLink, LocaleCurrencyPipe, TranslatePipe],
+  imports: [
+    ButtonComponent,
+    LivraisonFormDialogComponent,
+    WizardStepErrorsComponent,
+    RouterLink,
+    LocaleCurrencyPipe,
+    TranslatePipe,
+  ],
   templateUrl: './bons-step3.page.html',
   styleUrl: './bons-step3.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -58,16 +69,30 @@ export class BonsStep3Page implements OnInit {
   readonly operators = this.store.selectSignal(selectOperators);
   readonly operatorsLoading = this.store.selectSignal(selectOperatorsLoading);
 
-  readonly stepIsValid = computed(() => {
+  readonly stepIsValid = computed(() => this.stepValidationErrors().length === 0);
+
+  readonly stepValidationErrors = computed((): WizardStepError[] => {
+    const errors: WizardStepError[] = [];
     const items = this.allBons();
     if (items.length === 0) {
-      return false;
+      errors.push({ key: 'journee.validation.errors.step3.noBons' });
     }
+
     const manualBons = items.filter((item) => !item.fuelTransmittedFromNozzles);
     if (manualBons.length > 0 && this.selectedChefId() == null) {
-      return false;
+      errors.push({ key: 'journee.validation.errors.step3.chefRequired' });
     }
-    return items.every(isBonsStep3LivraisonValid);
+
+    for (const item of items) {
+      if (!isBonsStep3LivraisonValid(item)) {
+        errors.push({
+          key: 'journee.validation.errors.step3.unbalancedPayment',
+          params: { numero: item.livraison.numero },
+        });
+      }
+    }
+
+    return errors;
   });
 
   readonly dialogOpen = signal(false);
@@ -191,6 +216,9 @@ const FUEL_BON_PREFIX = 'CAR';
 const FUEL_VAT_PERCENT = 10;
 
 function nozzleQuantity(line: NozzleIndexLine): number {
+  if (line.status === 'offline') {
+    return 0;
+  }
   if (line.indexEntree == null || line.indexSortie == null) {
     return 0;
   }

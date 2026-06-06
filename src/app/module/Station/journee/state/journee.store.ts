@@ -173,7 +173,7 @@ export const JOURNEE_BON_CONFIG: JourneeBonsStepConfig = {
   title: 'journee.bons.title',
   description: 'journee.bons.description',
   backLink: ['/journees', 'nouvelle', 'index-pistoles-step2'],
-  nextLink: ['/journees', 'nouvelle', 'encaissements-step5'],
+  nextLink: ['/journees', 'nouvelle', 'encaissements-step4'],
   guardRedirectIfNoDraft: ['/journees', 'nouvelle', 'configuration-step1'],
   chefSelectLabel: 'journee.bons.chefLabel',
   headerIcon: '📋',
@@ -221,7 +221,7 @@ export const initialEncaissementsStep4 = (): EncaissementsStep4 => ({
 });
 
 // =============================================================================
-// Step 6 — depenses-step6
+// Step 5 — depenses-step5
 // =============================================================================
 
 export const EXPENSE_TYPES = [

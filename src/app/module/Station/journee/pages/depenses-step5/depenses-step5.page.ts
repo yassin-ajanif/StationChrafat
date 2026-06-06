@@ -4,6 +4,10 @@ import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
 import {
+  WizardStepErrorsComponent,
+  type WizardStepError,
+} from '../../../../../shared/components/wizard-step-errors/wizard-step-errors.component';
+import {
   DEPENSE_PAYMENT_MODES,
   DepenseLine,
   EXPENSE_TYPES,
@@ -17,13 +21,13 @@ import {
 } from '../../state/journee.selectors';
 
 @Component({
-  selector: 'app-depenses-step6-page',
+  selector: 'app-depenses-step5-page',
   standalone: true,
-  imports: [RouterLink, ButtonComponent, LocaleNumberPipe, TranslatePipe],
-  templateUrl: './depenses-step6.page.html',
-  styleUrl: './depenses-step6.page.scss',
+  imports: [RouterLink, ButtonComponent, WizardStepErrorsComponent, LocaleNumberPipe, TranslatePipe],
+  templateUrl: './depenses-step5.page.html',
+  styleUrl: './depenses-step5.page.scss',
 })
-export class DepensesStep6Page implements OnInit {
+export class DepensesStep5Page implements OnInit {
   private readonly store = inject(Store);
   private readonly router = inject(Router);
 
@@ -40,9 +44,20 @@ export class DepensesStep6Page implements OnInit {
   readonly expenseTypes = EXPENSE_TYPES;
   readonly paymentModes = DEPENSE_PAYMENT_MODES;
 
-  readonly stepIsValid = computed(() =>
-    this.lines().every((line) => isDepenseLineFilled(line) || isDepenseLineEmpty(line)),
-  );
+  readonly stepIsValid = computed(() => this.stepValidationErrors().length === 0);
+
+  readonly stepValidationErrors = computed((): WizardStepError[] => {
+    const errors: WizardStepError[] = [];
+    this.lines().forEach((line, index) => {
+      if (!isDepenseLineFilled(line) && !isDepenseLineEmpty(line)) {
+        errors.push({
+          key: 'journee.validation.errors.incompleteLine',
+          params: { line: index + 1 },
+        });
+      }
+    });
+    return errors;
+  });
 
   constructor() {
     effect(() => {

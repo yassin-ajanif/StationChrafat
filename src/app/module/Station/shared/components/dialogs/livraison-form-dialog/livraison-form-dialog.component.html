@@ -38,7 +38,7 @@
       </header>
 
       <div class="max-h-[70vh] overflow-y-auto px-6 py-5">
-        <div class="mb-6 grid gap-4 sm:grid-cols-2">
+        <div class="mb-6 grid gap-3 sm:grid-cols-3">
           <div>
             <label class="livraison-form-dialog__label" for="dialog-bon-number">
               {{ 'common.bon.number' | translate }}
@@ -71,7 +71,6 @@
               }
             </select>
           </div>
-
           <div>
             <label class="livraison-form-dialog__label" for="dialog-livraison-client">
               {{ 'common.table.client' | translate }}
@@ -121,7 +120,7 @@
               (input)="adresse.set($any($event.target).value)"
             />
           </div>
-          <div class="sm:col-span-2">
+          <div class="sm:col-span-3">
             <label class="livraison-form-dialog__label" for="dialog-livraison-description">{{ 'ventes.commande.description' | translate }}</label>
             <input
               id="dialog-livraison-description"

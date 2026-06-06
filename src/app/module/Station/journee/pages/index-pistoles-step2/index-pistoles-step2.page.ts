@@ -4,6 +4,10 @@ import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
 import {
+  WizardStepErrorsComponent,
+  type WizardStepError,
+} from '../../../../../shared/components/wizard-step-errors/wizard-step-errors.component';
+import {
   isPaymentSplitBalanced,
   paymentDifferenceLabel as formatPaymentDifference,
 } from '../../../shared/components/bon-recap-payments/bon-recap-payments.component';
@@ -29,7 +33,14 @@ import {
 @Component({
   selector: 'app-index-pistoles-step2-page',
   standalone: true,
-  imports: [RouterLink, ButtonComponent, LocaleNumberPipe, LocaleCurrencyPipe, TranslatePipe],
+  imports: [
+    RouterLink,
+    ButtonComponent,
+    WizardStepErrorsComponent,
+    LocaleNumberPipe,
+    LocaleCurrencyPipe,
+    TranslatePipe,
+  ],
   templateUrl: './index-pistoles-step2.page.html',
   styleUrl: './index-pistoles-step2.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -65,18 +76,45 @@ export class IndexPistolesStep2Page implements OnInit {
     ),
   );
 
-  readonly stepIsValid = computed(() => {
+  readonly stepIsValid = computed(() => this.stepValidationErrors().length === 0);
+
+  readonly stepValidationErrors = computed((): WizardStepError[] => {
+    const errors: WizardStepError[] = [];
     const selectedIds = this.selectedBombisteIds();
     if (selectedIds.length === 0) {
-      return false;
+      errors.push({ key: 'journee.validation.errors.step2.noBombiste' });
+      return errors;
     }
+
     const relevant = this.lines().filter((line) => selectedIds.includes(line.bombisteId));
-    if (relevant.length === 0 || !relevant.every(isNozzleIndexLineValid)) {
-      return false;
+    if (relevant.length === 0) {
+      errors.push({ key: 'journee.validation.errors.step2.noNozzleLines' });
     }
-    return this.bombisteGroups().every((group) =>
-      isPaymentSplitBalanced(group.payments, group.totals.amount),
-    );
+
+    const operatorNames = new Map(this.operators().map((operator) => [operator.id, operator.name]));
+    for (const line of relevant) {
+      if (!isNozzleIndexLineValid(line)) {
+        errors.push({
+          key: 'journee.validation.errors.step2.invalidIndex',
+          params: {
+            bombiste: operatorNames.get(line.bombisteId) ?? '',
+            pump: line.pumpLabel,
+            fuel: line.fuelLabel,
+          },
+        });
+      }
+    }
+
+    for (const group of this.bombisteGroups()) {
+      if (!isPaymentSplitBalanced(group.payments, group.totals.amount)) {
+        errors.push({
+          key: 'journee.validation.errors.step2.unbalancedPayment',
+          params: { name: group.bombisteName },
+        });
+      }
+    }
+
+    return errors;
   });
 
   readonly sessionTotals = computed(() => {
@@ -155,6 +193,9 @@ export class IndexPistolesStep2Page implements OnInit {
   }
 
   lineInvalid(line: NozzleIndexLine): boolean {
+    if (line.status === 'offline') {
+      return false;
+    }
     return !isNozzleIndexLineValid(line);
   }
 
@@ -203,6 +244,9 @@ export class IndexPistolesStep2Page implements OnInit {
 }
 
 function isNozzleIndexLineValid(line: NozzleIndexLine): boolean {
+  if (line.status === 'offline') {
+    return true;
+  }
   if (line.indexEntree == null || line.indexSortie == null) {
     return false;
   }
@@ -210,6 +254,9 @@ function isNozzleIndexLineValid(line: NozzleIndexLine): boolean {
 }
 
 function nozzleLineQuantity(line: NozzleIndexLine): number {
+  if (line.status === 'offline') {
+    return 0;
+  }
   if (line.indexEntree == null || line.indexSortie == null) {
     return 0;
   }

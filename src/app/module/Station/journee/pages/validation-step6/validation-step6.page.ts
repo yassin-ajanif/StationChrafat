@@ -19,7 +19,7 @@ import {
   templateUrl: './validation-step6.page.html',
   styleUrl: './validation-step6.page.scss',
 })
-export class ValidationStep7Page implements OnInit {
+export class ValidationStep6Page implements OnInit {
   private readonly store = inject(Store);
   private readonly router = inject(Router);
 

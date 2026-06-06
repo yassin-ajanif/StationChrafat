@@ -4,6 +4,10 @@ import { Component, OnInit, computed, effect, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
+import {
+  WizardStepErrorsComponent,
+  type WizardStepError,
+} from '../../../../../shared/components/wizard-step-errors/wizard-step-errors.component';
 import { ShiftSlotPickerComponent } from '../../components/shift-slot-picker/shift-slot-picker.component';
 import { ShiftSlot } from '../../state/journee.store';
 import { JourneeActions } from '../../state/journee.actions';
@@ -18,7 +22,14 @@ import {
 @Component({
   selector: 'app-configuration-step1-page',
   standalone: true,
-  imports: [RouterLink, ButtonComponent, ShiftSlotPickerComponent, DatePipe, TranslatePipe],
+  imports: [
+    RouterLink,
+    ButtonComponent,
+    ShiftSlotPickerComponent,
+    WizardStepErrorsComponent,
+    DatePipe,
+    TranslatePipe,
+  ],
   templateUrl: './configuration-step1.page.html',
   styleUrl: './configuration-step1.page.scss',
 })
@@ -48,6 +59,20 @@ export class ConfigurationStep1Page implements OnInit {
       this.chefId() != null &&
       this.shiftSlot() != null,
   );
+
+  readonly stepValidationErrors = computed((): WizardStepError[] => {
+    const errors: WizardStepError[] = [];
+    if (this.configurationStep1().journeeId == null) {
+      errors.push({ key: 'journee.validation.errors.step1.journeeNotStarted' });
+    }
+    if (this.chefId() == null) {
+      errors.push({ key: 'journee.validation.errors.step1.chefRequired' });
+    }
+    if (this.shiftSlot() == null) {
+      errors.push({ key: 'journee.validation.errors.step1.shiftRequired' });
+    }
+    return errors;
+  });
 
   constructor() {
     effect(() => {
