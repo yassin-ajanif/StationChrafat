@@ -2,7 +2,7 @@
 
 .stock-product-table {
   &__status {
-    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase leading-none;
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold uppercase leading-none;
 
     &--optimal {
       @apply bg-success/15 text-success;

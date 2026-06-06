@@ -1,9 +1,9 @@
 <div class="stock-gestion flex flex-col gap-6">
   <header class="stock-gestion__header">
-    <h1 class="stock-gestion__title font-display text-2xl font-bold uppercase text-primary">
+    <h1 class="stock-gestion__title font-display text-3xl font-bold uppercase text-primary">
       {{ 'stock.gestion.title' | translate }}
     </h1>
-    <p class="stock-gestion__subtitle mt-1 text-sm text-on-surface-variant">
+    <p class="stock-gestion__subtitle mt-1 text-base text-on-surface-variant">
       {{ 'stock.gestion.subtitle' | translate }}
     </p>
   </header>
@@ -34,7 +34,7 @@
         <app-stock-product-table [products]="paginatedProducts()" />
 
         <footer class="stock-gestion__pagination mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-outline-variant/60 pt-4">
-          <p class="text-sm text-on-surface-variant">
+          <p class="text-base text-on-surface-variant">
             @if (paginationRange(); as range) {
               {{ 'stock.gestion.paginationRange' | translate: range }}
             } @else {
