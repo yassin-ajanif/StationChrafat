@@ -1,0 +1,11 @@
+@reference '../../../../../../../../tailwind.css';
+
+.client-form-dialog {
+  &__label {
+    @apply mb-1 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant;
+  }
+
+  &__input {
+    @apply min-h-[44px] rounded-[var(--radius-input)] border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm text-on-surface outline-none focus:border-primary;
+  }
+}

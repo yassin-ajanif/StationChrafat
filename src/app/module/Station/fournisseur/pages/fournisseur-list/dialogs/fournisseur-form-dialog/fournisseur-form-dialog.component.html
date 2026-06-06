@@ -1,0 +1,133 @@
+@if (open()) {
+  <div
+    class="fournisseur-form-dialog__backdrop fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/50 p-4"
+    data-dialog-backdrop="true"
+    role="presentation"
+    (click)="onBackdropClick($event)"
+  >
+    <div
+      class="fournisseur-form-dialog__panel w-full max-w-lg rounded-[var(--radius-card)] bg-surface-container-lowest shadow-lg"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="fournisseur-form-dialog-title"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="flex items-start justify-between border-b border-outline-variant px-6 py-4">
+        <div>
+          <h2 id="fournisseur-form-dialog-title" class="font-display text-xl font-bold uppercase text-on-surface">
+            @if (isEditMode()) {
+              {{ 'fournisseur.dialog.edit' | translate }}
+            } @else {
+              {{ 'fournisseur.dialog.create' | translate }}
+            }
+          </h2>
+          <p class="mt-1 text-sm text-on-surface-variant">{{ 'fournisseur.dialog.subtitle' | translate }}</p>
+        </div>
+        <button
+          type="button"
+          class="text-2xl leading-none text-on-surface-variant hover:text-on-surface"
+          [attr.aria-label]="'common.actions.close' | translate"
+          (click)="cancel()"
+        >
+          ×
+        </button>
+      </header>
+
+      <div class="grid gap-4 px-6 py-5 sm:grid-cols-2">
+        <label class="fournisseur-form-dialog__field block sm:col-span-2">
+          <span class="fournisseur-form-dialog__label">{{ 'fournisseur.fields.name' | translate }}</span>
+          <input
+            type="text"
+            class="fournisseur-form-dialog__input w-full"
+            [placeholder]="'fournisseur.fields.namePlaceholder' | translate"
+            [value]="name()"
+            (input)="name.set($any($event.target).value)"
+          />
+        </label>
+
+        <label class="fournisseur-form-dialog__field block">
+          <span class="fournisseur-form-dialog__label">{{ 'fournisseur.fields.phone' | translate }}</span>
+          <input
+            type="tel"
+            class="fournisseur-form-dialog__input w-full"
+            [placeholder]="'fournisseur.fields.phonePlaceholder' | translate"
+            [value]="phone()"
+            (input)="phone.set($any($event.target).value)"
+          />
+        </label>
+
+        <label class="fournisseur-form-dialog__field block">
+          <span class="fournisseur-form-dialog__label">{{ 'fournisseur.fields.email' | translate }}</span>
+          <input
+            type="email"
+            class="fournisseur-form-dialog__input w-full"
+            [placeholder]="'fournisseur.fields.emailPlaceholder' | translate"
+            [value]="email()"
+            (input)="email.set($any($event.target).value)"
+          />
+        </label>
+
+        <label class="fournisseur-form-dialog__field block">
+          <span class="fournisseur-form-dialog__label">{{ 'fournisseur.fields.ice' | translate }}</span>
+          <input
+            type="text"
+            class="fournisseur-form-dialog__input w-full"
+            [placeholder]="'fournisseur.fields.icePlaceholder' | translate"
+            [value]="ice()"
+            (input)="ice.set($any($event.target).value)"
+          />
+        </label>
+
+        <label class="fournisseur-form-dialog__field block">
+          <span class="fournisseur-form-dialog__label">{{ 'fournisseur.fields.city' | translate }}</span>
+          <input
+            type="text"
+            class="fournisseur-form-dialog__input w-full"
+            [placeholder]="'fournisseur.fields.cityPlaceholder' | translate"
+            [value]="city()"
+            (input)="city.set($any($event.target).value)"
+          />
+        </label>
+
+        <label class="fournisseur-form-dialog__field block sm:col-span-2">
+          <span class="fournisseur-form-dialog__label">{{ 'fournisseur.fields.address' | translate }}</span>
+          <input
+            type="text"
+            class="fournisseur-form-dialog__input w-full"
+            [placeholder]="'fournisseur.fields.addressPlaceholder' | translate"
+            [value]="address()"
+            (input)="address.set($any($event.target).value)"
+          />
+        </label>
+
+        <label class="fournisseur-form-dialog__field block">
+          <span class="fournisseur-form-dialog__label">{{ 'fournisseur.fields.paymentTerms' | translate }}</span>
+          <input
+            type="number"
+            min="0"
+            class="fournisseur-form-dialog__input w-full"
+            [value]="paymentTermsDays()"
+            (input)="paymentTermsDays.set(+$any($event.target).value || 0)"
+          />
+        </label>
+
+        <label class="fournisseur-form-dialog__field flex items-center gap-2">
+          <input
+            type="checkbox"
+            class="size-4 accent-primary"
+            [checked]="active()"
+            (change)="active.set($any($event.target).checked)"
+          />
+          <span class="fournisseur-form-dialog__label">{{ 'fournisseur.fields.active' | translate }}</span>
+        </label>
+      </div>
+
+      <footer class="flex justify-end gap-3 border-t border-outline-variant px-6 py-4">
+        <app-button variant="secondary" (pressed)="cancel()">{{ 'common.actions.cancel' | translate }}</app-button>
+        <app-button variant="primary" [disabled]="!isValid() || saving()" [loading]="saving()" (pressed)="save()">
+          {{ 'common.actions.save' | translate }}
+        </app-button>
+      </footer>
+    </div>
+  </div>
+}

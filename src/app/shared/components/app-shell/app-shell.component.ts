@@ -118,6 +118,16 @@ export class AppShellComponent {
           route: '/station/produits-services',
           icon: 'catalogue',
         },
+        {
+          labelKey: 'shell.nav.clients',
+          route: '/station/client',
+          icon: 'client',
+        },
+        {
+          labelKey: 'shell.nav.fournisseurs',
+          route: '/station/fournisseur',
+          icon: 'fournisseur',
+        },
         { labelKey: 'shell.nav.journee', route: '/journees', icon: 'journee' },
       ],
     },

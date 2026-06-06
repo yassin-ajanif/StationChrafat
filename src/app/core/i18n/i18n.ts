@@ -30,6 +30,8 @@ const LOCALE_BUNDLE_FILES = [
   'achat.json',
   'stock.json',
   'produits-services.json',
+  'client.json',
+  'fournisseur.json',
 ] as const;
 
 const LOCALE_BUNDLE_NAMESPACE: Record<(typeof LOCALE_BUNDLE_FILES)[number], string> = {
@@ -40,6 +42,8 @@ const LOCALE_BUNDLE_NAMESPACE: Record<(typeof LOCALE_BUNDLE_FILES)[number], stri
   'achat.json': 'achat',
   'stock.json': 'stock',
   'produits-services.json': 'produitsServices',
+  'client.json': 'client',
+  'fournisseur.json': 'fournisseur',
 };
 
 export function isRtlLocale(locale: AppLocaleId): boolean {

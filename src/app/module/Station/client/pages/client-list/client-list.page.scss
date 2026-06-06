@@ -1,0 +1,45 @@
+@reference '../../../../../../tailwind.css';
+
+.client-list {
+  @apply mx-auto flex w-full max-w-7xl flex-col gap-6;
+
+  &__header {
+    @apply items-center border-b border-outline-variant/60 pb-5;
+  }
+
+  &__title {
+    @apply text-2xl font-bold tracking-wide md:text-3xl;
+  }
+
+  &__subtitle {
+    @apply mt-2 text-sm md:text-base;
+  }
+
+  &__status {
+    @apply py-16 text-center;
+  }
+
+  &__alert {
+    @apply rounded-[var(--radius-card)] border border-primary bg-primary/10 px-4 py-3 text-sm text-primary;
+  }
+
+  &__toolbar {
+    @apply flex flex-wrap items-center gap-3;
+  }
+
+  &__search {
+    @apply min-h-[44px] w-full max-w-md rounded-[var(--radius-input)] border border-outline-variant bg-surface-container-lowest px-4 py-2 text-sm text-on-surface outline-none focus:border-primary;
+  }
+
+  &__badge {
+    @apply inline-block rounded px-2.5 py-1 text-xs font-bold uppercase tracking-wide;
+
+    &--active {
+      @apply bg-secondary/15 text-secondary;
+    }
+
+    &--inactive {
+      @apply bg-on-surface-variant/15 text-on-surface-variant;
+    }
+  }
+}

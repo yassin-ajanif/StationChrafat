@@ -18,4 +18,12 @@ export const STATION_ROUTES: Routes = [
     path: 'produits-services',
     loadChildren: () => import('./produits-services/produits-services.routes').then((m) => m.PRODUITS_SERVICES_ROUTES),
   },
+  {
+    path: 'client',
+    loadChildren: () => import('./client/client.routes').then((m) => m.CLIENT_ROUTES),
+  },
+  {
+    path: 'fournisseur',
+    loadChildren: () => import('./fournisseur/fournisseur.routes').then((m) => m.FOURNISSEUR_ROUTES),
+  },
 ];

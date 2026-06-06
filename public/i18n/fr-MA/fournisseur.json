@@ -1,0 +1,44 @@
+{
+  "page": {
+    "title": "Gestion des fournisseurs",
+    "subtitle": "Référenciez vos fournisseurs carburant, lubrifiants, boutique et pièces.",
+    "cta": "+ Ajouter un fournisseur",
+    "loading": "Chargement des fournisseurs…",
+    "search": "Rechercher un fournisseur…",
+    "empty": "Aucun fournisseur trouvé."
+  },
+  "table": {
+    "colName": "Nom / Raison sociale",
+    "colPhone": "Téléphone",
+    "colIce": "ICE",
+    "colCity": "Ville",
+    "colPaymentTerms": "Délai paiement",
+    "days": "j"
+  },
+  "status": {
+    "active": "Actif",
+    "inactive": "Inactif"
+  },
+  "fields": {
+    "name": "Nom / Raison sociale",
+    "namePlaceholder": "Ex: TotalEnergies Marketing Maroc",
+    "phone": "Téléphone",
+    "phonePlaceholder": "05 XX XX XX XX",
+    "email": "E-mail",
+    "emailPlaceholder": "appro@exemple.ma",
+    "ice": "ICE",
+    "icePlaceholder": "Identifiant Commun de l'Entreprise",
+    "address": "Adresse",
+    "addressPlaceholder": "Rue, zone industrielle…",
+    "city": "Ville",
+    "cityPlaceholder": "Ex: Casablanca",
+    "paymentTerms": "Délai de paiement (jours)",
+    "active": "Fournisseur actif"
+  },
+  "dialog": {
+    "create": "Nouveau fournisseur",
+    "edit": "Modifier le fournisseur",
+    "subtitle": "Enregistrer les coordonnées du fournisseur pour les achats et réceptions."
+  },
+  "confirmDelete": "Supprimer ce fournisseur ?"
+}

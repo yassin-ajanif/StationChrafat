@@ -17,6 +17,10 @@ import { produitsServicesFeature } from './module/Station/produits-services/stat
 import { StockEffects, StockGestionEffects } from './module/Station/stock/state/effects';
 import { stockGestionFeature } from './module/Station/stock/state/reducers/stock-gestion.reducer';
 import { stockFeature } from './module/Station/stock/state/reducers/stock.reducer';
+import { ClientEffects } from './module/Station/client/state/client.effects';
+import { clientFeature } from './module/Station/client/state/client.reducer';
+import { FournisseurEffects } from './module/Station/fournisseur/state/fournisseur.effects';
+import { fournisseurFeature } from './module/Station/fournisseur/state/fournisseur.reducer';
 import { VentesEffects } from './module/Station/ventes/state/ventes.effects';
 import { ventesFeature } from './module/Station/ventes/state/ventes.reducer';
 
@@ -33,7 +37,18 @@ export const appConfig: ApplicationConfig = {
     provideState(stockFeature),
     provideState(stockGestionFeature),
     provideState(produitsServicesFeature),
-    provideEffects(JourneeEffects, VentesEffects, AchatEffects, StockEffects, StockGestionEffects, ProduitsServicesEffects),
+    provideState(clientFeature),
+    provideState(fournisseurFeature),
+    provideEffects(
+      JourneeEffects,
+      VentesEffects,
+      AchatEffects,
+      StockEffects,
+      StockGestionEffects,
+      ProduitsServicesEffects,
+      ClientEffects,
+      FournisseurEffects,
+    ),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
   ],
 };

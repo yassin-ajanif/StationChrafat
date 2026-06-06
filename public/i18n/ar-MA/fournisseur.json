@@ -1,0 +1,44 @@
+{
+  "page": {
+    "title": "إدارة الموردين",
+    "subtitle": "سجّل موردي الوقود والزيوت والبوتيك وقطع الغيار.",
+    "cta": "+ إضافة مورد",
+    "loading": "جاري تحميل الموردين…",
+    "search": "البحث عن مورد…",
+    "empty": "لم يتم العثور على أي مورد."
+  },
+  "table": {
+    "colName": "الاسم / السبب الاجتماعي",
+    "colPhone": "الهاتف",
+    "colIce": "ICE",
+    "colCity": "المدينة",
+    "colPaymentTerms": "مهلة الدفع",
+    "days": "ي"
+  },
+  "status": {
+    "active": "نشط",
+    "inactive": "غير نشط"
+  },
+  "fields": {
+    "name": "الاسم / السبب الاجتماعي",
+    "namePlaceholder": "مثال: TotalEnergies Marketing Maroc",
+    "phone": "الهاتف",
+    "phonePlaceholder": "05 XX XX XX XX",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "appro@exemple.ma",
+    "ice": "ICE",
+    "icePlaceholder": "المعرف الموحد للمقاولة",
+    "address": "العنوان",
+    "addressPlaceholder": "الشارع، المنطقة الصناعية…",
+    "city": "المدينة",
+    "cityPlaceholder": "مثال: الدار البيضاء",
+    "paymentTerms": "مهلة الدفع (أيام)",
+    "active": "مورد نشط"
+  },
+  "dialog": {
+    "create": "مورد جديد",
+    "edit": "تعديل المورد",
+    "subtitle": "تسجيل بيانات المورد لمشتريات واستلام البضائع."
+  },
+  "confirmDelete": "حذف هذا المورد؟"
+}

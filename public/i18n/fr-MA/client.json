@@ -1,0 +1,41 @@
+{
+  "page": {
+    "title": "Gestion des clients",
+    "subtitle": "Référenciez vos clients particuliers et professionnels pour les ventes et encaissements.",
+    "cta": "+ Ajouter un client",
+    "loading": "Chargement des clients…",
+    "search": "Rechercher un client…",
+    "empty": "Aucun client trouvé."
+  },
+  "table": {
+    "colName": "Nom / Raison sociale",
+    "colPhone": "Téléphone",
+    "colIce": "ICE",
+    "colCity": "Ville"
+  },
+  "status": {
+    "active": "Actif",
+    "inactive": "Inactif"
+  },
+  "fields": {
+    "name": "Nom / Raison sociale",
+    "namePlaceholder": "Ex: Transport Atlas SARL",
+    "phone": "Téléphone",
+    "phonePlaceholder": "06 XX XX XX XX",
+    "email": "E-mail",
+    "emailPlaceholder": "contact@exemple.ma",
+    "ice": "ICE",
+    "icePlaceholder": "Identifiant Commun de l'Entreprise",
+    "address": "Adresse",
+    "addressPlaceholder": "Rue, quartier…",
+    "city": "Ville",
+    "cityPlaceholder": "Ex: Casablanca",
+    "active": "Client actif"
+  },
+  "dialog": {
+    "create": "Nouveau client",
+    "edit": "Modifier le client",
+    "subtitle": "Enregistrer les coordonnées du client pour les documents de vente."
+  },
+  "confirmDelete": "Supprimer ce client ?"
+}

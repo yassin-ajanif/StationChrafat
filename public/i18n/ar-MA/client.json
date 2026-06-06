@@ -1,0 +1,41 @@
+{
+  "page": {
+    "title": "إدارة العملاء",
+    "subtitle": "سجّل عملاءك الأفراد والمهنيين للمبيعات والتحصيلات.",
+    "cta": "+ إضافة عميل",
+    "loading": "جاري تحميل العملاء…",
+    "search": "البحث عن عميل…",
+    "empty": "لم يتم العثور على أي عميل."
+  },
+  "table": {
+    "colName": "الاسم / السبب الاجتماعي",
+    "colPhone": "الهاتف",
+    "colIce": "ICE",
+    "colCity": "المدينة"
+  },
+  "status": {
+    "active": "نشط",
+    "inactive": "غير نشط"
+  },
+  "fields": {
+    "name": "الاسم / السبب الاجتماعي",
+    "namePlaceholder": "مثال: شركة النقل أطلس",
+    "phone": "الهاتف",
+    "phonePlaceholder": "06 XX XX XX XX",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "contact@exemple.ma",
+    "ice": "ICE",
+    "icePlaceholder": "المعرف الموحد للمقاولة",
+    "address": "العنوان",
+    "addressPlaceholder": "الشارع، الحي…",
+    "city": "المدينة",
+    "cityPlaceholder": "مثال: الدار البيضاء",
+    "active": "عميل نشط"
+  },
+  "dialog": {
+    "create": "عميل جديد",
+    "edit": "تعديل العميل",
+    "subtitle": "تسجيل بيانات العميل لوثائق البيع."
+  },
+  "confirmDelete": "حذف هذا العميل؟"
+}
