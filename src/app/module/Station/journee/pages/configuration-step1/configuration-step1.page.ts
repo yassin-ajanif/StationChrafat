@@ -5,7 +5,7 @@ import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
 import { ShiftSlotPickerComponent } from '../../components/shift-slot-picker/shift-slot-picker.component';
-import { ShiftSlot } from '../../models/journee.model';
+import { ShiftSlot } from '../../state/journee.store';
 import { JourneeActions } from '../../state/journee.actions';
 import {
   selectDraft,

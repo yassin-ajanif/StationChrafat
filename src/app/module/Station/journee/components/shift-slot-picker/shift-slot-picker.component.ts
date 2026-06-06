@@ -1,6 +1,6 @@
 import { Component, input, output } from '@angular/core';
 import { TranslatePipe } from '../../../../../core/i18n'
-import { ShiftSlot } from '../../models/journee.model';
+import { ShiftSlot } from '../../state/journee.store';
 
 interface SlotOption {
   value: ShiftSlot;

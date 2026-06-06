@@ -10,7 +10,7 @@ import {
   CatalogueItemDraft,
   CategoryDraft,
   CategoryKind,
-} from '../../models';
+} from '../../state/produits-services.store';
 import { ProduitsServicesActions } from '../../state/produits-services.actions';
 import {
   selectError,

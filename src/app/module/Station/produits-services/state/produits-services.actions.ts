@@ -1,7 +1,5 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
-import { CategoryDraft } from '../models/category-draft.model';
-import { CatalogueCategory } from '../models/category.model';
-import { CatalogueItem, CatalogueItemDraft } from '../models/catalogue-item.model';
+import { CatalogueCategory, CatalogueItem, CatalogueItemDraft, CategoryDraft } from './produits-services.store';
 
 export const ProduitsServicesActions = createActionGroup({
   source: 'ProduitsServices',

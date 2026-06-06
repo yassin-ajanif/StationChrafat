@@ -14,7 +14,7 @@ import {
   CatalogueItem,
   CatalogueItemDraft,
   CatalogueItemType,
-} from '../../../../models';
+} from '../../../../state/produits-services.store';
 
 @Component({
   selector: 'app-catalogue-item-form-dialog',

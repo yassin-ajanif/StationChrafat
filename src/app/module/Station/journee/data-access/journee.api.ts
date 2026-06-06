@@ -3,19 +3,17 @@ import { delay, of } from 'rxjs';
 import { StationBon } from '../../shared/models/bon';
 import {
   ENCAISSEMENT_DIVERS_CLIENT_ID,
+  DepenseLine,
   EncaissementClientOption,
   EncaissementLine,
-} from '../models/encaissement.model';
-import { DepenseLine } from '../models/depense.model';
-import { ValidationExtras } from '../models/journee-validation.model';
-import { NozzleIndexLine } from '../models/nozzle-index.model';
-import { emptyPaymentSplit } from '../models/payment-split.model';
-import {
   JourneeKpis,
   JourneeSummary,
+  NozzleIndexLine,
   Operator,
   ShiftSlot,
-} from '../models/journee.model';
+  ValidationExtras,
+  emptyPaymentSplit,
+} from '../state/journee.store';
 
 @Injectable({ providedIn: 'root' })
 export class JourneeApi {

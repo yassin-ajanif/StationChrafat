@@ -1,16 +1,19 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import { StationBon, StationBonDraftInput } from '../../shared/models/bon';
-import { DepenseLine, DepenseLinePatch } from '../models/depense.model';
-import { EncaissementClientOption, EncaissementLine, EncaissementLinePatch } from '../models/encaissement.model';
-import { ValidationExtras } from '../models/journee-validation.model';
-import { NozzleIndexLine } from '../models/nozzle-index.model';
 import {
+  DepenseLine,
+  DepenseLinePatch,
+  EncaissementClientOption,
+  EncaissementLine,
+  EncaissementLinePatch,
   JourneeDraftConfig,
   JourneeKpis,
   JourneeSummary,
+  NozzleIndexLine,
   Operator,
   ShiftSlot,
-} from '../models/journee.model';
+  ValidationExtras,
+} from './journee.store';
 
 export const JourneeActions = createActionGroup({
   source: 'Journee',

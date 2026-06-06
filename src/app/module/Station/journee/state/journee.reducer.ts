@@ -1,16 +1,16 @@
 import { createFeature, createReducer, on } from '@ngrx/store';
 import {
+  EncaissementClientOption,
   JourneeDraft,
   JourneeKpis,
   JourneeSummary,
   Operator,
-} from '../models/journee.model';
-import { EncaissementClientOption } from '../models/encaissement.model';
-import { createEmptyEncaissementLine } from '../models/encaissement.model';
-import { createEmptyDepenseLine } from '../models/depense.model';
-import { emptyBombisteNozzlePayment } from '../models/nozzle-index.model';
-import { emptyPaymentSplit } from '../models/payment-split.model';
-import { ValidationExtras } from '../models/journee-validation.model';
+  ValidationExtras,
+  createEmptyDepenseLine,
+  createEmptyEncaissementLine,
+  emptyBombisteNozzlePayment,
+  emptyPaymentSplit,
+} from './journee.store';
 import { JourneeActions } from './journee.actions';
 
 

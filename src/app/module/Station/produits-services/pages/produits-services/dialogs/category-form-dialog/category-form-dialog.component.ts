@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal } from '@angular/core';
 import { TranslatePipe } from '../../../../../../../core/i18n'
 import { ButtonComponent } from '../../../../../../../shared/components/button/button.component';
-import { CatalogueCategory, CategoryDraft, CategoryKind } from '../../../../models';
+import { CatalogueCategory, CategoryDraft, CategoryKind } from '../../../../state/produits-services.store';
 
 @Component({
   selector: 'app-category-form-dialog',

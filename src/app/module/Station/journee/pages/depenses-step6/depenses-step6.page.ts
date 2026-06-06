@@ -10,7 +10,7 @@ import {
   isDepenseLineEmpty,
   parseDepensePaymentMode,
   parseExpenseType,
-} from '../../models/depense.model';
+} from '../../state/journee.store';
 import { JourneeActions } from '../../state/journee.actions';
 import {
   selectCanProceedDepensesStep,

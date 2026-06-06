@@ -1,6 +1,5 @@
 import { createFeature, createReducer, on } from '@ngrx/store';
-import { CatalogueCategory } from '../models/category.model';
-import { CatalogueItem } from '../models/catalogue-item.model';
+import { CatalogueCategory, CatalogueItem } from './produits-services.store';
 import { ProduitsServicesActions } from './produits-services.actions';
 
 export interface ProduitsServicesState {

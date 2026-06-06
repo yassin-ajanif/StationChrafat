@@ -3,7 +3,7 @@ import { LocaleNumberPipe, LocaleCurrencyPipe, TranslatePipe } from '../../../..
 import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
-import { JourneeStatus } from '../../models/journee.model';
+import { JourneeStatus } from '../../state/journee.store';
 import { JourneeActions } from '../../state/journee.actions';
 import {
   selectJournees,

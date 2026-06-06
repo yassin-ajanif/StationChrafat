@@ -1,20 +1,16 @@
 import { createSelector } from '@ngrx/store';
 import { computeStationBonsTotal, canProceedBonsStep } from '../../shared/models/bon';
 import {
-  computeDepensesTotal,
-  canProceedDepensesStep,
-} from '../models/depense.model';
-import {
-  computeEncaissementsTotal,
-  canProceedEncaissementsStep,
-} from '../models/encaissement.model';
-import { buildJourneeValidationSummary } from '../models/journee-validation.model';
-import {
+  buildJourneeValidationSummary,
   buildNozzleBombisteGroups,
+  canProceedDepensesStep,
+  canProceedEncaissementsStep,
   canProceedNozzleStep,
+  computeDepensesTotal,
+  computeEncaissementsTotal,
   computeSessionSummary,
   mapLinesWithTotals,
-} from '../models/nozzle-index.model';
+} from './journee.store';
 import { journeeFeature } from './journee.reducer';
 
 export const {

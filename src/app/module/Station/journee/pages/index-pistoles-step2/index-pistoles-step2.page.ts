@@ -3,12 +3,12 @@ import { LocaleNumberPipe, LocaleCurrencyPipe, TranslatePipe } from '../../../..
 import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
+import { paymentDifferenceLabel as formatPaymentDifference } from '../../../shared/models/common/payment-split.model';
 import {
   NozzleBombisteGroup,
   NozzleIndexLine,
   isLineValid,
-} from '../../models/nozzle-index.model';
-import { paymentDifferenceLabel as formatPaymentDifference } from '../../models/payment-split.model';
+} from '../../state/journee.store';
 import { JourneeActions } from '../../state/journee.actions';
 import {
   selectAvailableNozzleBombistes,

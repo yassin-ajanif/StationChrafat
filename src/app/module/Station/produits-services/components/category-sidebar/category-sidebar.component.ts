@@ -1,6 +1,6 @@
 import { Component, input, output } from '@angular/core';
 import { TranslatePipe } from '../../../../../core/i18n'
-import { CatalogueCategory } from '../../models/category.model';
+import { CatalogueCategory } from '../../state/produits-services.store';
 
 @Component({
   selector: 'app-category-sidebar',

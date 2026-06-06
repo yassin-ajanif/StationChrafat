@@ -1,6 +1,6 @@
 import { Component, input, output } from '@angular/core';
 import { LocaleCurrencyPipe, TranslatePipe } from '../../../../../core/i18n'
-import { CatalogueCategory, CatalogueItem } from '../../models';
+import { CatalogueCategory, CatalogueItem } from '../../state/produits-services.store';
 
 @Component({
   selector: 'app-catalogue-item-table',

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { delay, Observable, of } from 'rxjs';
-import { CatalogueCategory } from '../models/category.model';
-import { CatalogueItem, CatalogueItemDraft } from '../models/catalogue-item.model';
+import { CatalogueCategory, CatalogueItem, CatalogueItemDraft } from '../state/produits-services.store';
 
 const SEED_CATEGORIES: CatalogueCategory[] = [
   { id: 1, kind: 'service', label: 'Nettoyage' },
