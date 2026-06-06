@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
-import { StationBonDraftInput } from './journee.store';
+import { BonsStep3LivraisonSave } from './journee.store';
 import {
   BonsStep3,
   ConfigurationStep1,
@@ -68,11 +68,9 @@ export const JourneeActions = createActionGroup({
       bons?: number;
     }>(),
 
-    'Transmit Fuel Sales To Station Bons': emptyProps(),
-
-    'Add Station Bon': props<{ bon: StationBonDraftInput }>(),
-    'Update Station Bon': props<{ id: number; bon: StationBonDraftInput }>(),
-    'Remove Station Bon': props<{ id: number }>(),
+    'Add Livraison': props<{ livraison: BonsStep3LivraisonSave }>(),
+    'Update Livraison': props<{ id: number; livraison: BonsStep3LivraisonSave }>(),
+    'Remove Livraison': props<{ id: number }>(),
 
     'Set Station Bons Chef Id': props<{ chefVidangeLavageId: number | null }>(),
 

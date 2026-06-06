@@ -1,0 +1,7 @@
+@reference '../../../../../../tailwind.css';
+
+.bons-step3 {
+  &__select {
+    @apply text-on-surface;
+  }
+}

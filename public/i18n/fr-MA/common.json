@@ -105,6 +105,9 @@
     "hs": "HS"
   },
   "formValidation": {
+    "bonNumberRequired": "Indiquez le numéro de bon.",
+    "operatorRequired": "Sélectionnez l'opérateur.",
+    "clientPlateRequired": "Indiquez le client / la plaque.",
     "clientRequired": "Indiquez le client.",
     "supplierRequired": "Indiquez le fournisseur.",
     "documentLineRequired": "Ajoutez au moins une ligne service ou produit complète (désignation, quantité, prix).",

@@ -105,6 +105,9 @@
     "hs": "خ.م"
   },
   "formValidation": {
+    "bonNumberRequired": "أدخل رقم الوصل.",
+    "operatorRequired": "اختر المشغّل.",
+    "clientPlateRequired": "أدخل الزبون / اللوحة.",
     "clientRequired": "أدخل اسم الزبون.",
     "supplierRequired": "أدخل اسم المورد.",
     "documentLineRequired": "أضف سطر خدمة أو منتج واحداً على الأقل (التسمية، الكمية، السعر).",

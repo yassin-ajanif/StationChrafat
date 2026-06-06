@@ -17,9 +17,8 @@ import {
   type DocumentLineTableRow,
 } from '../../document-lines-table/document-lines-table.component';
 import type {
-  StationBonFormDraft,
-  StationBonFormEditValue,
-  StationBonStatut,
+  BonsStep3LivraisonFormEdit,
+  BonsStep3LivraisonFormSave,
 } from '../../../../journee/state/journee.store';
 import type { Livraison, LivraisonDraft, LivraisonStatut } from '../../../../ventes/state/store';
 import { BonRecapPaymentsComponent } from '../../bon-recap-payments/bon-recap-payments.component';
@@ -128,14 +127,14 @@ export class LivraisonFormDialogComponent {
   readonly open = input(false);
   readonly variant = input<LivraisonFormVariant>('station');
   readonly editVentes = input<Livraison | null>(null);
-  readonly editStation = input<StationBonFormEditValue | null>(null);
+  readonly editStation = input<BonsStep3LivraisonFormEdit | null>(null);
   readonly suggestedBonNumber = input('');
   readonly defaultOperatorId = input<number | null>(null);
   readonly operators = input<{ id: number; name: string }[]>([]);
   readonly operatorsLoading = input(false);
 
   readonly ventesSaved = output<LivraisonDraft>();
-  readonly stationSaved = output<StationBonFormDraft>();
+  readonly stationSaved = output<BonsStep3LivraisonFormSave>();
   readonly closed = output<void>();
 
   readonly statutKeys = LIVRAISON_STATUT_KEYS;
@@ -241,25 +240,25 @@ export class LivraisonFormDialogComponent {
     );
   }
 
-  private loadStationEditForm(value: StationBonFormEditValue): void {
+  private loadStationEditForm(value: BonsStep3LivraisonFormEdit): void {
     this.serviceSeq = 0;
     this.productSeq = 0;
-    this.bonNumber.set(value.bonNumber);
+    this.bonNumber.set(value.numero);
     this.operatorId.set(value.operatorId);
-    this.client.set(value.client);
-    this.dateLivraison.set(value.dateLivraison);
-    this.statut.set(value.statut);
-    this.adresse.set(value.adresse);
-    this.description.set(value.description);
-    this.payments.set({ ...(value.payments ?? emptyPaymentSplit()) });
+    this.client.set(value.livraison.client);
+    this.dateLivraison.set(value.livraison.dateLivraison);
+    this.statut.set(value.livraison.statut);
+    this.adresse.set(value.livraison.adresse);
+    this.description.set(value.livraison.description);
+    this.payments.set({ ...(value.livraison.payments ?? emptyPaymentSplit()) });
     this.serviceRows.set(
-      value.serviceLines.length > 0
-        ? value.serviceLines.map((line) => documentLineToTableRow(line, ++this.serviceSeq))
+      value.livraison.serviceLines.length > 0
+        ? value.livraison.serviceLines.map((line) => documentLineToTableRow(line, ++this.serviceSeq))
         : this.createEmptyServiceRows(DEFAULT_SERVICE_ROWS),
     );
     this.productRows.set(
-      value.productLines.length > 0
-        ? value.productLines.map((line) => documentLineToTableRow(line, ++this.productSeq))
+      value.livraison.productLines.length > 0
+        ? value.livraison.productLines.map((line) => documentLineToTableRow(line, ++this.productSeq))
         : this.createEmptyProductRows(DEFAULT_PRODUCT_ROWS),
     );
   }
@@ -384,10 +383,18 @@ export class LivraisonFormDialogComponent {
     }
 
     this.stationSaved.emit({
-      bonNumber: this.bonNumber().trim(),
+      numero: this.bonNumber().trim(),
       operatorId: this.operatorId()!,
-      statut: this.statut() as StationBonStatut,
-      ...shared,
+      livraison: {
+        client: shared.client,
+        dateLivraison: shared.dateLivraison,
+        statut: this.statut(),
+        adresse: shared.adresse,
+        description: shared.description,
+        serviceLines,
+        productLines,
+        payments: shared.payments,
+      },
     });
   }
 }

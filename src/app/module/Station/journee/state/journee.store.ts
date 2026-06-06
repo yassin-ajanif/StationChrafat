@@ -1,79 +1,12 @@
 import type { DocumentLine, DocumentLineDraft, DocumentLineTableRow } from '../../shared/components/document-lines-table/document-lines-table.component';
 import type { PaymentSplit } from '../../shared/components/bon-recap-payments/bon-recap-payments.component';
+import type { Livraison, LivraisonDraft } from '../../ventes/state/store';
 
-export type { PaymentSplit };
+export type { PaymentSplit, Livraison, LivraisonDraft };
 
-// ---------------------------------------------------------------------------
-// Station bon (bons-step3)
-// ---------------------------------------------------------------------------
-
-export type StationBonStatut = 'planifiee' | 'en_cours' | 'livree' | 'annulee';
-
-export type StationBonLine = DocumentLine;
-export type StationBonLineDraft = DocumentLineDraft;
-export type StationBonLineTableRow = DocumentLineTableRow;
-
-export interface StationBon {
-  id: number;
-  bonNumber: string;
-  partnerRef: string;
-  chefVidangeLavageId: number;
-  operatorId: number;
-  dateLivraison: string;
-  statut: StationBonStatut;
-  adresse: string;
-  description: string;
-  serviceLines: StationBonLine[];
-  productLines: StationBonLine[];
-  payments: PaymentSplit;
-  fuelTransmittedFromNozzles?: boolean;
-}
-
-export interface StationBonDraftInput {
-  bonNumber: string;
-  partnerRef: string;
-  chefVidangeLavageId: number;
-  operatorId: number;
-  dateLivraison: string;
-  statut: StationBonStatut;
-  adresse: string;
-  description: string;
-  serviceLines: StationBonLineDraft[];
-  productLines: StationBonLineDraft[];
-  payments: PaymentSplit;
-}
-
-/** Dialog edit payload for the station (journee) variant. */
-export interface StationBonFormEditValue {
-  bonNumber: string;
-  operatorId: number;
-  client: string;
-  dateLivraison: string;
-  statut: StationBonStatut;
-  adresse: string;
-  description: string;
-  serviceLines: StationBonLine[];
-  productLines: StationBonLine[];
-  payments: PaymentSplit;
-}
-
-/** Dialog save payload for the station (journee) variant — chef is attached by the page. */
-export interface StationBonFormDraft {
-  bonNumber: string;
-  operatorId: number;
-  client: string;
-  dateLivraison: string;
-  statut: StationBonStatut;
-  adresse: string;
-  description: string;
-  serviceLines: StationBonLineDraft[];
-  productLines: StationBonLineDraft[];
-  payments: PaymentSplit;
-}
-
-// ---------------------------------------------------------------------------
-// Shared — list & KPIs (outside wizard draft)
-// ---------------------------------------------------------------------------
+// =============================================================================
+// Shared — list, KPIs, operators (outside wizard draft)
+// =============================================================================
 
 export type JourneeStatus = 'brouillon' | 'en_cours' | 'soumise' | 'cloturee';
 
@@ -100,9 +33,11 @@ export interface JourneeKpis {
   cashDiscrepancyThreshold: number;
 }
 
-// ---------------------------------------------------------------------------
-// Part 1 — configuration-step1
-// ---------------------------------------------------------------------------
+// =============================================================================
+// Step 1 — configuration-step1
+// =============================================================================
+
+export type ShiftSlot = 'Matin' | 'Apres-midi' | 'Nuit';
 
 export interface ConfigurationStep1 {
   isValid: boolean;
@@ -120,33 +55,11 @@ export const initialConfigurationStep1 = (): ConfigurationStep1 => ({
   openedAt: new Date().toISOString(),
 });
 
-export type ShiftSlot = 'Matin' | 'Apres-midi' | 'Nuit';
-
-// ---------------------------------------------------------------------------
-// Part 2 — index-pistoles-step2
-// ---------------------------------------------------------------------------
-
-export interface IndexPistolesStep2 {
-  isValid: boolean;
-  selectedBombisteIds: number[];
-  bombistePayments: BombisteNozzlePaymentEntry[];
-  lines: NozzleIndexLine[];
-}
-
-export const initialIndexPistolesStep2 = (): IndexPistolesStep2 => ({
-  isValid: false,
-  selectedBombisteIds: [],
-  bombistePayments: [],
-  lines: [],
-});
+// =============================================================================
+// Step 2 — index-pistoles-step2 (carburant vendu / nozzle indexes)
+// =============================================================================
 
 export type NozzleStatus = 'active' | 'offline';
-
-export type BombisteNozzlePayment = PaymentSplit;
-
-export interface BombisteNozzlePaymentEntry extends BombisteNozzlePayment {
-  bombisteId: number;
-}
 
 export interface NozzleIndexLine {
   id: number;
@@ -170,6 +83,12 @@ export interface NozzleLineWithTotals {
   total: number;
 }
 
+export type BombisteNozzlePayment = PaymentSplit;
+
+export interface BombisteNozzlePaymentEntry extends BombisteNozzlePayment {
+  bombisteId: number;
+}
+
 export interface NozzleBombisteGroup {
   bombisteId: number;
   bombisteName: string;
@@ -180,14 +99,58 @@ export interface NozzleBombisteGroup {
   paymentDifference: number;
 }
 
-// ---------------------------------------------------------------------------
-// Part 3 — bons-step3
-// ---------------------------------------------------------------------------
+export interface IndexPistolesStep2 {
+  isValid: boolean;
+  selectedBombisteIds: number[];
+  bombistePayments: BombisteNozzlePaymentEntry[];
+  lines: NozzleIndexLine[];
+}
+
+export const initialIndexPistolesStep2 = (): IndexPistolesStep2 => ({
+  isValid: false,
+  selectedBombisteIds: [],
+  bombistePayments: [],
+  lines: [],
+});
+
+// =============================================================================
+// Step 3 — bons-step3 (bons station = ventes bon de livraison + journée metadata)
+// =============================================================================
+
+/** Persisted step-3 entry: wraps ventes `Livraison`. */
+export interface BonsStep3Livraison {
+  operatorId: number;
+  chefVidangeLavageId: number;
+  fuelTransmittedFromNozzles?: boolean;
+  livraison: Livraison;
+}
+
+/** Reducer input when adding or updating a step-3 livraison. */
+export interface BonsStep3LivraisonSave {
+  numero: string;
+  operatorId: number;
+  chefVidangeLavageId: number;
+  livraison: LivraisonDraft;
+}
+
+/** Dialog save payload — chef is attached by the page. */
+export interface BonsStep3LivraisonFormSave {
+  numero: string;
+  operatorId: number;
+  livraison: LivraisonDraft;
+}
+
+/** Dialog edit payload for the station (journee) variant. */
+export interface BonsStep3LivraisonFormEdit {
+  numero: string;
+  operatorId: number;
+  livraison: Omit<Livraison, 'id' | 'numero' | 'montant'>;
+}
 
 export interface BonsStep3 {
   isValid: boolean;
   chefId: number | null;
-  items: StationBon[];
+  items: BonsStep3Livraison[];
 }
 
 export const initialBonsStep3 = (): BonsStep3 => ({
@@ -216,19 +179,9 @@ export const JOURNEE_BON_CONFIG: JourneeBonsStepConfig = {
   headerIcon: '📋',
 };
 
-// ---------------------------------------------------------------------------
-// Part 4 — encaissements-step4
-// ---------------------------------------------------------------------------
-
-export interface EncaissementsStep4 {
-  isValid: boolean;
-  lines: EncaissementLine[];
-}
-
-export const initialEncaissementsStep4 = (): EncaissementsStep4 => ({
-  isValid: true,
-  lines: [],
-});
+// =============================================================================
+// Step 4 — encaissements-step4
+// =============================================================================
 
 export const ENCAISSEMENT_DIVERS_CLIENT_ID = 0;
 
@@ -257,19 +210,19 @@ export interface EncaissementLinePatch {
   note?: string;
 }
 
-// ---------------------------------------------------------------------------
-// Part 5 — depenses-step6
-// ---------------------------------------------------------------------------
-
-export interface DepensesStep6 {
+export interface EncaissementsStep4 {
   isValid: boolean;
-  lines: DepenseLine[];
+  lines: EncaissementLine[];
 }
 
-export const initialDepensesStep6 = (): DepensesStep6 => ({
+export const initialEncaissementsStep4 = (): EncaissementsStep4 => ({
   isValid: true,
   lines: [],
 });
+
+// =============================================================================
+// Step 6 — depenses-step6
+// =============================================================================
 
 export const EXPENSE_TYPES = [
   'Achat Fournitures',
@@ -308,9 +261,19 @@ export interface DepenseLinePatch {
   note?: string;
 }
 
-// ---------------------------------------------------------------------------
-// Wizard draft root
-// ---------------------------------------------------------------------------
+export interface DepensesStep6 {
+  isValid: boolean;
+  lines: DepenseLine[];
+}
+
+export const initialDepensesStep6 = (): DepensesStep6 => ({
+  isValid: true,
+  lines: [],
+});
+
+// =============================================================================
+// Wizard draft root — aggregates all steps
+// =============================================================================
 
 export interface JourneeDraft {
   configurationStep1: ConfigurationStep1;

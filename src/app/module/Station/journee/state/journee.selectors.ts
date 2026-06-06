@@ -59,8 +59,16 @@ export const selectStationBonsChefId = createSelector(selectBonsStep3, (step) =>
 export const selectFilteredStationBons = createSelector(
   selectStationBons,
   selectStationBonsChefId,
-  (bons, chefId) =>
-    chefId == null ? [] : bons.filter((bon) => bon.chefVidangeLavageId === chefId),
+  (bons, chefId) => {
+    const fuelBons = bons.filter((bon) => bon.fuelTransmittedFromNozzles);
+    const manualBons =
+      chefId == null
+        ? []
+        : bons.filter(
+            (bon) => !bon.fuelTransmittedFromNozzles && bon.chefVidangeLavageId === chefId,
+          );
+    return [...fuelBons, ...manualBons];
+  },
 );
 
 export const selectEncaissements = createSelector(

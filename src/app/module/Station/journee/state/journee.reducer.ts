@@ -1,4 +1,5 @@
 import { createFeature, createReducer, on } from '@ngrx/store';
+import { computeDocumentLinesTotalTTC, roundMoney } from '../../shared/components/document-lines-table/document-lines-table.component';
 import { emptyPaymentSplit } from '../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import {
   DEFAULT_DEPENSE_PAYMENT_MODE,
@@ -11,7 +12,82 @@ import {
   JourneeSummary,
   Operator,
 } from './journee.store';
+import type { BonsStep3Livraison, BonsStep3LivraisonSave } from './journee.store';
+import type { LivraisonLineDraft } from '../../ventes/state/store';
 import { JourneeActions } from './journee.actions';
+
+function nextLivraisonId(items: BonsStep3Livraison[]): number {
+  return items.reduce((max, item) => Math.max(max, item.livraison.id), 0) + 1;
+}
+
+function nextDocumentLineId(items: BonsStep3Livraison[]): number {
+  return (
+    items.reduce(
+      (max, item) =>
+        Math.max(
+          max,
+          ...item.livraison.serviceLines.map((line) => line.id),
+          ...item.livraison.productLines.map((line) => line.id),
+          0,
+        ),
+      0,
+    ) + 1
+  );
+}
+
+function computeLivraisonMontant(
+  serviceLines: LivraisonLineDraft[],
+  productLines: LivraisonLineDraft[],
+): number {
+  return roundMoney(
+    computeDocumentLinesTotalTTC(serviceLines) + computeDocumentLinesTotalTTC(productLines),
+  );
+}
+
+function mapNewDocumentLine(line: LivraisonLineDraft, id: number) {
+  return {
+    id,
+    reference: line.reference,
+    designation: line.designation,
+    quantity: line.quantity,
+    unit: line.unit,
+    unitPriceHT: line.unitPriceHT,
+    discountPercent: line.discountPercent,
+    vatPercent: line.vatPercent,
+  };
+}
+
+function buildLivraisonFromSave(
+  save: BonsStep3LivraisonSave,
+  items: BonsStep3Livraison[],
+  existingId?: number,
+  existingLivraison?: BonsStep3Livraison['livraison'],
+): BonsStep3Livraison['livraison'] {
+  let nextLineId = nextDocumentLineId(items);
+  const mapLines = (
+    drafts: LivraisonLineDraft[],
+    existingLines: BonsStep3Livraison['livraison']['serviceLines'],
+  ) =>
+    drafts.map((line, index) =>
+      mapNewDocumentLine(line, existingLines[index]?.id ?? nextLineId++),
+    );
+  const draft = save.livraison;
+  const serviceLines = mapLines(draft.serviceLines, existingLivraison?.serviceLines ?? []);
+  const productLines = mapLines(draft.productLines, existingLivraison?.productLines ?? []);
+  return {
+    id: existingId ?? nextLivraisonId(items),
+    numero: save.numero.trim(),
+    client: draft.client.trim(),
+    dateLivraison: draft.dateLivraison,
+    statut: draft.statut,
+    adresse: draft.adresse.trim(),
+    description: draft.description.trim(),
+    montant: computeLivraisonMontant(serviceLines, productLines),
+    serviceLines,
+    productLines,
+    payments: draft.payments ?? emptyPaymentSplit(),
+  };
+}
 
 function createEmptyEncaissementLine(id: number): EncaissementLine {
   return { id, clientId: null, paymentMode: '', amount: 0, note: '' };
@@ -224,32 +300,8 @@ export const journeeFeature = createFeature({
       nozzleIndexesError: error,
     })),
 
-    on(JourneeActions.transmitFuelSalesToStationBons, (state) => state),
-
-    on(JourneeActions.addStationBon, (state, { bon }) => {
+    on(JourneeActions.addLivraison, (state, { livraison: save }) => {
       const items = state.draft.bonsStep3.items;
-      const nextBonId = items.reduce((max, b) => Math.max(max, b.id), 0) + 1;
-      let nextLineId =
-        items.reduce(
-          (max, b) =>
-            Math.max(
-              max,
-              ...b.serviceLines.map((l) => l.id),
-              ...b.productLines.map((l) => l.id),
-              0,
-            ),
-          0,
-        ) + 1;
-      const mapLine = (line: (typeof bon.serviceLines)[number]) => ({
-        id: nextLineId++,
-        reference: line.reference,
-        designation: line.designation,
-        quantity: line.quantity,
-        unit: line.unit,
-        unitPriceHT: line.unitPriceHT,
-        discountPercent: line.discountPercent,
-        vatPercent: line.vatPercent,
-      });
       return {
         ...state,
         draft: {
@@ -259,18 +311,9 @@ export const journeeFeature = createFeature({
             items: [
               ...items,
               {
-                id: nextBonId,
-                bonNumber: bon.bonNumber.trim(),
-                partnerRef: bon.partnerRef.trim(),
-                chefVidangeLavageId: bon.chefVidangeLavageId,
-                operatorId: bon.operatorId,
-                dateLivraison: bon.dateLivraison,
-                statut: bon.statut,
-                adresse: bon.adresse.trim(),
-                description: bon.description.trim(),
-                serviceLines: bon.serviceLines.map(mapLine),
-                productLines: bon.productLines.map(mapLine),
-                payments: bon.payments ?? emptyPaymentSplit(),
+                operatorId: save.operatorId,
+                chefVidangeLavageId: save.chefVidangeLavageId,
+                livraison: buildLivraisonFromSave(save, items),
               },
             ],
           },
@@ -278,77 +321,40 @@ export const journeeFeature = createFeature({
       };
     }),
 
-    on(JourneeActions.updateStationBon, (state, { id, bon }) => {
+    on(JourneeActions.updateLivraison, (state, { id, livraison: save }) => {
       const items = state.draft.bonsStep3.items;
-      const existing = items.find((b) => b.id === id);
+      const existing = items.find((item) => item.livraison.id === id);
       if (!existing) {
         return state;
       }
-      let nextLineId =
-        items.reduce(
-          (max, b) =>
-            Math.max(
-              max,
-              ...b.serviceLines.map((l) => l.id),
-              ...b.productLines.map((l) => l.id),
-              0,
-            ),
-          0,
-        ) + 1;
-      const mapLine = (
-        line: (typeof bon.serviceLines)[number],
-        index: number,
-        existingLines: typeof existing.serviceLines,
-      ) => ({
-        id: existingLines[index]?.id ?? nextLineId++,
-        reference: line.reference,
-        designation: line.designation,
-        quantity: line.quantity,
-        unit: line.unit,
-        unitPriceHT: line.unitPriceHT,
-        discountPercent: line.discountPercent,
-        vatPercent: line.vatPercent,
-      });
       return {
         ...state,
         draft: {
           ...state.draft,
           bonsStep3: {
             ...state.draft.bonsStep3,
-            items: items.map((b) =>
-              b.id === id
+            items: items.map((item) =>
+              item.livraison.id === id
                 ? {
-                    ...b,
-                    bonNumber: bon.bonNumber.trim(),
-                    partnerRef: bon.partnerRef.trim(),
-                    chefVidangeLavageId: bon.chefVidangeLavageId,
-                    operatorId: bon.operatorId,
-                    dateLivraison: bon.dateLivraison,
-                    statut: bon.statut,
-                    adresse: bon.adresse.trim(),
-                    description: bon.description.trim(),
-                    serviceLines: bon.serviceLines.map((line, index) =>
-                      mapLine(line, index, existing.serviceLines),
-                    ),
-                    productLines: bon.productLines.map((line, index) =>
-                      mapLine(line, index, existing.productLines),
-                    ),
-                    payments: bon.payments ?? emptyPaymentSplit(),
+                    operatorId: save.operatorId,
+                    chefVidangeLavageId: save.chefVidangeLavageId,
+                    fuelTransmittedFromNozzles: item.fuelTransmittedFromNozzles,
+                    livraison: buildLivraisonFromSave(save, items, id, existing.livraison),
                   }
-                : b,
+                : item,
             ),
           },
         },
       };
     }),
 
-    on(JourneeActions.removeStationBon, (state, { id }) => ({
+    on(JourneeActions.removeLivraison, (state, { id }) => ({
       ...state,
       draft: {
         ...state.draft,
         bonsStep3: {
           ...state.draft.bonsStep3,
-          items: state.draft.bonsStep3.items.filter((b) => b.id !== id),
+          items: state.draft.bonsStep3.items.filter((item) => item.livraison.id !== id),
         },
       },
     })),

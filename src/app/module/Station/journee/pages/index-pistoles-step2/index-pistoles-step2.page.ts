@@ -4,18 +4,14 @@ import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
 import {
-  computePaymentDifference,
-  computePaymentTotal,
-  emptyPaymentSplit,
   isPaymentSplitBalanced,
   paymentDifferenceLabel as formatPaymentDifference,
 } from '../../../shared/components/bon-recap-payments/bon-recap-payments.component';
 import { roundMoney } from '../../../shared/components/document-lines-table/document-lines-table.component';
 import {
-  BombisteNozzlePayment,
-  NozzleBombisteGroup,
-  NozzleIndexLine,
-  NozzleLineWithTotals,
+  type BombisteNozzlePaymentEntry,
+  type NozzleBombisteGroup,
+  type NozzleIndexLine,
 } from '../../state/journee.store';
 import { JourneeActions } from '../../state/journee.actions';
 import {
@@ -75,7 +71,7 @@ export class IndexPistolesStep2Page implements OnInit {
       return false;
     }
     const relevant = this.lines().filter((line) => selectedIds.includes(line.bombisteId));
-    if (relevant.length === 0 || !relevant.every(isNozzleLineValid)) {
+    if (relevant.length === 0 || !relevant.every(isNozzleIndexLineValid)) {
       return false;
     }
     return this.bombisteGroups().every((group) =>
@@ -159,7 +155,7 @@ export class IndexPistolesStep2Page implements OnInit {
   }
 
   lineInvalid(line: NozzleIndexLine): boolean {
-    return !isNozzleLineValid(line);
+    return !isNozzleIndexLineValid(line);
   }
 
   exportCsv(): void {
@@ -206,65 +202,53 @@ export class IndexPistolesStep2Page implements OnInit {
   }
 }
 
-function computeLineQuantity(line: NozzleIndexLine): number {
-  if (line.status === 'offline' || line.indexEntree == null || line.indexSortie == null) {
-    return 0;
-  }
-  const raw = line.indexEntree - line.indexSortie - line.tankReturn;
-  return Math.max(0, raw);
-}
-
-function computeLineTotal(line: NozzleIndexLine): number {
-  return roundMoney(computeLineQuantity(line) * line.unitPrice);
-}
-
-function mapLinesWithTotals(lines: NozzleIndexLine[]): NozzleLineWithTotals[] {
-  return lines.map((line) => ({
-    line,
-    quantity: computeLineQuantity(line),
-    total: computeLineTotal(line),
-  }));
-}
-
-function isNozzleLineValid(line: NozzleIndexLine): boolean {
-  if (line.status === 'offline') {
-    return true;
-  }
-  if (
-    line.indexEntree == null ||
-    line.indexSortie == null ||
-    Number.isNaN(line.indexEntree) ||
-    Number.isNaN(line.indexSortie)
-  ) {
+function isNozzleIndexLineValid(line: NozzleIndexLine): boolean {
+  if (line.indexEntree == null || line.indexSortie == null) {
     return false;
   }
-  return line.indexEntree >= line.indexSortie + line.tankReturn;
+  return line.indexEntree >= line.indexSortie;
+}
+
+function nozzleLineQuantity(line: NozzleIndexLine): number {
+  if (line.indexEntree == null || line.indexSortie == null) {
+    return 0;
+  }
+  return Math.max(0, line.indexEntree - line.indexSortie - line.tankReturn);
 }
 
 function buildNozzleBombisteGroups(
   lines: NozzleIndexLine[],
   selectedBombisteIds: number[],
-  operatorNameById: Map<number, string>,
-  paymentsByBombisteId: Map<number, BombisteNozzlePayment>,
+  operatorNames: Map<number, string>,
+  paymentsByBombiste: Map<number, BombisteNozzlePaymentEntry>,
 ): NozzleBombisteGroup[] {
   return selectedBombisteIds.map((bombisteId) => {
-    const groupLines = lines.filter((line) => line.bombisteId === bombisteId);
-    const rows = mapLinesWithTotals(groupLines);
-    const active = rows.filter(({ line }) => line.status === 'active');
-    const amount = roundMoney(active.reduce((sum, row) => sum + row.total, 0));
-    const payments = paymentsByBombisteId.get(bombisteId) ?? emptyPaymentSplit();
-
+    const bombisteLines = lines.filter((line) => line.bombisteId === bombisteId);
+    const rows = bombisteLines.map((line) => {
+      const quantity = nozzleLineQuantity(line);
+      return { line, quantity, total: roundMoney(quantity * line.unitPrice) };
+    });
+    const totals = {
+      liters: roundMoney(rows.reduce((sum, row) => sum + row.quantity, 0)),
+      amount: roundMoney(rows.reduce((sum, row) => sum + row.total, 0)),
+    };
+    const payments = paymentsByBombiste.get(bombisteId) ?? {
+      bombisteId,
+      cash: 0,
+      tpe: 0,
+      bons: 0,
+    };
+    const paymentTotal = roundMoney(
+      (payments.cash ?? 0) + (payments.tpe ?? 0) + (payments.bons ?? 0),
+    );
     return {
       bombisteId,
-      bombisteName: operatorNameById.get(bombisteId) ?? `Bombiste #${bombisteId}`,
+      bombisteName: operatorNames.get(bombisteId) ?? '',
       rows,
-      totals: {
-        liters: active.reduce((sum, row) => sum + row.quantity, 0),
-        amount,
-      },
+      totals,
       payments,
-      paymentTotal: computePaymentTotal(payments),
-      paymentDifference: computePaymentDifference(payments, amount),
+      paymentTotal,
+      paymentDifference: roundMoney(totals.amount - paymentTotal),
     };
   });
 }
