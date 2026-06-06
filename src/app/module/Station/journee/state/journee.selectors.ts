@@ -24,6 +24,8 @@ export const {
   selectEncaissementsError,
   selectDepensesLoading,
   selectDepensesError,
+  selectStockControlLoading,
+  selectStockControlError,
   selectSubmittingJournee,
   selectSubmitJourneeError,
 } = journeeFeature;
@@ -46,6 +48,13 @@ export const selectEncaissementsStep4 = createSelector(
 );
 
 export const selectDepensesStep6 = createSelector(selectDraft, (draft) => draft.depensesStep6);
+
+export const selectStockControlStep6 = createSelector(selectDraft, (draft) => draft.stockControlStep6);
+
+export const selectStockControlLines = createSelector(
+  selectStockControlStep6,
+  (step) => step.lines,
+);
 
 export const selectJourneeDraftId = createSelector(
   selectConfigurationStep1,
@@ -103,6 +112,7 @@ const DRAFT_STEP_KEYS: (keyof JourneeDraft)[] = [
   'bonsStep3',
   'encaissementsStep4',
   'depensesStep6',
+  'stockControlStep6',
 ];
 
 export const selectCanSubmitJournee = createSelector(selectDraft, (draft) =>
@@ -136,5 +146,7 @@ export const selectWizardStepValidityByPath = createSelector(
     'bons-step3': draft.bonsStep3.isValid,
     'encaissements-step4': draft.encaissementsStep4.isValid,
     'depenses-step5': draft.depensesStep6.isValid,
+    'controle-stock-step6': draft.stockControlStep6.isValid,
+    'validation-step7': DRAFT_STEP_KEYS.every((key) => draft[key].isValid),
   }),
 );

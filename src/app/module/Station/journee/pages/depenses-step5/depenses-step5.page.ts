@@ -125,7 +125,7 @@ export class DepensesStep5Page implements OnInit {
   }
 
   next(): void {
-    void this.router.navigate(['/journees', 'nouvelle', 'validation-step6']);
+    void this.router.navigate(['/journees', 'nouvelle', 'controle-stock-step6']);
   }
 }
 

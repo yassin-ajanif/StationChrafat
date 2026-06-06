@@ -16,6 +16,8 @@ import {
   NozzleIndexLine,
   Operator,
   ShiftSlot,
+  StockControlLine,
+  StockControlStep6,
 } from './journee.store';
 
 export const JourneeActions = createActionGroup({
@@ -38,6 +40,7 @@ export const JourneeActions = createActionGroup({
     'Patch Bons Step3': props<{ patch: Partial<BonsStep3> }>(),
     'Patch Encaissements Step4': props<{ patch: Partial<EncaissementsStep4> }>(),
     'Patch Depenses Step6': props<{ patch: Partial<DepensesStep6> }>(),
+    'Patch Stock Control Step6': props<{ patch: Partial<StockControlStep6> }>(),
 
     'Start Journee': props<{
       chefDePisteId: number;
@@ -93,6 +96,12 @@ export const JourneeActions = createActionGroup({
     'Add Depense Line': emptyProps(),
     'Update Depense Line': props<{ id: number; patch: DepenseLinePatch }>(),
     'Remove Depense Line': props<{ id: number }>(),
+
+    'Load Stock Control': emptyProps(),
+    'Load Stock Control Success': props<{ lines: StockControlLine[] }>(),
+    'Load Stock Control Failure': props<{ error: string }>(),
+
+    'Update Stock Control Measured': props<{ lineId: number; measuredStock: number | null }>(),
 
     'Submit Journee': emptyProps(),
     'Submit Journee Success': emptyProps(),

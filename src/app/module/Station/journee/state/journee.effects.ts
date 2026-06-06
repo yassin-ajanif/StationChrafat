@@ -155,6 +155,24 @@ export class JourneeEffects {
     ),
   );
 
+  loadStockControl$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(JourneeActions.loadStockControl),
+      switchMap(() =>
+        this.api.getStockControlLines().pipe(
+          map((lines) => JourneeActions.loadStockControlSuccess({ lines })),
+          catchError((err) =>
+            of(
+              JourneeActions.loadStockControlFailure({
+                error: err?.message ?? 'Erreur chargement contrôle stock',
+              }),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+
   submitJournee$ = createEffect(() =>
     this.actions$.pipe(
       ofType(JourneeActions.submitJournee),

@@ -1,0 +1,208 @@
+<div class="validation-step7 mx-auto flex w-full max-w-5xl flex-col">
+  <header class="validation-step7__hero mb-8 text-center">
+    <h1 class="validation-step7__title font-display uppercase text-on-surface">
+      {{ 'journee.validation.title' | translate }}
+    </h1>
+    <p class="validation-step7__subtitle text-on-surface-variant">
+      {{ 'journee.validation.subtitle' | translate }}
+    </p>
+  </header>
+
+  @if (submitError(); as err) {
+    <p class="mb-4 text-center text-sm text-primary" role="alert">{{ err }}</p>
+  }
+
+  @if (canSubmit()) {
+    @if (summary(); as s) {
+      <div class="validation-step7__summary mb-8 space-y-6">
+        <div class="validation-step7__summary-grid grid gap-6 md:grid-cols-2">
+          <article class="validation-step7__card">
+            <h2 class="validation-step7__card-title">
+              {{ 'journee.validation.revenueTitle' | translate }}
+            </h2>
+            <div class="validation-step7__row">
+              <span class="validation-step7__row-label">
+                {{ 'journee.validation.fuelSales' | translate }}
+              </span>
+              <span class="validation-step7__row-value">{{ s.revenue.fuel | localeCurrency }}</span>
+            </div>
+            <div class="validation-step7__row">
+              <span class="validation-step7__row-label">
+                {{ 'journee.validation.productSales' | translate }}
+              </span>
+              <span class="validation-step7__row-value">{{ s.revenue.products | localeCurrency }}</span>
+            </div>
+            <div class="validation-step7__row">
+              <span class="validation-step7__row-label">
+                {{ 'journee.validation.serviceSales' | translate }}
+              </span>
+              <span class="validation-step7__row-value">{{ s.revenue.services | localeCurrency }}</span>
+            </div>
+            <div class="validation-step7__gross-total">
+              <span class="validation-step7__gross-total-label">
+                {{ 'journee.validation.grossTotal' | translate }}
+              </span>
+              <span class="validation-step7__gross-total-value">
+                {{ s.revenue.grossTotal | localeCurrency }}
+              </span>
+            </div>
+          </article>
+
+          <article class="validation-step7__card">
+            <h2 class="validation-step7__card-title">
+              {{ 'journee.validation.cashMovementsTitle' | translate }}
+            </h2>
+            <div class="validation-step7__row">
+              <span class="validation-step7__row-label">
+                {{ 'journee.validation.nonCashEncaissements' | translate }}
+              </span>
+              <span class="validation-step7__row-value validation-step7__row-value--negative">
+                −{{ s.cashMovements.nonCashEncaissements | localeCurrency }}
+              </span>
+            </div>
+            <div class="validation-step7__row">
+              <span class="validation-step7__row-label">
+                {{ 'journee.validation.authorizedExpenses' | translate }}
+              </span>
+              <span class="validation-step7__row-value validation-step7__row-value--negative">
+                −{{ s.cashMovements.authorizedExpenses | localeCurrency }}
+              </span>
+            </div>
+            <div class="validation-step7__row">
+              <span class="validation-step7__row-label">
+                {{ 'journee.validation.debtSettlements' | translate }}
+              </span>
+              <span class="validation-step7__row-value validation-step7__row-value--positive">
+                +{{ s.cashMovements.debtSettlements | localeCurrency }}
+              </span>
+            </div>
+            <div class="validation-step7__row">
+              <span class="validation-step7__row-label">
+                {{ 'journee.validation.cardRecharges' | translate }}
+              </span>
+              <span class="validation-step7__row-value validation-step7__row-value--positive">
+                +{{ s.cashMovements.cardRecharges | localeCurrency }}
+              </span>
+            </div>
+            @if (s.cashMovements.stockLoss > 0) {
+              <div class="validation-step7__row">
+                <span class="validation-step7__row-label">
+                  {{ 'journee.validation.stockLoss' | translate }}
+                </span>
+                <span class="validation-step7__row-value validation-step7__row-value--negative">
+                  −{{ s.cashMovements.stockLoss | localeCurrency }}
+                </span>
+              </div>
+            }
+          </article>
+        </div>
+
+        <section class="validation-step7__remittance" aria-label="{{ 'journee.validation.netRemittance' | translate }}">
+          <div>
+            <p class="validation-step7__remittance-kicker">
+              {{ 'journee.validation.netRemittance' | translate }}
+            </p>
+            <p class="validation-step7__remittance-label">
+              {{ 'journee.validation.cashToRemitBy' | translate: { name: s.chefName } }}
+            </p>
+          </div>
+          <p class="validation-step7__remittance-amount">
+            {{ s.netRemittance | localeCurrency }}
+          </p>
+        </section>
+
+        @if (s.encaissementDetails.length > 0) {
+          <section
+            class="validation-step7__card"
+            aria-labelledby="validation-encaissements-detail"
+          >
+            <h2 id="validation-encaissements-detail" class="validation-step7__detail-title">
+              {{ 'journee.validation.encaissementsDetailTitle' | translate }}
+            </h2>
+            <div class="overflow-x-auto">
+              <table class="validation-step7__detail-table w-full min-w-[28rem] border-collapse text-sm">
+                <thead>
+                  <tr class="bg-table-header">
+                    <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase tracking-wide text-white">
+                      {{ 'journee.validation.colPaymentType' | translate }}
+                    </th>
+                    <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase tracking-wide text-white">
+                      {{ 'journee.validation.colReference' | translate }}
+                    </th>
+                    <th class="px-4 py-3 text-right font-display text-xs font-bold uppercase tracking-wide text-white">
+                      {{ 'journee.validation.colAmount' | translate }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of s.encaissementDetails; track row.paymentTypeKey) {
+                    <tr class="border-t border-outline-variant/50">
+                      <td class="px-4 py-3 text-on-surface">
+                        {{ row.paymentTypeKey | translate }}
+                      </td>
+                      <td class="px-4 py-3 text-on-surface-variant">
+                        @if (row.referenceText) {
+                          {{ row.referenceText }}
+                        } @else if (row.referenceKey) {
+                          {{ row.referenceKey | translate: row.referenceParams }}
+                        }
+                      </td>
+                      <td class="px-4 py-3 text-right font-semibold tabular-nums text-on-surface">
+                        {{ row.amount | localeCurrency }}
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </section>
+        }
+      </div>
+    }
+  } @else {
+    <section
+      class="validation-step7__issues mb-8 rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest p-6"
+      role="status"
+    >
+      <h2 class="validation-step7__issues-title font-display text-lg uppercase text-on-surface">
+        {{ 'journee.validation.incompleteTitle' | translate }}
+      </h2>
+      <p class="mt-2 text-sm text-on-surface-variant">
+        {{ 'journee.validation.incompleteHint' | translate }}
+      </p>
+      <ul class="mt-4 space-y-2">
+        @for (step of invalidSteps(); track step.path) {
+          <li>
+            <a
+              [routerLink]="['/journees', 'nouvelle', step.path]"
+              class="text-primary underline underline-offset-2"
+            >
+              {{ step.labelKey | translate }}
+            </a>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  <footer class="validation-step7__footer flex flex-wrap items-center justify-between gap-4 pt-2">
+    <a routerLink="/journees/nouvelle/controle-stock-step6" class="validation-step7__footer-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M19 12H5M12 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      {{ 'journee.validation.back' | translate }}
+    </a>
+    <app-button
+      variant="primary"
+      class="validation-step7__footer-submit"
+      [disabled]="!canSubmit() || submitting()"
+      [loading]="submitting()"
+      (pressed)="submit()"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+        <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      {{ 'journee.validation.submit' | translate }}
+    </app-button>
+  </footer>
+</div>

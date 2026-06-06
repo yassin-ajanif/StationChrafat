@@ -12,7 +12,8 @@ export const JOURNEE_WIZARD_STEPS: readonly JourneeWizardStep[] = [
   { id: 'bons-step3', path: 'bons-step3', labelKey: 'journee.wizard.steps.bonsStation', order: 3 },
   { id: 'encaissements-step4', path: 'encaissements-step4', labelKey: 'journee.wizard.steps.encaissements', order: 4 },
   { id: 'depenses-step5', path: 'depenses-step5', labelKey: 'journee.wizard.steps.depenses', order: 5 },
-  { id: 'validation-step6', path: 'validation-step6', labelKey: 'journee.wizard.steps.validation', order: 6 },
+  { id: 'controle-stock-step6', path: 'controle-stock-step6', labelKey: 'journee.wizard.steps.stockControl', order: 6 },
+  { id: 'validation-step7', path: 'validation-step7', labelKey: 'journee.wizard.steps.validation', order: 7 },
 ] as const;
 
 export const JOURNEE_WIZARD_STEP_COUNT = JOURNEE_WIZARD_STEPS.length;

@@ -272,6 +272,35 @@ export const initialDepensesStep6 = (): DepensesStep6 => ({
 });
 
 // =============================================================================
+// Step 6 — controle-stock-step6 (physical stock count vs system stock)
+// =============================================================================
+
+export interface StockControlLine {
+  id: number;
+  productId: number;
+  name: string;
+  categoryLabel: string;
+  unit: string;
+  theoreticalStock: number;
+  measuredStock: number | null;
+  unitPriceDh: number;
+}
+
+export interface StockControlStep6 {
+  isValid: boolean;
+  lines: StockControlLine[];
+}
+
+export const initialStockControlStep6 = (): StockControlStep6 => ({
+  isValid: false,
+  lines: [],
+});
+
+// =============================================================================
+// Step 7 — validation-step7
+// =============================================================================
+
+// =============================================================================
 // Wizard draft root — aggregates all steps
 // =============================================================================
 
@@ -281,6 +310,7 @@ export interface JourneeDraft {
   bonsStep3: BonsStep3;
   encaissementsStep4: EncaissementsStep4;
   depensesStep6: DepensesStep6;
+  stockControlStep6: StockControlStep6;
 }
 
 export const initialJourneeDraft = (): JourneeDraft => ({
@@ -289,4 +319,5 @@ export const initialJourneeDraft = (): JourneeDraft => ({
   bonsStep3: initialBonsStep3(),
   encaissementsStep4: initialEncaissementsStep4(),
   depensesStep6: initialDepensesStep6(),
+  stockControlStep6: initialStockControlStep6(),
 });

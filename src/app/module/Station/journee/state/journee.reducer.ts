@@ -126,6 +126,8 @@ export interface JourneeState {
   encaissementsError: string | null;
   depensesLoading: boolean;
   depensesError: string | null;
+  stockControlLoading: boolean;
+  stockControlError: string | null;
   submittingJournee: boolean;
   submitJourneeError: string | null;
 }
@@ -150,6 +152,8 @@ export const initialJourneeState: JourneeState = {
   encaissementsError: null,
   depensesLoading: false,
   depensesError: null,
+  stockControlLoading: false,
+  stockControlError: null,
   submittingJournee: false,
   submitJourneeError: null,
 };
@@ -232,6 +236,14 @@ export const journeeFeature = createFeature({
       },
     })),
 
+    on(JourneeActions.patchStockControlStep6, (state, { patch }) => ({
+      ...state,
+      draft: {
+        ...state.draft,
+        stockControlStep6: { ...state.draft.stockControlStep6, ...patch },
+      },
+    })),
+
     on(JourneeActions.startJournee, (state) => ({
       ...state,
       startingJournee: true,
@@ -264,6 +276,7 @@ export const journeeFeature = createFeature({
       encaissementClientsError: null,
       encaissementsError: null,
       depensesError: null,
+      stockControlError: null,
       submitJourneeError: null,
     })),
 
@@ -506,6 +519,53 @@ export const journeeFeature = createFeature({
         depensesStep6: {
           ...state.draft.depensesStep6,
           lines: state.draft.depensesStep6.lines.filter((line) => line.id !== id),
+        },
+      },
+    })),
+
+    on(JourneeActions.loadStockControl, (state) => ({
+      ...state,
+      stockControlLoading: true,
+      stockControlError: null,
+    })),
+    on(JourneeActions.loadStockControlSuccess, (state, { lines }) => {
+      const step = state.draft.stockControlStep6;
+      const merged =
+        step.lines.length > 0
+          ? lines.map((line) => {
+              const existing = step.lines.find((entry) => entry.id === line.id);
+              return existing
+                ? {
+                    ...line,
+                    measuredStock: existing.measuredStock,
+                  }
+                : line;
+            })
+          : lines;
+      return {
+        ...state,
+        stockControlLoading: false,
+        draft: {
+          ...state.draft,
+          stockControlStep6: { ...step, lines: merged },
+        },
+      };
+    }),
+    on(JourneeActions.loadStockControlFailure, (state, { error }) => ({
+      ...state,
+      stockControlLoading: false,
+      stockControlError: error,
+    })),
+
+    on(JourneeActions.updateStockControlMeasured, (state, { lineId, measuredStock }) => ({
+      ...state,
+      draft: {
+        ...state.draft,
+        stockControlStep6: {
+          ...state.draft.stockControlStep6,
+          lines: state.draft.stockControlStep6.lines.map((line) =>
+            line.id === lineId ? { ...line, measuredStock } : line,
+          ),
         },
       },
     })),

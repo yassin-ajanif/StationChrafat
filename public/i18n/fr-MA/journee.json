@@ -8,6 +8,7 @@
       "bonsStation": "Bons station",
       "encaissements": "Encaissements",
       "depenses": "Dépenses",
+      "stockControl": "Contrôle du stock",
       "validation": "Validation"
     }
   },
@@ -109,6 +110,21 @@
     "loading": "Chargement des dépenses…",
     "total": "Total dépenses autorisées"
   },
+  "stepStock": {
+    "title": "Étape 6 : Contrôle du stock",
+    "subtitle": "Saisissez le stock mesuré sur le terrain et comparez-le au stock théorique du système.",
+    "colProduct": "Produit",
+    "colCategory": "Catégorie",
+    "colTheoretical": "Stock théorique",
+    "colMeasured": "Stock mesuré",
+    "colUnit": "Unité",
+    "colGap": "Écart",
+    "colLoss": "Perte (DH)",
+    "mismatchCount": "Produits en écart",
+    "totalLoss": "Perte totale stock",
+    "loading": "Chargement du stock…",
+    "empty": "Aucun produit à contrôler."
+  },
   "validation": {
     "title": "Ouverture de journée",
     "subtitle": "Validation finale avant transmission des données.",
@@ -118,6 +134,30 @@
     "stepErrorsTitle": "Points à corriger",
     "back": "Revenir au formulaire",
     "submit": "Soumettre la journée",
+    "revenueTitle": "Chiffre d'affaires",
+    "fuelSales": "Ventes Carburants",
+    "productSales": "Boutique & Produits",
+    "serviceSales": "Services (Lavage/Graissage)",
+    "grossTotal": "Total brut",
+    "cashMovementsTitle": "Mouvements de caisse",
+    "nonCashEncaissements": "Encaissements Non-Espèces",
+    "authorizedExpenses": "Dépenses Autorisées",
+    "debtSettlements": "Règlements Dettes (+)",
+    "cardRecharges": "Recharges Cartes (+)",
+    "stockLoss": "Perte stock (contrôle)",
+    "netRemittance": "Montant net à verser",
+    "cashToRemitBy": "Espèces à remettre par {{name}}",
+    "encaissementsDetailTitle": "Détail encaissements non-espèces",
+    "colPaymentType": "Type de paiement",
+    "colReference": "Référence / Nb",
+    "colAmount": "Montant",
+    "transactionCount": "{{count}} transactions",
+    "lineCount": "{{count}} lignes",
+    "paymentTypes": {
+      "cmi": "Cartes Bancaires (TPE)",
+      "taq": "Cartes Flotte (Total/Shell)",
+      "bon": "Bons Carburant (Secteur Public)"
+    },
     "errors": {
       "incompleteLine": "Ligne {{line}} : complétez tous les champs obligatoires ou supprimez la ligne.",
       "step1": {
@@ -135,6 +175,9 @@
         "noBons": "Aucun bon station. Les bons carburant sont générés depuis l'étape carburant vendue.",
         "chefRequired": "Sélectionnez le responsable vidange / lavage pour les bons manuels.",
         "unbalancedPayment": "Bon {{numero}} : la répartition des paiements ne correspond pas au total."
+      },
+      "step6": {
+        "incompleteMeasurements": "{{count}} produit(s) sans stock mesuré."
       }
     }
   },

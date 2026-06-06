@@ -8,6 +8,7 @@
       "bonsStation": "أواصيل المحطة",
       "encaissements": "المقبوضات",
       "depenses": "المصاريف",
+      "stockControl": "مراقبة المخزون",
       "validation": "التصديق"
     }
   },
@@ -109,6 +110,21 @@
     "loading": "جاري تحميل المصاريف…",
     "total": "مجموع المصاريف المسموح بها"
   },
+  "stepStock": {
+    "title": "المرحلة 6 : مراقبة المخزون",
+    "subtitle": "أدخل المخزون المقاس ميدانياً وقارنه بالمخزون النظري في النظام.",
+    "colProduct": "المنتج",
+    "colCategory": "الفئة",
+    "colTheoretical": "مخزون نظري",
+    "colMeasured": "مخزون مقاس",
+    "colUnit": "الوحدة",
+    "colGap": "الفرق",
+    "colLoss": "خسارة (درهم)",
+    "mismatchCount": "منتجات بها فرق",
+    "totalLoss": "إجمالي خسارة المخزون",
+    "loading": "جاري تحميل المخزون…",
+    "empty": "لا توجد منتجات للمراقبة."
+  },
   "validation": {
     "title": "فتح اليومية",
     "subtitle": "التصديق النهائي قبل إرسال البيانات.",
@@ -118,6 +134,30 @@
     "stepErrorsTitle": "نقاط يجب تصحيحها",
     "back": "العودة إلى النموذج",
     "submit": "إرسال اليومية",
+    "revenueTitle": "رقم المعاملات",
+    "fuelSales": "مبيعات الوقود",
+    "productSales": "المتجر والمنتجات",
+    "serviceSales": "الخدمات (غسيل / تشحيم)",
+    "grossTotal": "المجموع الإجمالي",
+    "cashMovementsTitle": "حركات الصندوق",
+    "nonCashEncaissements": "مقبوضات غير نقدية",
+    "authorizedExpenses": "مصاريف مسموح بها",
+    "debtSettlements": "تسديد ديون (+)",
+    "cardRecharges": "تعبئة بطاقات (+)",
+    "stockLoss": "خسارة المخزون (مراقبة)",
+    "netRemittance": "صافي المبلغ للتوريد",
+    "cashToRemitBy": "نقد للتسليم من طرف {{name}}",
+    "encaissementsDetailTitle": "تفصيل المقبوضات غير النقدية",
+    "colPaymentType": "نوع الدفع",
+    "colReference": "مرجع / عدد",
+    "colAmount": "المبلغ",
+    "transactionCount": "{{count}} معاملات",
+    "lineCount": "{{count}} أسطر",
+    "paymentTypes": {
+      "cmi": "بطاقات بنكية (TPE)",
+      "taq": "بطاقات الأسطول (Total/Shell)",
+      "bon": "أذونات وقود (قطاع عمومي)"
+    },
     "errors": {
       "incompleteLine": "السطر {{line}} : أكمل جميع الحقول الإلزامية أو احذف السطر.",
       "step1": {
@@ -135,6 +175,9 @@
         "noBons": "لا توجد أواصيل محطة. أواصيل الوقود تُولَّد تلقائياً من مرحلة الوقود المباع.",
         "chefRequired": "اختر مسؤول الغسيل / التزييت للأواصيل اليدوية.",
         "unbalancedPayment": "الوصل {{numero}} : توزيع الدفع لا يطابق المجموع."
+      },
+      "step6": {
+        "incompleteMeasurements": "{{count}} منتج(ات) بدون مخزون مقاس."
       }
     }
   },

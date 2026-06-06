@@ -1,0 +1,11 @@
+@reference '../../../../../../tailwind.css';
+
+.controle-stock-step6 {
+  &__input {
+    @apply min-h-[var(--spacing-touch)] w-full min-w-[6rem] rounded-[var(--radius-card)] border border-outline px-3 text-right tabular-nums;
+  }
+
+  &__table-wrap {
+    @apply overflow-x-auto;
+  }
+}

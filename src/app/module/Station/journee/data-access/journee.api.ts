@@ -11,6 +11,8 @@ import {
   NozzleIndexLine,
   Operator,
   ShiftSlot,
+  StockControlLine,
+  StockControlStep6,
 } from '../state/journee.store';
 import { emptyPaymentSplit } from '../../shared/components/bon-recap-payments/bon-recap-payments.component';
 
@@ -436,4 +438,19 @@ export class JourneeApi {
     return of({ id: journeeId, status: 'soumise' as const }).pipe(delay(800));
   }
 
+  getStockControlLines() {
+    const lines: StockControlLine[] = [
+      { id: 1, productId: 1, name: 'Gazole Excellium', categoryLabel: 'Carburant', unit: 'L', theoreticalStock: 28500, measuredStock: null, unitPriceDh: 12.85 },
+      { id: 2, productId: 2, name: 'Sans Plomb 95', categoryLabel: 'Carburant', unit: 'L', theoreticalStock: 18200, measuredStock: null, unitPriceDh: 14.85 },
+      { id: 3, productId: 3, name: 'Sans Plomb 98', categoryLabel: 'Carburant', unit: 'L', theoreticalStock: 5200, measuredStock: null, unitPriceDh: 15.2 },
+      { id: 4, productId: 4, name: 'Gazole Standard', categoryLabel: 'Carburant', unit: 'L', theoreticalStock: 22100, measuredStock: null, unitPriceDh: 12.5 },
+      { id: 5, productId: 6, name: 'Huile Moteur 15W40', categoryLabel: 'Vidange', unit: 'Bidons', theoreticalStock: 420, measuredStock: null, unitPriceDh: 350 },
+      { id: 6, productId: 7, name: 'Huile Moteur 5W30', categoryLabel: 'Vidange', unit: 'Bidons', theoreticalStock: 180, measuredStock: null, unitPriceDh: 420 },
+      { id: 7, productId: 9, name: 'Liquide Frein DOT4', categoryLabel: 'Vidange', unit: 'Unités', theoreticalStock: 220, measuredStock: null, unitPriceDh: 85 },
+      { id: 8, productId: 11, name: 'Shampooing Auto', categoryLabel: 'Lavage', unit: 'L', theoreticalStock: 340, measuredStock: null, unitPriceDh: 45 },
+      { id: 9, productId: 12, name: 'Cire Protectrice', categoryLabel: 'Lavage', unit: 'Unités', theoreticalStock: 85, measuredStock: null, unitPriceDh: 120 },
+      { id: 10, productId: 13, name: 'Détergent Mousse', categoryLabel: 'Lavage', unit: 'L', theoreticalStock: 420, measuredStock: null, unitPriceDh: 38 },
+    ];
+    return of(lines).pipe(delay(300));
+  }
 }

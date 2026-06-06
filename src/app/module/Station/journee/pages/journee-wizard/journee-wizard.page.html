@@ -1,5 +1,5 @@
 <div class="journee-wizard">
-  @if (currentPath() !== 'validation-step6') {
+  @if (currentPath() !== 'validation-step7') {
     <div class="journee-wizard__intro mb-6">
       <p class="font-display text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
         {{ 'journee.wizard.breadcrumb' | translate }}
@@ -11,11 +11,11 @@
     [steps]="steps"
     [currentPath]="currentPath()"
     [stepValidityByPath]="stepValidityByPath()"
-    [compact]="currentPath() === 'validation-step6'"
+    [compact]="currentPath() === 'validation-step7'"
   />
   <div
     class="journee-wizard__outlet"
-    [class.journee-wizard__outlet--validation]="currentPath() === 'validation-step6'"
+    [class.journee-wizard__outlet--validation]="currentPath() === 'validation-step7'"
   >
     <router-outlet />
   </div>
