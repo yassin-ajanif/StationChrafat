@@ -9,6 +9,10 @@
     }
   }
 
+  &__table-wrap {
+    @apply hidden w-full overflow-x-auto md:block;
+  }
+
   &__table {
     @apply min-w-[880px];
 
@@ -26,7 +30,7 @@
   }
 
   &__cards {
-    @apply flex flex-col gap-3;
+    @apply flex flex-col gap-3 md:hidden;
   }
 
   &__card {

@@ -6,7 +6,11 @@
     "empty": "لا يوجد عرض سعر للمورد حالياً.",
     "dialogNew": "عرض سعر مورد جديد",
     "dialogEdit": "تعديل عرض السعر",
-    "save": "حفظ عرض السعر"
+    "save": "حفظ عرض السعر",
+    "statusBrouillon": "مسودة",
+    "statusEnvoye": "مُرسل",
+    "statusAccepte": "مقبول",
+    "statusRefuse": "مرفوض"
   },
   "commande": {
     "title": "أمر شراء المورد — المحطة",
@@ -18,7 +22,11 @@
     "dialogEdit": "تعديل أمر الشراء",
     "total": "مبلغ الأمر =",
     "save": "حفظ الأمر",
-    "statusRecue": "مستلم"
+    "statusEnAttente": "في الانتظار",
+    "statusConfirmee": "مؤكد",
+    "statusEnCours": "جاري",
+    "statusRecue": "مستلم",
+    "statusAnnulee": "ملغى"
   },
   "reception": {
     "title": "وصل الاستلام — المحطة",
@@ -35,7 +43,10 @@
     "referencePlaceholder": "BL-...",
     "total": "مبلغ الاستلام =",
     "save": "حفظ الاستلام",
-    "statusRecue": "مستلم"
+    "statusPlanifiee": "مخطط",
+    "statusEnCours": "جاري",
+    "statusRecue": "مستلم",
+    "statusAnnulee": "ملغى"
   },
   "facture": {
     "title": "فاتورة المورد — المحطة",
@@ -48,7 +59,11 @@
     "dateReception": "تاريخ الاستلام",
     "dateEcheance": "تاريخ الاستحقاق",
     "total": "مبلغ الفاتورة =",
-    "save": "حفظ الفاتورة"
+    "save": "حفظ الفاتورة",
+    "statusBrouillon": "مسودة",
+    "statusRecue": "مستلمة",
+    "statusPayee": "مدفوعة",
+    "statusEnRetard": "متأخرة"
   },
   "avoir": {
     "title": "إشعار دائن المورد — المحطة",
@@ -59,6 +74,7 @@
     "dialogEdit": "تعديل الإشعار",
     "total": "مبلغ الإشعار =",
     "save": "حفظ الإشعار",
+    "statusBrouillon": "مسودة",
     "statusRecu": "مستلم",
     "statusApplique": "مطبَّق"
   },
@@ -71,6 +87,9 @@
     "dialogEdit": "تعديل وصل الإرجاع",
     "fournisseurPlaceholder": "اسم المورد",
     "motifPlaceholder": "سبب الإرجاع",
-    "statusEnvoye": "مُرسل"
+    "statusEnAttente": "في الانتظار",
+    "statusEnvoye": "مُرسل",
+    "statusRecu": "مستلم",
+    "statusRefuse": "مرفوض"
   }
 }

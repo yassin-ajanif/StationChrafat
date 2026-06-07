@@ -25,6 +25,10 @@
     }
   }
 
+  &__table-wrap {
+    @apply hidden overflow-x-auto md:block;
+  }
+
   &__table {
     @apply min-w-[960px];
 
@@ -35,7 +39,7 @@
   }
 
   &__cards {
-    @apply flex flex-col gap-3 p-4;
+    @apply flex flex-col gap-3 p-4 md:hidden;
   }
 
   &__card {
@@ -87,7 +91,7 @@
   }
 
   &__subtotal-card {
-    @apply mx-4 mb-4 flex flex-col gap-3 rounded-[var(--radius-card)] border border-outline-variant bg-surface-container px-4 py-4 sm:flex-row sm:items-center sm:justify-between;
+    @apply mx-4 mb-4 flex flex-col gap-3 rounded-[var(--radius-card)] border border-outline-variant bg-surface-container px-4 py-4 sm:flex-row sm:items-center sm:justify-between md:hidden;
   }
 
   &__subtotal-label {

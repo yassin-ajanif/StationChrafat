@@ -37,7 +37,7 @@
       {{ 'journee.bons.empty' | translate }}
     </p>
   } @else {
-    <ul class="bons-step3__cards md:hidden">
+    <ul class="bons-step3__cards">
       @for (item of bons(); track item.livraison.id) {
         <li class="bons-step3__card">
           <div class="bons-step3__card-head">
@@ -98,12 +98,12 @@
       }
     </ul>
 
-    <div class="bons-step3__total-card md:hidden">
+    <div class="bons-step3__total-card">
       <span class="bons-step3__total-label">{{ 'journee.bons.totalStation' | translate }}</span>
       <span class="bons-step3__total-value">{{ filteredTotal() | localeCurrency }}</span>
     </div>
 
-    <div class="bons-step3__table-wrap hidden overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest shadow-sm md:block">
+    <div class="bons-step3__table-wrap rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest shadow-sm">
       <table class="bons-step3__table w-full border-collapse text-sm">
         <thead>
           <tr class="bg-table-header">

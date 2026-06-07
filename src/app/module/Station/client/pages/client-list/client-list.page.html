@@ -33,7 +33,7 @@
     @if (clients().length === 0) {
       <p class="client-list__empty">{{ 'client.page.empty' | translate }}</p>
     } @else {
-      <ul class="client-list__cards md:hidden">
+      <ul class="client-list__cards">
         @for (client of clients(); track client.id) {
           <li
             class="client-list__card"
@@ -98,7 +98,7 @@
         }
       </ul>
 
-      <div class="client-list__table-wrap hidden overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant shadow-sm md:block">
+      <div class="client-list__table-wrap rounded-[var(--radius-card)] border border-outline-variant shadow-sm">
         <table class="client-list__table w-full border-collapse text-sm">
           <thead>
             <tr class="bg-table-header">

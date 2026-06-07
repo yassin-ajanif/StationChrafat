@@ -2,7 +2,7 @@
 
 .encaissements-step4 {
   &__table-wrap {
-    @apply min-w-0;
+    @apply hidden w-full overflow-x-auto md:block min-w-0;
   }
 
   &__table {
@@ -43,7 +43,7 @@
   }
 
   &__cards {
-    @apply flex flex-col gap-3;
+    @apply flex flex-col gap-3 md:hidden;
   }
 
   &__card {
@@ -67,7 +67,7 @@
   }
 
   &__total-card {
-    @apply mt-3 flex items-center justify-between gap-4 rounded-[var(--radius-card)] border border-outline-variant bg-surface-container px-4 py-4;
+    @apply mt-3 flex items-center justify-between gap-4 rounded-[var(--radius-card)] border border-outline-variant bg-surface-container px-4 py-4 md:hidden;
   }
 
   &__total-label {

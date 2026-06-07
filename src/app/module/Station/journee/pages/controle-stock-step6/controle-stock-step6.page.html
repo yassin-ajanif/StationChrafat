@@ -29,7 +29,7 @@
       {{ 'journee.stepStock.empty' | translate }}
     </p>
   } @else {
-    <ul class="controle-stock-step6__cards md:hidden">
+    <ul class="controle-stock-step6__cards">
       @for (row of rows(); track row.line.id) {
         <li class="controle-stock-step6__card">
           <div class="controle-stock-step6__card-head">
@@ -99,7 +99,7 @@
     </ul>
 
     <section
-      class="controle-stock-step6__table-wrap hidden w-full overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest shadow-sm md:block"
+      class="controle-stock-step6__table-wrap w-full rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest shadow-sm"
       aria-busy="{{ loading() }}"
     >
       <table class="controle-stock-step6__table w-full border-collapse text-base">

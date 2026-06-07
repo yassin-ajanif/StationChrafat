@@ -32,7 +32,7 @@
       {{ 'journee.step6.empty' | translate }}
     </p>
   } @else {
-    <ul class="depenses-step5__cards md:hidden">
+    <ul class="depenses-step5__cards">
       @for (line of lines(); track line.id; let i = $index) {
         <li class="depenses-step5__card">
           <div class="depenses-step5__card-header">
@@ -126,7 +126,7 @@
       }
     </ul>
 
-    <div class="depenses-step5__total-card md:hidden">
+    <div class="depenses-step5__total-card">
       <span class="depenses-step5__total-label">{{ 'journee.step6.total' | translate }}</span>
       <div class="depenses-step5__total-value">
         <p class="font-display text-2xl font-bold leading-none text-primary tabular-nums">
@@ -137,7 +137,7 @@
     </div>
 
     <section
-      class="depenses-step5__table-wrap hidden w-full overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest shadow-sm md:block"
+      class="depenses-step5__table-wrap w-full rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest shadow-sm"
       aria-busy="{{ loading() }}"
     >
       <table class="depenses-step5__table w-full border-collapse text-base">

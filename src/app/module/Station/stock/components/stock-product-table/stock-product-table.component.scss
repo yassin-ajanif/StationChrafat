@@ -1,10 +1,18 @@
 @reference '../../../../../../tailwind.css';
 
+:host {
+  @apply block w-full min-w-0;
+}
+
 .stock-product-table {
-  @apply md:border md:border-outline-variant md:rounded-[var(--radius-card)];
+  @apply w-full min-w-0 md:border md:border-outline-variant md:rounded-[var(--radius-card)];
 
   &__cards {
     @apply flex flex-col gap-3;
+
+    @media (min-width: 768px) {
+      display: none;
+    }
   }
 
   &__card {
@@ -60,6 +68,15 @@
 
     &--unit {
       @apply text-base text-secondary;
+    }
+  }
+
+  &__wrap {
+    @apply min-w-0 overflow-x-auto;
+    display: none;
+
+    @media (min-width: 768px) {
+      display: block;
     }
   }
 

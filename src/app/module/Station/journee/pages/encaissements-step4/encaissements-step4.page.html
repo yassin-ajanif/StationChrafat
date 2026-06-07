@@ -35,7 +35,7 @@
       {{ 'journee.step4.empty' | translate }}
     </p>
   } @else {
-    <ul class="encaissements-step4__cards md:hidden">
+    <ul class="encaissements-step4__cards">
       @for (line of lines(); track line.id; let i = $index) {
         <li class="encaissements-step4__card">
           <div class="encaissements-step4__card-header">
@@ -126,7 +126,7 @@
       }
     </ul>
 
-    <div class="encaissements-step4__total-card md:hidden">
+    <div class="encaissements-step4__total-card">
       <span class="encaissements-step4__total-label">{{ 'journee.step4.total' | translate }}</span>
       <div class="encaissements-step4__total-value">
         <p class="font-display text-2xl font-bold leading-none text-primary tabular-nums">
@@ -137,7 +137,7 @@
     </div>
 
     <section
-      class="encaissements-step4__table-wrap hidden w-full overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest shadow-sm md:block"
+      class="encaissements-step4__table-wrap w-full rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest shadow-sm"
       aria-busy="{{ loading() || clientsLoading() }}"
     >
       <table class="encaissements-step4__table w-full border-collapse text-base">

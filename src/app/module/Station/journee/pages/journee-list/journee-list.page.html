@@ -65,7 +65,7 @@
     } @else if (listLoading()) {
       <p class="p-8 text-center text-on-surface-variant">{{ 'common.actions.loading' | translate }}</p>
     } @else {
-      <ul class="journee-list__cards p-4 md:hidden">
+      <ul class="journee-list__cards">
         @for (j of journees(); track j.id) {
           <li
             class="journee-list__card"
@@ -114,7 +114,7 @@
         }
       </ul>
 
-      <div class="hidden overflow-x-auto md:block">
+      <div class="journee-list__table-wrap">
         <table class="journee-list__table w-full min-w-[640px] text-left text-sm">
           <thead>
             <tr>

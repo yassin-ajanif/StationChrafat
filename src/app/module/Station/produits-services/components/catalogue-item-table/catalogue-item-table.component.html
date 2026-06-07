@@ -27,7 +27,7 @@
   @if (items().length === 0) {
     <p class="catalogue-item-table__empty text-on-surface-variant">{{ 'produitsServices.table.empty' | translate }}</p>
   } @else {
-    <ul class="catalogue-item-table__cards md:hidden">
+    <ul class="catalogue-item-table__cards">
       @for (item of items(); track item.id) {
         <li class="catalogue-item-table__card">
           <div class="catalogue-item-table__card-main">
@@ -74,7 +74,7 @@
       }
     </ul>
 
-    <div class="catalogue-item-table__wrap hidden overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant md:block">
+    <div class="catalogue-item-table__wrap rounded-[var(--radius-card)] border border-outline-variant">
       <table class="catalogue-item-table__table w-full border-collapse text-sm">
         <thead>
           <tr class="bg-table-header">

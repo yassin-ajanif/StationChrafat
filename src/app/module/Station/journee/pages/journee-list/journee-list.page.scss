@@ -30,7 +30,7 @@
   }
 
   &__cards {
-    @apply flex flex-col gap-3;
+    @apply flex flex-col gap-3 p-4 md:hidden;
   }
 
   &__card {
@@ -119,6 +119,14 @@
     &--draft {
       @apply bg-surface-container text-on-surface;
     }
+  }
+
+  &__table-section {
+    @apply rounded-[var(--radius-card)] bg-surface-container-lowest shadow-sm;
+  }
+
+  &__table-wrap {
+    @apply hidden overflow-x-auto md:block;
   }
 
   &__table thead {

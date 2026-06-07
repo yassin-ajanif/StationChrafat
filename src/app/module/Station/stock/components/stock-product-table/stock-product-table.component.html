@@ -2,7 +2,7 @@
   @if (products().length === 0) {
     <p class="px-4 py-8 text-center text-base text-on-surface-variant">{{ 'stock.gestion.empty' | translate }}</p>
   } @else {
-    <ul class="stock-product-table__cards md:hidden">
+    <ul class="stock-product-table__cards">
       @for (product of products(); track product.id) {
         <li
           class="stock-product-table__card"
@@ -60,7 +60,7 @@
       }
     </ul>
 
-    <div class="stock-product-table__wrap hidden overflow-x-auto md:block">
+    <div class="stock-product-table__wrap">
       <table class="stock-product-table__table w-full border-collapse text-base">
         <thead>
           <tr class="bg-table-header">

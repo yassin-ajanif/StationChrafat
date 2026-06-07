@@ -33,7 +33,7 @@
     @if (fournisseurs().length === 0) {
       <p class="fournisseur-list__empty">{{ 'fournisseur.page.empty' | translate }}</p>
     } @else {
-      <ul class="fournisseur-list__cards md:hidden">
+      <ul class="fournisseur-list__cards">
         @for (fournisseur of fournisseurs(); track fournisseur.id) {
           <li
             class="fournisseur-list__card"
@@ -101,7 +101,7 @@
         }
       </ul>
 
-      <div class="fournisseur-list__table-wrap hidden overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant shadow-sm md:block">
+      <div class="fournisseur-list__table-wrap rounded-[var(--radius-card)] border border-outline-variant shadow-sm">
         <table class="fournisseur-list__table w-full border-collapse text-sm">
           <thead>
             <tr class="bg-table-header">

@@ -91,7 +91,7 @@
           </app-button>
         </header>
 
-        <ul class="index-pistoles-step2__cards md:hidden">
+        <ul class="index-pistoles-step2__cards">
           @for (row of group.rows; track row.line.id) {
             <li
               class="index-pistoles-step2__card"
@@ -178,7 +178,7 @@
           }
         </ul>
 
-        <div class="index-pistoles-step2__subtotal-card md:hidden">
+        <div class="index-pistoles-step2__subtotal-card">
           <span class="index-pistoles-step2__subtotal-label">
             {{ 'journee.step2.subtotal' | translate: { name: group.bombisteName } }}
           </span>
@@ -194,7 +194,7 @@
           </div>
         </div>
 
-        <div class="hidden overflow-x-auto md:block">
+        <div class="index-pistoles-step2__table-wrap">
           <table class="index-pistoles-step2__table w-full border-collapse text-base">
             <thead>
               <tr class="bg-table-header">

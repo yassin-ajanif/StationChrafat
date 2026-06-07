@@ -10,7 +10,7 @@
   }
 
   &__cards {
-    @apply flex flex-col gap-3;
+    @apply flex flex-col gap-3 md:hidden;
   }
 
   &__card {
@@ -62,11 +62,15 @@
   }
 
   &__total-card {
-    @apply flex items-center justify-between gap-4 rounded-[var(--radius-card)] border border-outline-variant bg-surface-container px-4 py-4;
+    @apply flex items-center justify-between gap-4 rounded-[var(--radius-card)] border border-outline-variant bg-surface-container px-4 py-4 md:hidden;
   }
 
   &__total-label {
     @apply font-display text-sm font-bold uppercase tracking-wide text-on-surface;
+  }
+
+  &__table-wrap {
+    @apply hidden overflow-x-auto md:block;
   }
 
   &__table {

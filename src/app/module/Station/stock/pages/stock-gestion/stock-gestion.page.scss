@@ -1,6 +1,10 @@
 @reference '../../../../../../tailwind.css';
 
 .stock-gestion {
+  &__panel-body {
+    @apply min-w-0;
+  }
+
   &__page-btn {
     @apply flex min-w-[var(--spacing-touch)] items-center justify-center rounded px-2 py-1.5 font-display text-sm font-bold uppercase tracking-wide text-on-surface-variant transition hover:bg-surface-container hover:text-on-surface;
 
