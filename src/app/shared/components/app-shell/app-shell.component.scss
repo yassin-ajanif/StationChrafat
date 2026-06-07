@@ -1,10 +1,14 @@
 @reference '../../../../tailwind.css';
 
+:host {
+  @apply block h-full overflow-hidden;
+}
+
 // Shell grid uses dir="ltr" so column placement is not flipped by html[dir=rtl].
 .app-shell {
   --width-sidebar-collapsed: 56px;
 
-  @apply grid min-h-dvh;
+  @apply grid h-dvh overflow-hidden;
   grid-template-columns: var(--width-sidebar) minmax(0, 1fr);
   grid-template-areas: 'sidebar main';
 
@@ -23,11 +27,20 @@
 
   &__main {
     grid-area: main;
+    @apply flex min-h-0 min-w-0 flex-col overflow-hidden;
+  }
+
+  &__header {
+    @apply shrink-0;
+  }
+
+  &__content {
+    @apply min-h-0 flex-1 overflow-y-auto overflow-x-hidden;
   }
 
   &__sidebar {
     grid-area: sidebar;
-    @apply relative transition-[width] duration-200 ease-out;
+    @apply relative min-h-0 overflow-hidden transition-[width] duration-200 ease-out;
 
     &--collapsed {
       width: var(--width-sidebar-collapsed);

@@ -1,5 +1,5 @@
 <div
-  class="app-shell min-h-dvh bg-surface"
+  class="app-shell h-dvh overflow-hidden bg-surface"
   dir="ltr"
   [class.app-shell--sidebar-collapsed]="sidebarCollapsed() && !mobileNavOpen()"
   [class.app-shell--mobile-nav-open]="mobileNavOpen()"
@@ -14,7 +14,7 @@
     ></button>
   }
   <aside
-    class="app-shell__sidebar flex w-[var(--width-sidebar)] shrink-0 flex-col bg-inverse-surface text-inverse-on-surface"
+    class="app-shell__sidebar flex w-[var(--width-sidebar)] shrink-0 flex-col overflow-hidden bg-inverse-surface text-inverse-on-surface"
     [class.app-shell__sidebar--collapsed]="sidebarCollapsed() && !mobileNavOpen()"
     [attr.dir]="locale.direction()"
     id="app-shell-sidebar"
@@ -192,8 +192,8 @@
     </nav>
   </aside>
 
-  <div class="app-shell__main flex min-w-0 flex-1 flex-col" [attr.dir]="locale.direction()">
-    <header class="app-shell__header flex min-h-16 items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-4 md:px-6">
+  <div class="app-shell__main flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden" [attr.dir]="locale.direction()">
+    <header class="app-shell__header flex shrink-0 min-h-16 items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-4 md:px-6">
       <div class="flex min-w-0 items-center gap-3">
         <button
           type="button"
