@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { AppLocaleId, LocaleService, TranslatePipe } from '../../../core/i18n';
 
 @Component({
@@ -13,11 +13,18 @@ export class LocaleSwitcherComponent {
 
   readonly activeLocale = this.locale.activeLocale;
 
-  async setLocale(locale: AppLocaleId): Promise<void> {
-    await this.locale.setLocale(locale);
-  }
+  readonly displayLabel = computed(() =>
+    this.activeLocale() === 'fr-MA' ? 'ع' : 'FR',
+  );
+
+  readonly isArabicLabel = computed(() => this.displayLabel() === 'ع');
 
   isActive(locale: AppLocaleId): boolean {
     return this.activeLocale() === locale;
+  }
+
+  async toggleLocale(): Promise<void> {
+    const next: AppLocaleId = this.activeLocale() === 'fr-MA' ? 'ar-MA' : 'fr-MA';
+    await this.locale.setLocale(next);
   }
 }

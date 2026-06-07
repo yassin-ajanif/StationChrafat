@@ -154,8 +154,11 @@
     }
 
     &__sidebar {
-      @apply fixed inset-y-0 start-0 z-50 w-[var(--width-sidebar)] max-w-[85vw] shadow-xl;
-      transform: translateX(-100%);
+      @apply fixed inset-y-0 z-50 w-[var(--width-sidebar)] max-w-[85vw] shadow-xl transition-transform duration-200 ease-out;
+      grid-area: auto;
+      left: 0;
+      right: auto;
+      transform: translate3d(-100%, 0, 0);
 
       &--collapsed {
         width: var(--width-sidebar);
@@ -164,16 +167,17 @@
     }
 
     &--mobile-nav-open &__sidebar {
-      transform: translateX(0);
+      transform: translate3d(0, 0, 0);
     }
 
     &--rtl &__sidebar {
-      @apply start-auto end-0;
-      transform: translateX(100%);
+      left: auto;
+      right: 0;
+      transform: translate3d(100%, 0, 0);
     }
 
     &--rtl#{&}--mobile-nav-open &__sidebar {
-      transform: translateX(0);
+      transform: translate3d(0, 0, 0);
     }
 
     &--mobile-nav-open {
