@@ -1,5 +1,5 @@
 <section
-  class="bon-recap-payments mt-8 rounded-[var(--radius-card)] border border-outline-variant bg-surface-container px-5 py-4 shadow-sm"
+  class="bon-recap-payments mt-6 rounded-[var(--radius-card)] border border-outline-variant bg-surface-container px-4 py-3 shadow-sm sm:mt-8 sm:px-5 sm:py-4"
   [attr.aria-label]="'common.bonRecap.aria' | translate"
 >
   <p class="bon-recap-payments__label mb-3">{{ 'common.bon.total' | translate }}</p>
@@ -26,7 +26,7 @@
 
   <div class="bon-recap-payments__payments mt-5 border-t border-outline-variant pt-5">
     <p class="bon-recap-payments__label mb-3">{{ 'common.bonRecap.paymentsTitle' | translate }}</p>
-    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
       <div>
         <label class="bon-recap-payments__label" [for]="inputIdPrefix() + '-payment-cash'">
           {{ 'common.payment.cash' | translate }}

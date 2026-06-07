@@ -68,7 +68,10 @@
     "vat": "TVA %",
     "amountHt": "Montant HT",
     "amountTtc": "Montant TTC",
-    "hint": "Remplissez les tableaux services et produits. Cochez ou décochez les colonnes à afficher."
+    "hint": "Remplissez les tableaux services et produits. Cochez ou décochez les colonnes à afficher.",
+    "emptyLine": "Ligne vide",
+    "expandLine": "Afficher la ligne {{n}}",
+    "collapseLine": "Masquer la ligne {{n}}"
   },
   "bon": {
     "number": "N° bon",

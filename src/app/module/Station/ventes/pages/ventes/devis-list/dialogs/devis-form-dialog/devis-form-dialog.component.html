@@ -1,33 +1,33 @@
 @if (open()) {
   <div
-    class="erp-dialog__backdrop fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/50 p-4"
+    class="erp-dialog__backdrop"
     data-dialog-backdrop="true"
     role="presentation"
     (click)="onBackdropClick($event)"
   >
     <div
-      class="erp-dialog__panel w-full max-w-6xl rounded-[var(--radius-card)] bg-surface-container-lowest shadow-lg"
+      class="erp-dialog__panel"
       role="dialog"
       aria-modal="true"
       aria-labelledby="devis-form-dialog-title"
       (click)="$event.stopPropagation()"
     >
-      <header class="flex items-start justify-between border-b border-outline-variant px-6 py-4">
-        <div>
-          <h2 id="devis-form-dialog-title" class="font-display text-xl font-bold uppercase text-on-surface">
+      <header class="erp-dialog__header">
+        <div class="min-w-0 flex-1">
+          <h2 id="devis-form-dialog-title" class="erp-dialog__title">
             @if (isEditMode()) {
               {{ 'ventes.devis.dialogEdit' | translate }}
             } @else {
               {{ 'ventes.devis.dialogNew' | translate }}
             }
           </h2>
-          <p class="mt-1 text-sm text-on-surface-variant">
+          <p class="erp-dialog__subtitle">
             {{ 'common.documentLines.hint' | translate }}
           </p>
         </div>
         <button
           type="button"
-          class="text-2xl leading-none text-on-surface-variant hover:text-on-surface"
+          class="erp-dialog__close"
           [attr.aria-label]="'common.actions.close' | translate"
           (click)="cancel()"
         >
@@ -35,8 +35,8 @@
         </button>
       </header>
 
-      <div class="max-h-[70vh] overflow-y-auto px-6 py-5">
-        <div class="mb-6 grid gap-4 sm:grid-cols-2">
+      <div class="erp-dialog__body">
+        <div class="erp-dialog__fields">
           <div>
             <label class="erp-dialog__label" for="dialog-devis-client">
               {{ 'common.table.client' | translate }}
@@ -88,7 +88,7 @@
           </div>
         </div>
 
-        <section class="mb-8">
+        <section class="erp-dialog__section">
           <app-document-lines-table
             [titleKey]="'common.documentLines.services'"
             [addRowLabelKey]="'common.documentLines.addService'"
@@ -99,7 +99,7 @@
           />
         </section>
 
-        <section class="mb-8">
+        <section class="erp-dialog__section">
           <app-document-lines-table
             [titleKey]="'common.documentLines.products'"
             [addRowLabelKey]="'common.documentLines.addProduct'"
@@ -120,28 +120,32 @@
         />
       </div>
 
-      <footer class="flex flex-wrap items-center justify-between gap-4 border-t border-outline-variant px-6 py-4">
-        <div class="min-w-[12rem] flex-1">
-          <p class="text-sm text-on-surface-variant">
+      <footer class="erp-dialog__footer">
+        <div class="erp-dialog__footer-meta">
+          <p class="erp-dialog__footer-total">
             {{ 'ventes.devis.total' | translate }}
             <span class="font-bold tabular-nums text-on-surface">{{ devisTotal() | localeCurrency }}</span>
           </p>
           @if (!canSave() && saveBlockers().length > 0) {
-            <ul class="mt-2 list-disc space-y-0.5 pl-4 text-sm text-primary" role="status">
+            <ul class="erp-dialog__errors" role="status">
               @for (key of saveBlockers(); track key) {
                 <li>{{ key | translate }}</li>
               }
             </ul>
           }
         </div>
-        <app-button variant="secondary" (pressed)="cancel()">{{ 'common.actions.cancel' | translate }}</app-button>
-        <app-button variant="primary" [disabled]="!canSave()" (pressed)="save()">
-          @if (isEditMode()) {
-            {{ 'common.actions.saveChanges' | translate }}
-          } @else {
-            {{ 'ventes.devis.save' | translate }}
-          }
-        </app-button>
+        <div class="erp-dialog__footer-actions">
+          <app-button variant="secondary" (pressed)="cancel()">
+            {{ 'common.actions.cancel' | translate }}
+          </app-button>
+          <app-button variant="primary" [disabled]="!canSave()" (pressed)="save()">
+            @if (isEditMode()) {
+              {{ 'common.actions.saveChanges' | translate }}
+            } @else {
+              {{ 'ventes.devis.save' | translate }}
+            }
+          </app-button>
+        </div>
       </footer>
     </div>
   </div>

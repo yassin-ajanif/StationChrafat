@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { LocaleNumberPipe, TranslatePipe } from '../../../../../core/i18n';
 
 export function roundMoney(value: number): number {
@@ -16,11 +16,18 @@ export type DocumentLineColumnKey =
   | 'amountHT'
   | 'amountTTC';
 
+export type EditableDocumentLineColumnKey = Exclude<DocumentLineColumnKey, 'amountHT' | 'amountTTC'>;
+
 export interface DocumentLineColumnDef {
   key: DocumentLineColumnKey;
   labelKey: string;
   editable: boolean;
   align: 'left' | 'right';
+}
+
+export interface EditableDocumentLineColumnDef extends Omit<DocumentLineColumnDef, 'key' | 'editable'> {
+  key: EditableDocumentLineColumnKey;
+  editable: true;
 }
 
 export const DOCUMENT_LINE_COLUMNS: DocumentLineColumnDef[] = [
@@ -204,12 +211,27 @@ export class DocumentLinesTableComponent {
   readonly addRowLabelKey = input<string>('common.documentLines.addService');
   readonly rows = input.required<DocumentLineTableRow[]>();
 
+  readonly sectionKind = computed((): 'services' | 'products' | 'returnedProducts' => {
+    const key = this.titleKey();
+    if (key.includes('returnedProducts')) {
+      return 'returnedProducts';
+    }
+    if (key.includes('products')) {
+      return 'products';
+    }
+    return 'services';
+  });
+
   readonly rowChange = output<{ rowId: number; field: keyof DocumentLineTableRow; value: string | number | null }>();
   readonly addRowRequested = output<void>();
   readonly clearRowRequested = output<number>();
 
   readonly columns = DOCUMENT_LINE_COLUMNS;
+  readonly editableColumns = DOCUMENT_LINE_COLUMNS.filter(
+    (column): column is EditableDocumentLineColumnDef => column.editable,
+  );
   readonly columnVisibility = signal<DocumentLineVisibility>(defaultDocumentLineVisibility());
+  private readonly expandedRowIds = signal<ReadonlySet<number>>(new Set());
 
   readonly filledCount = () => filledDocumentLineTableRows(this.rows()).length;
   readonly totalHT = () => computeDocumentLineTableTotalHT(this.rows());
@@ -235,16 +257,27 @@ export class DocumentLinesTableComponent {
     return computeLineAmountTTC(row);
   }
 
-  onTextInput(rowId: number, field: keyof DocumentLineTableRow, event: Event): void {
+  onTextInput(rowId: number, field: EditableDocumentLineColumnKey, event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.rowChange.emit({ rowId, field, value });
   }
 
-  onNumberInput(rowId: number, field: keyof DocumentLineTableRow, event: Event): void {
+  onNumberInput(rowId: number, field: EditableDocumentLineColumnKey, event: Event): void {
     const raw = (event.target as HTMLInputElement).value.trim();
     const parsed = raw === '' ? null : Number(raw);
     const value = parsed != null && Number.isNaN(parsed) ? null : parsed;
     this.rowChange.emit({ rowId, field, value });
+  }
+
+  onColumnInput(rowId: number, column: DocumentLineColumnDef, event: Event): void {
+    if (!column.editable) {
+      return;
+    }
+    if (this.isTextColumn(column.key as EditableDocumentLineColumnKey)) {
+      this.onTextInput(rowId, column.key as EditableDocumentLineColumnKey, event);
+    } else {
+      this.onNumberInput(rowId, column.key as EditableDocumentLineColumnKey, event);
+    }
   }
 
   cellValue(row: DocumentLineTableRow, key: DocumentLineColumnKey): string | number | null {
@@ -266,5 +299,46 @@ export class DocumentLinesTableComponent {
       default:
         return null;
     }
+  }
+
+  isTextColumn(key: EditableDocumentLineColumnKey): boolean {
+    return key === 'reference' || key === 'designation' || key === 'unit';
+  }
+
+  isRowExpanded(rowId: number): boolean {
+    return this.expandedRowIds().has(rowId);
+  }
+
+  toggleRowExpanded(rowId: number): void {
+    this.expandedRowIds.update((current) => {
+      const next = new Set(current);
+      if (next.has(rowId)) {
+        next.delete(rowId);
+      } else {
+        next.add(rowId);
+      }
+      return next;
+    });
+  }
+
+  rowSummary(row: DocumentLineTableRow): string {
+    const designation = row.designation.trim();
+    if (designation.length > 0) {
+      return designation;
+    }
+    const reference = row.reference.trim();
+    if (reference.length > 0) {
+      return reference;
+    }
+    return '';
+  }
+
+  isRowSummaryEmpty(row: DocumentLineTableRow): boolean {
+    return this.rowSummary(row).length === 0;
+  }
+
+  onAddRowRequested(): void {
+    this.expandedRowIds.set(new Set());
+    this.addRowRequested.emit();
   }
 }

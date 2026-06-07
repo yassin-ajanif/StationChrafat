@@ -1,13 +1,18 @@
-<section class="document-lines-table">
+<section
+  class="document-lines-table"
+  [class.document-lines-table--services]="sectionKind() === 'services'"
+  [class.document-lines-table--products]="sectionKind() === 'products'"
+  [class.document-lines-table--returned]="sectionKind() === 'returnedProducts'"
+>
   <p class="document-lines-table__title mb-3 font-display text-sm font-semibold uppercase text-on-surface-variant">
     {{ titleKey() | translate }}
   </p>
-  <div class="document-lines-table__columns no-print mb-3 flex flex-wrap gap-x-4 gap-y-2">
+  <div class="document-lines-table__columns no-print">
     @for (column of columns; track column.key) {
-      <label class="inline-flex cursor-pointer items-center gap-2 text-sm text-on-surface-variant">
+      <label class="document-lines-table__column-toggle">
         <input
           type="checkbox"
-          class="size-4 rounded border-outline accent-primary"
+          class="size-4 shrink-0 rounded border-outline accent-primary"
           [checked]="isColumnVisible(column.key)"
           (change)="toggleColumn(column.key, $any($event.target).checked)"
         />
@@ -16,8 +21,138 @@
     }
   </div>
 
-  <div class="overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant">
-    <table class="document-lines-table__grid w-full min-w-[56rem] border-collapse text-sm">
+  <ul class="document-lines-table__cards">
+    @for (row of rows(); track row.rowId; let i = $index) {
+      <li
+        class="document-lines-table__card"
+        [class.document-lines-table__card--expanded]="isRowExpanded(row.rowId)"
+      >
+        <div class="document-lines-table__card-header">
+          <button
+            type="button"
+            class="document-lines-table__card-toggle"
+            [attr.aria-expanded]="isRowExpanded(row.rowId)"
+            [attr.aria-label]="
+              (isRowExpanded(row.rowId) ? 'common.documentLines.collapseLine' : 'common.documentLines.expandLine')
+                | translate: { n: i + 1 }
+            "
+            (click)="toggleRowExpanded(row.rowId)"
+          >
+            <svg
+              class="document-lines-table__chevron"
+              [class.document-lines-table__chevron--expanded]="isRowExpanded(row.rowId)"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              aria-hidden="true"
+            >
+              <path d="M19 9l-7 7-7-7" />
+            </svg>
+            <span class="document-lines-table__card-num">{{ i + 1 }}</span>
+            @if (isRowSummaryEmpty(row)) {
+              <span class="document-lines-table__card-summary document-lines-table__card-summary--empty">
+                {{ 'common.documentLines.emptyLine' | translate }}
+              </span>
+            } @else {
+              <span class="document-lines-table__card-summary">{{ rowSummary(row) }}</span>
+            }
+            @if (lineAmountTTC(row) > 0 && isColumnVisible('amountTTC')) {
+              <span class="document-lines-table__card-amount">{{ lineAmountTTC(row) | localeNumber:'1.2-2' }}</span>
+            }
+          </button>
+          <button
+            type="button"
+            class="document-lines-table__clear-btn document-lines-table__clear-btn--header"
+            (click)="clearRowRequested.emit(row.rowId)"
+            [attr.aria-label]="'common.actions.clearLine' | translate: { n: i + 1 }"
+          >
+            {{ 'common.documentLines.clearColumn' | translate }}
+          </button>
+        </div>
+
+        @if (isRowExpanded(row.rowId)) {
+          <div class="document-lines-table__card-body">
+            @for (column of editableColumns; track column.key) {
+              @if (isColumnVisible(column.key)) {
+                <label class="document-lines-table__field">
+                  <span class="document-lines-table__field-label">{{ column.labelKey | translate }}</span>
+                  @if (isTextColumn(column.key)) {
+                    <input
+                      type="text"
+                      class="document-lines-table__cell-input"
+                      [value]="cellValue(row, column.key) ?? ''"
+                      (input)="onTextInput(row.rowId, column.key, $event)"
+                      [attr.aria-label]="(column.labelKey | translate) + ' ' + (i + 1)"
+                    />
+                  } @else {
+                    <input
+                      type="number"
+                      class="document-lines-table__cell-input document-lines-table__cell-input--number"
+                      [value]="cellValue(row, column.key) ?? ''"
+                      [step]="column.key === 'quantity' ? '0.01' : '0.01'"
+                      [min]="column.key === 'quantity' || column.key === 'unitPriceHT' ? '0' : null"
+                      inputmode="decimal"
+                      (input)="onNumberInput(row.rowId, column.key, $event)"
+                      [attr.aria-label]="(column.labelKey | translate) + ' ' + (i + 1)"
+                    />
+                  }
+                </label>
+              }
+            }
+
+            @if (isColumnVisible('amountHT') || isColumnVisible('amountTTC')) {
+              <div class="document-lines-table__card-totals">
+                @if (isColumnVisible('amountHT')) {
+                  <div class="document-lines-table__card-total">
+                    <span class="document-lines-table__field-label">{{ 'common.documentLines.amountHt' | translate }}</span>
+                    <span class="document-lines-table__card-total-value">{{ lineAmountHT(row) | localeNumber:'1.2-2' }}</span>
+                  </div>
+                }
+                @if (isColumnVisible('amountTTC')) {
+                  <div class="document-lines-table__card-total">
+                    <span class="document-lines-table__field-label">{{ 'common.documentLines.amountTtc' | translate }}</span>
+                    <span class="document-lines-table__card-total-value document-lines-table__card-total-value--accent">
+                      {{ lineAmountTTC(row) | localeNumber:'1.2-2' }}
+                    </span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </li>
+    }
+  </ul>
+
+  <div class="document-lines-table__mobile-total">
+    <p class="document-lines-table__mobile-total-label">
+      @if (filledCount() > 1) {
+        {{ 'common.documentLines.subtotalPlural' | translate: { count: filledCount() } }}
+      } @else {
+        {{ 'common.documentLines.subtotal' | translate: { count: filledCount() } }}
+      }
+    </p>
+    <div class="document-lines-table__mobile-total-values">
+      @if (isColumnVisible('amountHT')) {
+        <div class="document-lines-table__card-total">
+          <span class="document-lines-table__field-label">{{ 'common.documentLines.amountHt' | translate }}</span>
+          <span class="document-lines-table__card-total-value">{{ totalHT() | localeNumber:'1.2-2' }}</span>
+        </div>
+      }
+      @if (isColumnVisible('amountTTC')) {
+        <div class="document-lines-table__card-total">
+          <span class="document-lines-table__field-label">{{ 'common.documentLines.amountTtc' | translate }}</span>
+          <span class="document-lines-table__card-total-value document-lines-table__card-total-value--accent">
+            {{ totalTTC() | localeNumber:'1.2-2' }}
+          </span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="document-lines-table__table-wrap">
+    <table class="document-lines-table__grid w-full border-collapse text-sm">
       <thead>
         <tr class="bg-table-header">
           <th class="w-10 px-2 py-2.5 text-center font-display text-xs font-bold uppercase text-white">#</th>
@@ -50,18 +185,14 @@
                     <span class="block text-right tabular-nums">{{ lineAmountTTC(row) | localeNumber:'1.2-2' }}</span>
                   } @else if (column.editable) {
                     <input
-                      [type]="column.key === 'reference' || column.key === 'designation' || column.key === 'unit' ? 'text' : 'number'"
+                      [type]="isTextColumn($any(column.key)) ? 'text' : 'number'"
                       class="document-lines-table__cell-input block w-full"
                       [class.text-right]="column.align === 'right'"
                       [class.text-left]="column.align === 'left'"
                       [value]="cellValue(row, column.key) ?? ''"
                       [step]="column.key === 'quantity' ? '0.01' : '0.01'"
                       [min]="column.key === 'quantity' || column.key === 'unitPriceHT' ? '0' : null"
-                      (input)="
-                        column.key === 'reference' || column.key === 'designation' || column.key === 'unit'
-                          ? onTextInput(row.rowId, column.key, $event)
-                          : onNumberInput(row.rowId, column.key, $event)
-                      "
+                      (input)="onColumnInput(row.rowId, column, $event)"
                       [attr.aria-label]="(column.labelKey | translate) + ' ' + (i + 1)"
                     />
                   }
@@ -71,7 +202,7 @@
             <td class="px-2 py-1.5 text-center">
               <button
                 type="button"
-                class="text-xs font-semibold uppercase text-on-surface-variant hover:text-primary"
+                class="document-lines-table__clear-btn document-lines-table__clear-btn--compact"
                 (click)="clearRowRequested.emit(row.rowId)"
                 [attr.aria-label]="'common.actions.clearLine' | translate: { n: i + 1 }"
               >
@@ -111,8 +242,8 @@
 
   <button
     type="button"
-    class="mt-3 text-sm font-semibold uppercase text-secondary hover:underline"
-    (click)="addRowRequested.emit()"
+    class="document-lines-table__add-btn"
+    (click)="onAddRowRequested()"
   >
     {{ addRowLabelKey() | translate }}
   </button>
