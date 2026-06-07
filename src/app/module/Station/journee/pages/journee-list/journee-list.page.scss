@@ -29,6 +29,94 @@
     @apply min-h-[var(--spacing-touch)] rounded-[var(--radius-card)] border border-outline px-3;
   }
 
+  &__cards {
+    @apply flex flex-col gap-3;
+  }
+
+  &__card {
+    @apply overflow-hidden rounded-[var(--radius-card)] border border-outline-variant/70 bg-surface-container-lowest shadow-sm;
+
+    &--active {
+      @apply border-warning-text/40;
+    }
+  }
+
+  &__card-top {
+    @apply flex gap-3 p-4 pb-3;
+  }
+
+  &__card-info {
+    @apply min-w-0 flex-1;
+  }
+
+  &__card-title-row {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  &__card-date {
+    @apply font-display text-base font-bold uppercase leading-tight text-on-surface;
+  }
+
+  &__card-meta {
+    @apply mt-1.5 text-sm leading-snug text-on-surface-variant;
+  }
+
+  &__icon {
+    @apply flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-card)] bg-surface-container text-on-surface-variant;
+
+    svg {
+      @apply size-5;
+    }
+  }
+
+  &__stats {
+    @apply grid grid-cols-2 divide-x divide-outline-variant/50 border-t border-outline-variant/50 bg-surface-container/60;
+  }
+
+  &__stat {
+    @apply flex flex-col items-center gap-1 px-3 py-3 text-center;
+  }
+
+  &__stat-label {
+    @apply font-display text-[10px] font-bold uppercase leading-tight tracking-wide text-on-surface-variant;
+  }
+
+  &__stat-value {
+    @apply text-sm font-semibold leading-snug text-on-surface;
+
+    &--revenue {
+      @apply font-display text-base font-bold tabular-nums text-secondary;
+    }
+  }
+
+  &__card-actions {
+    @apply border-t border-outline-variant/50;
+  }
+
+  &__action {
+    @apply min-h-[var(--spacing-touch)] w-full px-3 py-2 text-xs font-bold uppercase text-secondary transition hover:bg-secondary/10;
+  }
+
+  &__badge {
+    @apply inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase leading-none;
+
+    &--active {
+      @apply bg-warning-bg text-warning-text;
+    }
+
+    &--closed {
+      @apply bg-on-surface-variant/15 text-on-surface-variant;
+    }
+
+    &--submitted {
+      @apply bg-secondary/15 text-secondary;
+    }
+
+    &--draft {
+      @apply bg-surface-container text-on-surface;
+    }
+  }
+
   &__table thead {
     @apply bg-table-header text-xs font-bold uppercase text-white;
   }

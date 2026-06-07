@@ -5,16 +5,16 @@
       aria-hidden="true"
     >{{ config.headerIcon }}</span>
     <div>
-      <h1 class="font-display text-2xl font-bold uppercase text-on-surface">{{ config.title | translate }}</h1>
-      <p class="mt-1 text-base text-on-surface-variant">{{ config.description | translate }}</p>
+      <h1 class="font-display text-xl font-bold uppercase text-on-surface md:text-2xl">{{ config.title | translate }}</h1>
+      <p class="mt-1 text-sm text-on-surface-variant md:text-base">{{ config.description | translate }}</p>
     </div>
   </header>
 
-  <div class="flex flex-wrap items-center justify-between gap-4 rounded-[var(--radius-card)] bg-surface-container-lowest px-4 py-3 shadow-sm">
-    <div class="flex flex-wrap items-center gap-3">
+  <div class="flex flex-col gap-4 rounded-[var(--radius-card)] bg-surface-container-lowest px-4 py-4 shadow-sm sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
+    <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
       <label class="font-display text-xs font-bold uppercase text-on-surface-variant">{{ config.chefSelectLabel | translate }}</label>
       <select
-        class="bons-step3__select min-h-[var(--spacing-touch)] rounded-[var(--radius-card)] border border-outline px-3 text-base"
+        class="bons-step3__select min-h-[var(--spacing-touch)] w-full rounded-[var(--radius-card)] border border-outline px-3 text-base sm:min-w-[16rem]"
         [value]="selectedChefId() ?? ''"
         (change)="onChefChange($event)"
       >
@@ -27,70 +27,134 @@
         <span class="text-sm text-on-surface-variant">{{ 'common.actions.loading' | translate }}</span>
       }
     </div>
-    <app-button variant="primary" (pressed)="openNewBonDialog()">
+    <app-button variant="primary" class="w-full sm:w-auto" (pressed)="openNewBonDialog()">
       {{ 'common.bon.new' | translate }}
     </app-button>
   </div>
 
-  <div class="overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest shadow-sm">
-    <table class="w-full border-collapse text-sm">
-      <thead>
-        <tr class="bg-table-header">
-          <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">{{ 'common.bon.number' | translate }}</th>
-          <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">{{ 'common.bon.clientPlate' | translate }}</th>
-          <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">{{ 'common.bon.operator' | translate }}</th>
-          <th class="px-4 py-3 text-right font-display text-xs font-bold uppercase text-white">{{ 'common.documentLines.services' | translate }}</th>
-          <th class="px-4 py-3 text-right font-display text-xs font-bold uppercase text-white">{{ 'common.documentLines.products' | translate }}</th>
-          <th class="px-4 py-3 text-right font-display text-xs font-bold uppercase text-white">{{ 'common.table.total' | translate }}</th>
-          <th class="px-4 py-3 text-center font-display text-xs font-bold uppercase text-white">{{ 'common.table.actions' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (item of bons(); track item.livraison.id) {
-          <tr class="border-t border-outline-variant/50 bg-surface-container-lowest even:bg-surface-container/40">
-            <td class="px-4 py-3 font-mono text-xs font-semibold text-on-surface">
-              <span class="inline-flex items-center gap-2">
-                {{ item.livraison.numero }}
-                @if (item.fuelTransmittedFromNozzles) {
-                  <span class="rounded bg-primary/10 px-1.5 py-0.5 font-display text-[10px] font-bold uppercase text-primary">
-                    {{ 'journee.bons.fuelBadge' | translate }}
-                  </span>
-                }
+  @if (bons().length === 0) {
+    <p class="bons-step3__empty py-12 text-center text-on-surface-variant">
+      {{ 'journee.bons.empty' | translate }}
+    </p>
+  } @else {
+    <ul class="bons-step3__cards md:hidden">
+      @for (item of bons(); track item.livraison.id) {
+        <li class="bons-step3__card">
+          <div class="bons-step3__card-head">
+            <div>
+              <p class="bons-step3__card-num">{{ item.livraison.numero }}</p>
+              @if (item.fuelTransmittedFromNozzles) {
+                <span class="bons-step3__fuel-badge">
+                  {{ 'journee.bons.fuelBadge' | translate }}
+                </span>
+              }
+            </div>
+            <div class="bons-step3__card-actions">
+              <button
+                type="button"
+                class="rounded px-2 py-1 text-xs font-semibold uppercase text-secondary hover:bg-secondary/10"
+                (click)="openEditBonDialog(item.livraison.id)"
+              >
+                {{ 'common.actions.edit' | translate }}
+              </button>
+              <button
+                type="button"
+                class="rounded px-2 py-1 text-xs font-semibold uppercase text-primary hover:bg-primary/10"
+                (click)="removeBon(item.livraison.id)"
+              >
+                {{ 'common.actions.delete' | translate }}
+              </button>
+            </div>
+          </div>
+
+          <div class="bons-step3__card-grid">
+            <div class="bons-step3__field">
+              <span class="bons-step3__field-label">{{ 'common.bon.clientPlate' | translate }}</span>
+              <span class="bons-step3__field-value">{{ item.livraison.client }}</span>
+            </div>
+            <div class="bons-step3__field">
+              <span class="bons-step3__field-label">{{ 'common.bon.operator' | translate }}</span>
+              <span class="bons-step3__field-value">{{ operatorName(item.operatorId) }}</span>
+            </div>
+            <div class="bons-step3__field">
+              <span class="bons-step3__field-label">{{ 'common.documentLines.services' | translate }}</span>
+              <span class="bons-step3__field-value bons-step3__field-value--amount">
+                {{ getBonServicesAmount(item) | localeCurrency }}
               </span>
-            </td>
-            <td class="px-4 py-3 text-on-surface">{{ item.livraison.client }}</td>
-            <td class="px-4 py-3 text-on-surface-variant">{{ operatorName(item.operatorId) }}</td>
-            <td class="px-4 py-3 text-right tabular-nums text-on-surface">{{ getBonServicesAmount(item) | localeCurrency }}</td>
-            <td class="px-4 py-3 text-right tabular-nums text-on-surface">{{ getBonProductsAmount(item) | localeCurrency }}</td>
-            <td class="px-4 py-3 text-right font-bold tabular-nums text-on-surface">{{ getBonTotal(item) | localeCurrency }}</td>
-            <td class="px-4 py-3">
-              <div class="flex items-center justify-center gap-2">
-                <button
-                  type="button"
-                  class="rounded px-2 py-1 text-xs font-semibold uppercase text-secondary hover:bg-secondary/10"
-                  (click)="openEditBonDialog(item.livraison.id)"
-                >
-                  {{ 'common.actions.edit' | translate }}
-                </button>
-                <button
-                  type="button"
-                  class="rounded px-2 py-1 text-xs font-semibold uppercase text-primary hover:bg-primary/10"
-                  (click)="removeBon(item.livraison.id)"
-                >
-                  {{ 'common.actions.delete' | translate }}
-                </button>
-              </div>
-            </td>
+            </div>
+            <div class="bons-step3__field">
+              <span class="bons-step3__field-label">{{ 'common.documentLines.products' | translate }}</span>
+              <span class="bons-step3__field-value bons-step3__field-value--amount">
+                {{ getBonProductsAmount(item) | localeCurrency }}
+              </span>
+            </div>
+          </div>
+
+          <div class="bons-step3__card-total">
+            <span class="bons-step3__field-label">{{ 'common.table.total' | translate }}</span>
+            <span class="bons-step3__total-value">{{ getBonTotal(item) | localeCurrency }}</span>
+          </div>
+        </li>
+      }
+    </ul>
+
+    <div class="bons-step3__total-card md:hidden">
+      <span class="bons-step3__total-label">{{ 'journee.bons.totalStation' | translate }}</span>
+      <span class="bons-step3__total-value">{{ filteredTotal() | localeCurrency }}</span>
+    </div>
+
+    <div class="bons-step3__table-wrap hidden overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest shadow-sm md:block">
+      <table class="bons-step3__table w-full border-collapse text-sm">
+        <thead>
+          <tr class="bg-table-header">
+            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">{{ 'common.bon.number' | translate }}</th>
+            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">{{ 'common.bon.clientPlate' | translate }}</th>
+            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">{{ 'common.bon.operator' | translate }}</th>
+            <th class="px-4 py-3 text-right font-display text-xs font-bold uppercase text-white">{{ 'common.documentLines.services' | translate }}</th>
+            <th class="px-4 py-3 text-right font-display text-xs font-bold uppercase text-white">{{ 'common.documentLines.products' | translate }}</th>
+            <th class="px-4 py-3 text-right font-display text-xs font-bold uppercase text-white">{{ 'common.table.total' | translate }}</th>
+            <th class="px-4 py-3 text-center font-display text-xs font-bold uppercase text-white">{{ 'common.table.actions' | translate }}</th>
           </tr>
-        } @empty {
-          <tr>
-            <td colspan="7" class="px-4 py-12 text-center text-on-surface-variant">
-              {{ 'journee.bons.empty' | translate }}
-            </td>
-          </tr>
-        }
-      </tbody>
-      @if (bons().length > 0) {
+        </thead>
+        <tbody>
+          @for (item of bons(); track item.livraison.id) {
+            <tr class="border-t border-outline-variant/50 bg-surface-container-lowest even:bg-surface-container/40">
+              <td class="px-4 py-3 font-mono text-xs font-semibold text-on-surface">
+                <span class="inline-flex items-center gap-2">
+                  {{ item.livraison.numero }}
+                  @if (item.fuelTransmittedFromNozzles) {
+                    <span class="rounded bg-primary/10 px-1.5 py-0.5 font-display text-[10px] font-bold uppercase text-primary">
+                      {{ 'journee.bons.fuelBadge' | translate }}
+                    </span>
+                  }
+                </span>
+              </td>
+              <td class="px-4 py-3 text-on-surface">{{ item.livraison.client }}</td>
+              <td class="px-4 py-3 text-on-surface-variant">{{ operatorName(item.operatorId) }}</td>
+              <td class="px-4 py-3 text-right tabular-nums text-on-surface">{{ getBonServicesAmount(item) | localeCurrency }}</td>
+              <td class="px-4 py-3 text-right tabular-nums text-on-surface">{{ getBonProductsAmount(item) | localeCurrency }}</td>
+              <td class="px-4 py-3 text-right font-bold tabular-nums text-on-surface">{{ getBonTotal(item) | localeCurrency }}</td>
+              <td class="px-4 py-3">
+                <div class="flex items-center justify-center gap-2">
+                  <button
+                    type="button"
+                    class="rounded px-2 py-1 text-xs font-semibold uppercase text-secondary hover:bg-secondary/10"
+                    (click)="openEditBonDialog(item.livraison.id)"
+                  >
+                    {{ 'common.actions.edit' | translate }}
+                  </button>
+                  <button
+                    type="button"
+                    class="rounded px-2 py-1 text-xs font-semibold uppercase text-primary hover:bg-primary/10"
+                    (click)="removeBon(item.livraison.id)"
+                  >
+                    {{ 'common.actions.delete' | translate }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
         <tfoot>
           <tr class="border-t-2 border-outline-variant bg-surface-container">
             <td colspan="5" class="px-4 py-4 font-display text-sm font-bold uppercase text-on-surface">
@@ -102,9 +166,9 @@
             <td></td>
           </tr>
         </tfoot>
-      }
-    </table>
-  </div>
+      </table>
+    </div>
+  }
 
   <app-livraison-form-dialog
     [open]="dialogOpen()"
@@ -118,12 +182,12 @@
     (closed)="closeDialog()"
   />
 
-  <footer class="mt-4 flex flex-wrap items-center gap-4">
-    <a [routerLink]="config.backLink">
-      <app-button variant="secondary">{{ 'common.actions.back' | translate }}</app-button>
+  <footer class="mt-4 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
+    <a [routerLink]="config.backLink" class="w-full sm:w-auto">
+      <app-button variant="secondary" class="w-full sm:w-auto">{{ 'common.actions.back' | translate }}</app-button>
     </a>
     <app-wizard-step-errors [errors]="stepValidationErrors()" />
-    <app-button variant="primary" class="ml-auto" (pressed)="onNext()">
+    <app-button variant="primary" class="w-full sm:ml-auto sm:w-auto" (pressed)="onNext()">
       {{ 'common.actions.next' | translate }}
     </app-button>
   </footer>

@@ -15,8 +15,9 @@
     @apply mt-2 text-sm md:text-base;
   }
 
-  &__status {
-    @apply py-16 text-center;
+  &__status,
+  &__empty {
+    @apply rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest py-12 text-center text-sm text-on-surface-variant;
   }
 
   &__alert {
@@ -28,11 +29,105 @@
   }
 
   &__search {
-    @apply min-h-[44px] w-full max-w-md rounded-[var(--radius-input)] border border-outline-variant bg-surface-container-lowest px-4 py-2 text-sm text-on-surface outline-none focus:border-primary;
+    @apply min-h-[44px] w-full rounded-[var(--radius-input)] border border-outline-variant bg-surface-container-lowest px-4 py-2 text-sm text-on-surface outline-none focus:border-primary sm:max-w-md;
+  }
+
+  &__cards {
+    @apply flex flex-col gap-3;
+  }
+
+  &__card {
+    @apply overflow-hidden rounded-[var(--radius-card)] border border-outline-variant/70 bg-surface-container-lowest shadow-sm;
+
+    &--inactive {
+      @apply border-on-surface-variant/30 opacity-90;
+    }
+  }
+
+  &__card-top {
+    @apply flex gap-3 p-4 pb-3;
+  }
+
+  &__card-info {
+    @apply min-w-0 flex-1;
+  }
+
+  &__card-title-row {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  &__card-name {
+    @apply font-display text-base font-bold uppercase leading-tight text-on-surface;
+  }
+
+  &__card-meta {
+    @apply mt-1.5 text-sm leading-snug text-on-surface-variant;
+  }
+
+  &__card-meta-sep {
+    @apply mx-1 text-on-surface-variant/50;
+  }
+
+  &__icon {
+    @apply flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-card)] bg-surface-container text-on-surface-variant;
+
+    svg {
+      @apply size-5;
+    }
+  }
+
+  &__stats {
+    @apply grid grid-cols-2 divide-x divide-outline-variant/50 border-t border-outline-variant/50 bg-surface-container/60;
+  }
+
+  &__stat {
+    @apply flex flex-col items-center gap-1 px-3 py-3 text-center;
+  }
+
+  &__stat-label {
+    @apply font-display text-[10px] font-bold uppercase leading-tight tracking-wide text-on-surface-variant;
+  }
+
+  &__stat-value {
+    @apply text-sm font-semibold leading-snug text-on-surface;
+
+    &--accent {
+      @apply font-display text-base font-bold tabular-nums text-secondary;
+    }
+  }
+
+  &__card-actions {
+    @apply grid grid-cols-2 divide-x divide-outline-variant/50 border-t border-outline-variant/50;
+  }
+
+  &__action {
+    @apply min-h-[var(--spacing-touch)] px-3 py-2 text-xs font-bold uppercase transition;
+
+    &--edit {
+      @apply text-secondary hover:bg-secondary/10;
+    }
+
+    &--delete {
+      @apply text-primary hover:bg-primary/10;
+    }
+  }
+
+  &__table {
+    @apply min-w-[840px];
+
+    th,
+    td {
+      @apply align-middle whitespace-nowrap;
+    }
+
+    td:first-child,
+    th:first-child {
+      @apply whitespace-normal;
+    }
   }
 
   &__badge {
-    @apply inline-block rounded px-2.5 py-1 text-xs font-bold uppercase tracking-wide;
+    @apply inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase leading-none;
 
     &--active {
       @apply bg-secondary/15 text-secondary;

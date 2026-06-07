@@ -9,7 +9,9 @@
   },
   "sidebar": {
     "toggleExpand": "إظهار القائمة",
-    "toggleCollapse": "إخفاء القائمة"
+    "toggleCollapse": "إخفاء القائمة",
+    "openMenu": "فتح القائمة",
+    "closeMenu": "إغلاق القائمة"
   },
   "locale": {
     "fr": "Français",

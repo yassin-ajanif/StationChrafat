@@ -1,20 +1,20 @@
 <div class="encaissements-step4 flex w-full flex-col">
-  <header class="mb-6 flex flex-wrap items-start justify-between gap-4">
+  <header class="mb-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
     <div class="flex items-start gap-3">
       <span
         class="flex size-10 shrink-0 items-center justify-center rounded bg-primary/10 text-primary"
         aria-hidden="true"
       >💳</span>
       <div>
-        <h1 class="font-display text-2xl font-bold uppercase text-on-surface">
+        <h1 class="font-display text-xl font-bold uppercase text-on-surface md:text-2xl">
           {{ 'journee.step4.title' | translate }}
         </h1>
-        <p class="mt-1 text-base text-on-surface-variant">
+        <p class="mt-1 text-sm text-on-surface-variant md:text-base">
           {{ 'journee.step4.subtitle' | translate }}
         </p>
       </div>
     </div>
-    <app-button variant="primary" (pressed)="addLine()">
+    <app-button variant="primary" class="w-full sm:w-auto" (pressed)="addLine()">
       {{ 'journee.step4.addLine' | translate }}
     </app-button>
   </header>
@@ -26,50 +26,147 @@
     <p class="mb-4 text-sm text-primary" role="alert">{{ err }}</p>
   }
 
-  <section
-    class="encaissements-step4__table-wrap w-full overflow-hidden rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest shadow-sm"
-    aria-busy="{{ loading() || clientsLoading() }}"
-  >
-    <table class="encaissements-step4__table w-full border-collapse text-base">
-      <thead>
-        <tr class="bg-table-header">
-          <th class="encaissements-step4__col-num px-3 py-3.5 text-center font-display text-sm font-bold uppercase tracking-wide text-white">
-            N°
-          </th>
-          <th class="encaissements-step4__col-client px-3 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">
-            Client
-          </th>
-          <th class="encaissements-step4__col-balance px-3 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">
-            Solde actuel (DH)
-          </th>
-          <th class="encaissements-step4__col-mode px-3 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">
-            Mode de paiement
-          </th>
-          <th class="encaissements-step4__col-amount px-3 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">
-            Montant (DH)
-          </th>
-          <th class="encaissements-step4__col-note px-3 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">
-            Note (facultative)
-          </th>
-          <th class="encaissements-step4__col-actions px-2 py-3.5 text-center font-display text-sm font-bold uppercase tracking-wide text-white">
-            <span class="sr-only">{{ 'common.table.actions' | translate }}</span>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        @if (loading() || clientsLoading()) {
-          <tr>
-            <td colspan="7" class="py-12 text-center text-on-surface-variant">
-              {{ 'journee.step4.loading' | translate }}
-            </td>
+  @if (loading() || clientsLoading()) {
+    <p class="encaissements-step4__status py-12 text-center text-on-surface-variant">
+      {{ 'journee.step4.loading' | translate }}
+    </p>
+  } @else if (lines().length === 0) {
+    <p class="encaissements-step4__status py-12 text-center text-on-surface-variant">
+      {{ 'journee.step4.empty' | translate }}
+    </p>
+  } @else {
+    <ul class="encaissements-step4__cards md:hidden">
+      @for (line of lines(); track line.id; let i = $index) {
+        <li class="encaissements-step4__card">
+          <div class="encaissements-step4__card-header">
+            <span class="encaissements-step4__card-num">{{ i + 1 }}</span>
+            @if (canRemoveLine(line)) {
+              <button
+                type="button"
+                class="encaissements-step4__icon-action"
+                [attr.aria-label]="'journee.step4.deleteLine' | translate"
+                (click)="removeLine(line.id)"
+              >
+                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M3 6h18" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                  <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
+              </button>
+            }
+          </div>
+
+          <label class="encaissements-step4__field">
+            <span class="encaissements-step4__field-label">{{ 'journee.step4.colClient' | translate }}</span>
+            <select
+              class="encaissements-step4__cell-input"
+              [value]="line.clientId ?? ''"
+              (change)="updateClientId(line.id, $event)"
+              [attr.aria-label]="'Client ligne ' + (i + 1)"
+            >
+              <option value="">{{ 'journee.step4.clientPlaceholder' | translate }}</option>
+              @for (client of clients(); track client.id) {
+                <option [value]="client.id">{{ client.label }}</option>
+              }
+            </select>
+          </label>
+
+          <div class="encaissements-step4__field">
+            <span class="encaissements-step4__field-label">{{ 'journee.step4.colBalance' | translate }}</span>
+            @if (resolveClientBalance(line.clientId, clients()); as balance) {
+              <span class="encaissements-step4__balance encaissements-step4__balance--debt">
+                {{ balance | localeNumber:'1.2-2' }}
+              </span>
+            } @else {
+              <span class="encaissements-step4__balance">—</span>
+            }
+          </div>
+
+          <label class="encaissements-step4__field">
+            <span class="encaissements-step4__field-label">{{ 'journee.step4.colMode' | translate }}</span>
+            <select
+              class="encaissements-step4__cell-input"
+              [value]="line.paymentMode"
+              (change)="updatePaymentMode(line.id, $event)"
+              [attr.aria-label]="'Mode de paiement ligne ' + (i + 1)"
+            >
+              <option value="">{{ 'journee.step4.modePlaceholder' | translate }}</option>
+              @for (mode of paymentModes; track mode) {
+                <option [value]="mode">{{ mode }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="encaissements-step4__field">
+            <span class="encaissements-step4__field-label">{{ 'journee.step4.colAmount' | translate }}</span>
+            <input
+              type="number"
+              class="encaissements-step4__cell-input encaissements-step4__cell-input--amount"
+              min="0"
+              step="0.01"
+              inputmode="decimal"
+              [value]="line.amount || ''"
+              (input)="updateAmount(line.id, $event)"
+              [attr.aria-label]="'Montant ligne ' + (i + 1)"
+            />
+          </label>
+
+          <label class="encaissements-step4__field">
+            <span class="encaissements-step4__field-label">{{ 'journee.step4.colNote' | translate }}</span>
+            <input
+              type="text"
+              class="encaissements-step4__cell-input"
+              placeholder="Note…"
+              [value]="line.note"
+              (input)="updateNote(line.id, $event)"
+              [attr.aria-label]="'Note ligne ' + (i + 1)"
+            />
+          </label>
+        </li>
+      }
+    </ul>
+
+    <div class="encaissements-step4__total-card md:hidden">
+      <span class="encaissements-step4__total-label">{{ 'journee.step4.total' | translate }}</span>
+      <div class="encaissements-step4__total-value">
+        <p class="font-display text-2xl font-bold leading-none text-primary tabular-nums">
+          {{ total() | localeNumber:'1.2-2' }}
+        </p>
+        <p class="mt-1 text-sm font-semibold text-primary">DH</p>
+      </div>
+    </div>
+
+    <section
+      class="encaissements-step4__table-wrap hidden w-full overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest shadow-sm md:block"
+      aria-busy="{{ loading() || clientsLoading() }}"
+    >
+      <table class="encaissements-step4__table w-full border-collapse text-base">
+        <thead>
+          <tr class="bg-table-header">
+            <th class="encaissements-step4__col-num px-3 py-3.5 text-center font-display text-sm font-bold uppercase tracking-wide text-white">
+              {{ 'common.table.num' | translate }}
+            </th>
+            <th class="encaissements-step4__col-client px-3 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">
+              {{ 'journee.step4.colClient' | translate }}
+            </th>
+            <th class="encaissements-step4__col-balance px-3 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">
+              {{ 'journee.step4.colBalance' | translate }}
+            </th>
+            <th class="encaissements-step4__col-mode px-3 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">
+              {{ 'journee.step4.colMode' | translate }}
+            </th>
+            <th class="encaissements-step4__col-amount px-3 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">
+              {{ 'journee.step4.colAmount' | translate }}
+            </th>
+            <th class="encaissements-step4__col-note px-3 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">
+              {{ 'journee.step4.colNote' | translate }}
+            </th>
+            <th class="encaissements-step4__col-actions px-2 py-3.5 text-center font-display text-sm font-bold uppercase tracking-wide text-white">
+              <span class="sr-only">{{ 'common.table.actions' | translate }}</span>
+            </th>
           </tr>
-        } @else if (lines().length === 0) {
-          <tr>
-            <td colspan="7" class="py-12 text-center text-on-surface-variant">
-              {{ 'journee.step4.empty' | translate }}
-            </td>
-          </tr>
-        } @else {
+        </thead>
+        <tbody>
           @for (line of lines(); track line.id; let i = $index) {
             <tr class="border-t border-outline-variant/50 bg-surface-container-lowest even:bg-surface-container/40">
               <td class="px-3 py-2 text-center text-sm tabular-nums text-on-surface-variant">
@@ -82,7 +179,7 @@
                   (change)="updateClientId(line.id, $event)"
                   [attr.aria-label]="'Client ligne ' + (i + 1)"
                 >
-                  <option value="">Rechercher client…</option>
+                  <option value="">{{ 'journee.step4.clientPlaceholder' | translate }}</option>
                   @for (client of clients(); track client.id) {
                     <option [value]="client.id">{{ client.label }}</option>
                   }
@@ -90,9 +187,7 @@
               </td>
               <td class="px-2 py-2">
                 @if (resolveClientBalance(line.clientId, clients()); as balance) {
-                  <span
-                    class="encaissements-step4__balance encaissements-step4__balance--debt block"
-                  >
+                  <span class="encaissements-step4__balance encaissements-step4__balance--debt block">
                     {{ balance | localeNumber:'1.2-2' }}
                   </span>
                 } @else {
@@ -167,10 +262,8 @@
               </td>
             </tr>
           }
-        }
-      </tbody>
-      <tfoot>
-        @if (!loading() && !clientsLoading() && lines().length > 0) {
+        </tbody>
+        <tfoot>
           <tr class="border-t-2 border-outline-variant bg-surface-container">
             <td
               colspan="4"
@@ -186,19 +279,19 @@
             </td>
             <td colspan="2"></td>
           </tr>
-        }
-      </tfoot>
-    </table>
-  </section>
+        </tfoot>
+      </table>
+    </section>
+  }
 
-  <footer class="mt-8 flex flex-wrap items-center gap-4">
-    <a routerLink="/journees/nouvelle/bons-step3">
-      <app-button variant="secondary">← Retour</app-button>
+  <footer class="mt-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
+    <a routerLink="/journees/nouvelle/bons-step3" class="w-full sm:w-auto">
+      <app-button variant="secondary" class="w-full sm:w-auto">← Retour</app-button>
     </a>
     <app-wizard-step-errors [errors]="stepValidationErrors()" />
     <app-button
       variant="primary"
-      class="ml-auto"
+      class="w-full sm:ml-auto sm:w-auto"
       [disabled]="loading() || clientsLoading()"
       (pressed)="next()"
     >

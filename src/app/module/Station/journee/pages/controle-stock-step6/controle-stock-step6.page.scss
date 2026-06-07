@@ -2,10 +2,78 @@
 
 .controle-stock-step6 {
   &__input {
-    @apply min-h-[var(--spacing-touch)] w-full min-w-[6rem] rounded-[var(--radius-card)] border border-outline px-3 text-right tabular-nums;
+    @apply min-h-[var(--spacing-touch)] w-full rounded-[var(--radius-card)] border border-outline bg-surface-container-lowest px-3 text-right tabular-nums text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary/30;
+
+    &--table {
+      @apply min-w-[6rem];
+    }
   }
 
-  &__table-wrap {
-    @apply overflow-x-auto;
+  &__table {
+    @apply min-w-[880px];
+
+    th,
+    td {
+      @apply align-middle whitespace-nowrap;
+    }
+
+    td:first-child,
+    th:first-child,
+    td:nth-child(2),
+    th:nth-child(2) {
+      @apply whitespace-normal;
+    }
+  }
+
+  &__cards {
+    @apply flex flex-col gap-3;
+  }
+
+  &__card {
+    @apply rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest p-4 shadow-sm;
+  }
+
+  &__card-head {
+    @apply mb-3 border-b border-outline-variant/40 pb-3;
+  }
+
+  &__card-name {
+    @apply font-semibold text-on-surface;
+  }
+
+  &__card-category {
+    @apply mt-1 text-sm text-on-surface-variant;
+  }
+
+  &__card-grid {
+    @apply grid grid-cols-2 gap-3;
+  }
+
+  &__field {
+    @apply flex flex-col gap-1.5;
+  }
+
+  &__field-label {
+    @apply font-display text-xs font-bold uppercase tracking-wide text-on-surface-variant;
+  }
+
+  &__readonly {
+    @apply min-h-[var(--spacing-touch)] rounded border border-outline-variant/40 bg-surface-container px-3 py-2 text-right text-sm font-semibold tabular-nums text-on-surface;
+
+    &--gap {
+      @apply font-bold;
+    }
+  }
+
+  &__unit {
+    @apply inline-flex min-h-[var(--spacing-touch)] items-center font-display text-xs font-bold uppercase text-secondary;
+  }
+
+  &__card-loss {
+    @apply mt-3 flex items-center justify-between gap-3 border-t border-outline-variant/40 pt-3;
+  }
+
+  &__loss-value {
+    @apply font-display text-lg font-bold tabular-nums text-primary;
   }
 }

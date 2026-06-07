@@ -1,5 +1,5 @@
 <div class="client-list">
-  <header class="client-list__header flex flex-wrap items-start justify-between gap-4">
+  <header class="client-list__header flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
     <div>
       <h1 class="client-list__title font-display uppercase text-primary">
         {{ 'client.page.title' | translate }}
@@ -8,7 +8,9 @@
         {{ 'client.page.subtitle' | translate }}
       </p>
     </div>
-    <app-button variant="primary" (pressed)="openNew()">{{ 'client.page.cta' | translate }}</app-button>
+    <app-button variant="primary" class="w-full sm:w-auto" (pressed)="openNew()">
+      {{ 'client.page.cta' | translate }}
+    </app-button>
   </header>
 
   @if (loading()) {
@@ -28,73 +30,136 @@
       />
     </div>
 
-    <div class="client-list__table-wrap overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant shadow-sm">
-      <table class="client-list__table w-full border-collapse text-sm">
-        <thead>
-          <tr class="bg-table-header">
-            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">
-              {{ 'client.table.colName' | translate }}
-            </th>
-            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">
-              {{ 'client.table.colPhone' | translate }}
-            </th>
-            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">
-              {{ 'client.table.colIce' | translate }}
-            </th>
-            <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">
-              {{ 'client.table.colCity' | translate }}
-            </th>
-            <th class="px-4 py-3 text-center font-display text-xs font-bold uppercase text-white">
-              {{ 'common.table.status' | translate }}
-            </th>
-            <th class="px-4 py-3 text-center font-display text-xs font-bold uppercase text-white">
-              {{ 'common.table.actions' | translate }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (client of clients(); track client.id) {
-            <tr class="border-t border-outline-variant/50 bg-surface-container-lowest even:bg-surface-container/40">
-              <td class="px-4 py-3 font-semibold text-on-surface">{{ client.name }}</td>
-              <td class="px-4 py-3 text-on-surface-variant">{{ client.phone || '—' }}</td>
-              <td class="px-4 py-3 font-mono text-xs text-on-surface-variant">{{ client.ice || '—' }}</td>
-              <td class="px-4 py-3 text-on-surface-variant">{{ client.city || '—' }}</td>
-              <td class="px-4 py-3 text-center">
-                @if (client.active) {
-                  <span class="client-list__badge client-list__badge--active">{{ 'client.status.active' | translate }}</span>
-                } @else {
-                  <span class="client-list__badge client-list__badge--inactive">{{ 'client.status.inactive' | translate }}</span>
-                }
-              </td>
-              <td class="px-4 py-3">
-                <div class="flex items-center justify-center gap-2">
-                  <button
-                    type="button"
-                    class="rounded px-2 py-1 text-xs font-semibold uppercase text-secondary hover:bg-secondary/10"
-                    (click)="openEdit(client)"
-                  >
-                    {{ 'common.actions.edit' | translate }}
-                  </button>
-                  <button
-                    type="button"
-                    class="rounded px-2 py-1 text-xs font-semibold uppercase text-primary hover:bg-primary/10"
-                    (click)="removeClient(client.id)"
-                  >
-                    {{ 'common.actions.delete' | translate }}
-                  </button>
+    @if (clients().length === 0) {
+      <p class="client-list__empty">{{ 'client.page.empty' | translate }}</p>
+    } @else {
+      <ul class="client-list__cards md:hidden">
+        @for (client of clients(); track client.id) {
+          <li
+            class="client-list__card"
+            [class.client-list__card--inactive]="!client.active"
+          >
+            <div class="client-list__card-top">
+              <span class="client-list__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </span>
+              <div class="client-list__card-info">
+                <div class="client-list__card-title-row">
+                  <p class="client-list__card-name">{{ client.name }}</p>
+                  @if (client.active) {
+                    <span class="client-list__badge client-list__badge--active">
+                      {{ 'client.status.active' | translate }}
+                    </span>
+                  } @else {
+                    <span class="client-list__badge client-list__badge--inactive">
+                      {{ 'client.status.inactive' | translate }}
+                    </span>
+                  }
                 </div>
-              </td>
+                <p class="client-list__card-meta">
+                  {{ client.city || '—' }}
+                  <span class="client-list__card-meta-sep" aria-hidden="true">·</span>
+                  {{ client.phone || '—' }}
+                </p>
+              </div>
+            </div>
+
+            <div class="client-list__stats">
+              <div class="client-list__stat">
+                <span class="client-list__stat-label">{{ 'client.table.colPhone' | translate }}</span>
+                <span class="client-list__stat-value">{{ client.phone || '—' }}</span>
+              </div>
+              <div class="client-list__stat">
+                <span class="client-list__stat-label">{{ 'client.table.colCity' | translate }}</span>
+                <span class="client-list__stat-value">{{ client.city || '—' }}</span>
+              </div>
+            </div>
+
+            <div class="client-list__card-actions">
+              <button
+                type="button"
+                class="client-list__action client-list__action--edit"
+                (click)="openEdit(client)"
+              >
+                {{ 'common.actions.edit' | translate }}
+              </button>
+              <button
+                type="button"
+                class="client-list__action client-list__action--delete"
+                (click)="removeClient(client.id)"
+              >
+                {{ 'common.actions.delete' | translate }}
+              </button>
+            </div>
+          </li>
+        }
+      </ul>
+
+      <div class="client-list__table-wrap hidden overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant shadow-sm md:block">
+        <table class="client-list__table w-full border-collapse text-sm">
+          <thead>
+            <tr class="bg-table-header">
+              <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">
+                {{ 'client.table.colName' | translate }}
+              </th>
+              <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">
+                {{ 'client.table.colPhone' | translate }}
+              </th>
+              <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">
+                {{ 'client.table.colIce' | translate }}
+              </th>
+              <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">
+                {{ 'client.table.colCity' | translate }}
+              </th>
+              <th class="px-4 py-3 text-center font-display text-xs font-bold uppercase text-white">
+                {{ 'common.table.status' | translate }}
+              </th>
+              <th class="px-4 py-3 text-center font-display text-xs font-bold uppercase text-white">
+                {{ 'common.table.actions' | translate }}
+              </th>
             </tr>
-          } @empty {
-            <tr>
-              <td colspan="6" class="px-4 py-12 text-center text-on-surface-variant">
-                {{ 'client.page.empty' | translate }}
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            @for (client of clients(); track client.id) {
+              <tr class="border-t border-outline-variant/50 bg-surface-container-lowest even:bg-surface-container/40">
+                <td class="px-4 py-3 font-semibold text-on-surface">{{ client.name }}</td>
+                <td class="px-4 py-3 text-on-surface-variant">{{ client.phone || '—' }}</td>
+                <td class="px-4 py-3 font-mono text-xs text-on-surface-variant">{{ client.ice || '—' }}</td>
+                <td class="px-4 py-3 text-on-surface-variant">{{ client.city || '—' }}</td>
+                <td class="px-4 py-3 text-center">
+                  @if (client.active) {
+                    <span class="client-list__badge client-list__badge--active">{{ 'client.status.active' | translate }}</span>
+                  } @else {
+                    <span class="client-list__badge client-list__badge--inactive">{{ 'client.status.inactive' | translate }}</span>
+                  }
+                </td>
+                <td class="px-4 py-3">
+                  <div class="flex items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      class="rounded px-2 py-1 text-xs font-semibold uppercase text-secondary hover:bg-secondary/10"
+                      (click)="openEdit(client)"
+                    >
+                      {{ 'common.actions.edit' | translate }}
+                    </button>
+                    <button
+                      type="button"
+                      class="rounded px-2 py-1 text-xs font-semibold uppercase text-primary hover:bg-primary/10"
+                      (click)="removeClient(client.id)"
+                    >
+                      {{ 'common.actions.delete' | translate }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
 
     @if (saving()) {
       <p class="client-list__saving text-sm text-on-surface-variant">{{ 'common.actions.saving' | translate }}</p>

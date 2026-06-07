@@ -1,8 +1,84 @@
 @reference '../../../../../../tailwind.css';
 
 .stock-product-table {
+  @apply md:border md:border-outline-variant md:rounded-[var(--radius-card)];
+
+  &__cards {
+    @apply flex flex-col gap-3;
+  }
+
+  &__card {
+    @apply overflow-hidden rounded-[var(--radius-card)] border border-outline-variant/70 bg-surface-container-lowest shadow-sm;
+
+    &--critique {
+      @apply border-primary/25;
+    }
+  }
+
+  &__card-top {
+    @apply flex gap-3 p-4 pb-3;
+  }
+
+  &__card-info {
+    @apply min-w-0 flex-1;
+  }
+
+  &__card-title-row {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  &__card-name {
+    @apply font-display text-base font-bold uppercase leading-tight text-on-surface;
+  }
+
+  &__card-meta {
+    @apply mt-1.5 text-sm leading-snug text-on-surface-variant;
+  }
+
+  &__card-meta-sep {
+    @apply mx-1 text-on-surface-variant/50;
+  }
+
+  &__stats {
+    @apply grid grid-cols-3 divide-x divide-outline-variant/50 border-t border-outline-variant/50 bg-surface-container/60;
+  }
+
+  &__stat {
+    @apply flex flex-col items-center gap-1 px-2 py-3 text-center;
+  }
+
+  &__stat-label {
+    @apply font-display text-[10px] font-bold uppercase leading-tight tracking-wide text-on-surface-variant;
+  }
+
+  &__stat-value {
+    @apply font-display text-lg font-bold tabular-nums leading-none text-on-surface;
+
+    &--critique {
+      @apply text-primary;
+    }
+
+    &--unit {
+      @apply text-base text-secondary;
+    }
+  }
+
+  &__table {
+    @apply min-w-[720px];
+
+    th,
+    td {
+      @apply align-middle whitespace-nowrap;
+    }
+
+    td:first-child,
+    th:first-child {
+      @apply whitespace-normal;
+    }
+  }
+
   &__status {
-    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold uppercase leading-none;
+    @apply inline-flex shrink-0 items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase leading-none;
 
     &--optimal {
       @apply bg-success/15 text-success;
@@ -30,7 +106,7 @@
   }
 
   &__icon {
-    font-size: 1rem;
+    @apply flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-card)] bg-surface-container text-base text-on-surface-variant;
     line-height: 1;
   }
 }

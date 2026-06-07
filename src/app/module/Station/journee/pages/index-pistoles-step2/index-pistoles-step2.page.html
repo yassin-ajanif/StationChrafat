@@ -29,13 +29,13 @@
   }
 
   <section
-    class="no-print mb-6 rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest p-5 shadow-sm"
+    class="no-print mb-6 rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest p-4 shadow-sm md:p-5"
   >
     <label class="index-pistoles-step2__label" for="bombiste-select">{{ 'journee.step2.addBombiste' | translate }}</label>
-    <div class="flex flex-wrap items-end gap-3">
+    <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
       <select
         id="bombiste-select"
-        class="index-pistoles-step2__select min-w-[16rem] flex-1"
+        class="index-pistoles-step2__select w-full sm:min-w-[16rem] sm:flex-1"
         [value]="pendingBombisteId() ?? ''"
         (change)="onBombisteSelect($event)"
         [disabled]="loading() || operatorsLoading() || availableBombistes().length === 0"
@@ -47,6 +47,7 @@
       </select>
       <app-button
         variant="primary"
+        class="w-full sm:w-auto"
         [disabled]="pendingBombisteId() == null || loading()"
         (pressed)="addBombiste()"
       >
@@ -74,24 +75,127 @@
       <section
         class="index-pistoles-step2__group mb-6 w-full overflow-hidden rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest shadow-sm"
       >
-        <header class="flex flex-wrap items-center justify-between gap-3 border-b border-outline-variant/50 px-5 py-4">
+        <header class="flex flex-col gap-3 border-b border-outline-variant/50 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
           <div>
             <p class="font-display text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
-              Bombiste
+              {{ 'journee.step2.bombiste' | translate }}
             </p>
-            <h2 class="font-display text-xl font-bold uppercase text-on-surface">{{ group.bombisteName }}</h2>
+            <h2 class="font-display text-lg font-bold uppercase text-on-surface md:text-xl">{{ group.bombisteName }}</h2>
           </div>
           <app-button
-            class="no-print"
+            class="no-print w-full sm:w-auto"
             variant="secondary"
             (pressed)="onRemoveBombiste(group.bombisteId)"
           >
-            Retirer
+            {{ 'common.actions.remove' | translate }}
           </app-button>
         </header>
 
-        <div class="overflow-x-auto">
-          <table class="w-full border-collapse text-base">
+        <ul class="index-pistoles-step2__cards md:hidden">
+          @for (row of group.rows; track row.line.id) {
+            <li
+              class="index-pistoles-step2__card"
+              [class.index-pistoles-step2__card--offline]="row.line.status === 'offline'"
+              [class.index-pistoles-step2__card--invalid]="lineInvalid(row.line)"
+            >
+              <div class="index-pistoles-step2__card-head">
+                <div>
+                  <p class="index-pistoles-step2__card-meta">
+                    {{ 'journee.step2.ilot' | translate }} {{ row.line.island }}
+                    · {{ 'journee.step2.pistolet' | translate }} {{ row.line.pumpLabel }}
+                  </p>
+                  <span
+                    class="index-pistoles-step2__fuel-badge inline-block rounded px-2.5 py-1 text-sm font-semibold text-white"
+                    [style.background-color]="row.line.fuelColor"
+                  >
+                    {{ row.line.fuelLabel }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="index-pistoles-step2__card-grid">
+                <label class="index-pistoles-step2__field">
+                  <span class="index-pistoles-step2__field-label">{{ 'journee.step2.indexEntree' | translate }}</span>
+                  @if (row.line.status === 'offline') {
+                    <span class="index-pistoles-step2__offline-badge">HS</span>
+                  } @else {
+                    <input
+                      type="number"
+                      class="index-pistoles-step2__index-input"
+                      [class.index-pistoles-step2__index-input--invalid]="lineInvalid(row.line)"
+                      [value]="row.line.indexEntree ?? ''"
+                      (input)="onIndexInput(row.line.id, 'entree', $event)"
+                      min="0"
+                      step="0.01"
+                      inputmode="decimal"
+                      [attr.aria-label]="('journee.step2.indexEntree' | translate) + ' ' + row.line.pumpLabel"
+                    />
+                  }
+                </label>
+
+                <label class="index-pistoles-step2__field">
+                  <span class="index-pistoles-step2__field-label">{{ 'journee.step2.indexSortie' | translate }}</span>
+                  @if (row.line.status === 'offline') {
+                    <span class="index-pistoles-step2__offline-dash">—</span>
+                  } @else {
+                    <input
+                      type="number"
+                      class="index-pistoles-step2__index-input"
+                      [class.index-pistoles-step2__index-input--invalid]="lineInvalid(row.line)"
+                      [value]="row.line.indexSortie ?? ''"
+                      (input)="onIndexInput(row.line.id, 'sortie', $event)"
+                      min="0"
+                      step="0.01"
+                      inputmode="decimal"
+                      [attr.aria-label]="('journee.step2.indexSortie' | translate) + ' ' + row.line.pumpLabel"
+                    />
+                  }
+                </label>
+
+                <div class="index-pistoles-step2__field">
+                  <span class="index-pistoles-step2__field-label">{{ 'journee.step2.remiseCuve' | translate }}</span>
+                  <span class="index-pistoles-step2__readonly">{{ row.line.tankReturn | localeNumber:'1.2-2' }}</span>
+                </div>
+
+                <div class="index-pistoles-step2__field">
+                  <span class="index-pistoles-step2__field-label">{{ 'journee.step2.quantite' | translate }}</span>
+                  <span class="index-pistoles-step2__readonly">{{ row.quantity | localeNumber:'1.2-2' }}</span>
+                </div>
+
+                <div class="index-pistoles-step2__field">
+                  <span class="index-pistoles-step2__field-label">{{ 'journee.step2.pu' | translate }}</span>
+                  <span class="index-pistoles-step2__readonly">{{ row.line.unitPrice | localeNumber:'1.2-2' }}</span>
+                </div>
+
+                <div class="index-pistoles-step2__field">
+                  <span class="index-pistoles-step2__field-label">{{ 'journee.step2.total' | translate }}</span>
+                  <span class="index-pistoles-step2__readonly index-pistoles-step2__readonly--total">
+                    {{ row.total | localeNumber:'1.2-2' }}
+                  </span>
+                </div>
+              </div>
+            </li>
+          }
+        </ul>
+
+        <div class="index-pistoles-step2__subtotal-card md:hidden">
+          <span class="index-pistoles-step2__subtotal-label">
+            {{ 'journee.step2.subtotal' | translate: { name: group.bombisteName } }}
+          </span>
+          <div class="index-pistoles-step2__subtotal-values">
+            <p class="text-base font-bold tabular-nums text-on-surface">
+              {{ group.totals.liters | localeNumber:'1.2-2' }}
+              <span class="ml-1 font-normal text-on-surface-variant">L</span>
+            </p>
+            <p class="font-display text-xl font-bold text-primary tabular-nums">
+              {{ group.totals.amount | localeNumber:'1.2-2' }}
+              <span class="ml-1 text-sm font-semibold">DH</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="hidden overflow-x-auto md:block">
+          <table class="index-pistoles-step2__table w-full border-collapse text-base">
             <thead>
               <tr class="bg-table-header">
                 <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">{{ 'journee.step2.ilot' | translate }}</th>
@@ -131,11 +235,8 @@
                     } @else {
                       <input
                         type="number"
-                        class="min-h-[var(--spacing-touch)] w-32 rounded border px-3 text-base text-right"
-                        [class.border-outline]="!lineInvalid(row.line)"
-                        [class.border-primary]="lineInvalid(row.line)"
-                        [class.ring-1]="lineInvalid(row.line)"
-                        [class.ring-primary/30]="lineInvalid(row.line)"
+                        class="index-pistoles-step2__index-input index-pistoles-step2__index-input--table"
+                        [class.index-pistoles-step2__index-input--invalid]="lineInvalid(row.line)"
                         [value]="row.line.indexEntree ?? ''"
                         (input)="onIndexInput(row.line.id, 'entree', $event)"
                         min="0"
@@ -151,17 +252,14 @@
                     } @else {
                       <input
                         type="number"
-                        class="min-h-[var(--spacing-touch)] w-32 rounded border px-3 text-base text-right"
-                        [class.border-outline]="!lineInvalid(row.line)"
-                        [class.border-primary]="lineInvalid(row.line)"
-                        [class.ring-1]="lineInvalid(row.line)"
-                        [class.ring-primary/30]="lineInvalid(row.line)"
+                        class="index-pistoles-step2__index-input index-pistoles-step2__index-input--table"
+                        [class.index-pistoles-step2__index-input--invalid]="lineInvalid(row.line)"
                         [value]="row.line.indexSortie ?? ''"
                         (input)="onIndexInput(row.line.id, 'sortie', $event)"
                         min="0"
                         step="0.01"
                         inputmode="decimal"
-                        [attr.aria-label]="'Index sortie ' + row.line.pumpLabel"
+                        [attr.aria-label]="('journee.step2.indexSortie' | translate) + ' ' + row.line.pumpLabel"
                       />
                     }
                   </td>
@@ -180,7 +278,7 @@
                   colspan="6"
                   class="px-4 py-4 font-display text-sm font-bold uppercase tracking-wide text-on-surface"
                 >
-                  Sous-total {{ group.bombisteName }}
+                  {{ 'journee.step2.subtotal' | translate: { name: group.bombisteName } }}
                 </td>
                 <td class="px-4 py-4 text-right text-base font-bold tabular-nums text-on-surface">
                   {{ group.totals.liters | localeNumber:'1.2-2' }}
@@ -308,14 +406,14 @@
     }
   }
 
-  <footer class="no-print mt-8 flex flex-wrap items-center gap-4">
-    <a [routerLink]="backLink">
-      <app-button variant="secondary">← Retour</app-button>
+  <footer class="no-print mt-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
+    <a [routerLink]="backLink" class="w-full sm:w-auto">
+      <app-button variant="secondary" class="w-full sm:w-auto">← Retour</app-button>
     </a>
     <app-wizard-step-errors [errors]="stepValidationErrors()" />
     <app-button
       variant="primary"
-      class="ml-auto"
+      class="w-full sm:ml-auto sm:w-auto"
       [disabled]="loading()"
       (pressed)="onNext()"
     >

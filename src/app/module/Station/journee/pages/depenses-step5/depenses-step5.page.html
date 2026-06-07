@@ -1,21 +1,21 @@
 <div class="depenses-step5 flex w-full flex-col">
-  <header class="mb-6 flex flex-wrap items-start justify-between gap-4">
+  <header class="mb-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
     <div class="flex items-start gap-3">
       <span
         class="flex size-10 shrink-0 items-center justify-center rounded bg-primary/10 text-primary"
         aria-hidden="true"
       >💵</span>
       <div>
-        <h1 class="font-display text-2xl font-bold uppercase text-on-surface">
+        <h1 class="font-display text-xl font-bold uppercase text-on-surface md:text-2xl">
           {{ 'journee.step6.title' | translate }}
         </h1>
-        <p class="mt-1 text-base text-on-surface-variant">
+        <p class="mt-1 text-sm text-on-surface-variant md:text-base">
           {{ 'journee.step6.subtitle' | translate }}
         </p>
       </div>
     </div>
-    <app-button variant="primary" (pressed)="addLine()">
-      {{ 'journee.step4.addLine' | translate }}
+    <app-button variant="primary" class="w-full sm:w-auto" (pressed)="addLine()">
+      {{ 'journee.step6.addLine' | translate }}
     </app-button>
   </header>
 
@@ -23,50 +23,150 @@
     <p class="mb-4 text-sm text-primary" role="alert">{{ err }}</p>
   }
 
-  <section
-    class="depenses-step5__table-wrap w-full overflow-hidden rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest shadow-sm"
-    aria-busy="{{ loading() }}"
-  >
-    <table class="depenses-step5__table w-full border-collapse text-base">
-      <thead>
-        <tr class="bg-table-header">
-          <th class="depenses-step5__col-num px-3 py-3.5 text-center font-display text-sm font-bold uppercase tracking-wide text-white">
-            N°
-          </th>
-          <th class="depenses-step5__col-type px-3 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">
-            {{ 'journee.step6.colType' | translate }}
-          </th>
-          <th class="depenses-step5__col-description px-3 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">
-            Description
-          </th>
-          <th class="depenses-step5__col-amount px-3 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">
-            Montant (DH)
-          </th>
-          <th class="depenses-step5__col-mode px-3 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">
-            Mode de paiement
-          </th>
-          <th class="depenses-step5__col-note px-3 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">
-            Note (facultative)
-          </th>
-          <th class="depenses-step5__col-actions px-2 py-3.5 text-center font-display text-sm font-bold uppercase tracking-wide text-white">
-            <span class="sr-only">{{ 'common.table.actions' | translate }}</span>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        @if (loading()) {
-          <tr>
-            <td colspan="7" class="py-12 text-center text-on-surface-variant">
-              {{ 'journee.step6.loading' | translate }}
-            </td>
+  @if (loading()) {
+    <p class="depenses-step5__status py-12 text-center text-on-surface-variant">
+      {{ 'journee.step6.loading' | translate }}
+    </p>
+  } @else if (lines().length === 0) {
+    <p class="depenses-step5__status py-12 text-center text-on-surface-variant">
+      {{ 'journee.step6.empty' | translate }}
+    </p>
+  } @else {
+    <ul class="depenses-step5__cards md:hidden">
+      @for (line of lines(); track line.id; let i = $index) {
+        <li class="depenses-step5__card">
+          <div class="depenses-step5__card-header">
+            <span class="depenses-step5__card-num">{{ i + 1 }}</span>
+            @if (canRemoveLine(line)) {
+              <button
+                type="button"
+                class="depenses-step5__icon-action"
+                [attr.aria-label]="'journee.step6.deleteLine' | translate"
+                (click)="removeLine(line.id)"
+              >
+                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M3 6h18" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                  <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
+              </button>
+            }
+          </div>
+
+          <label class="depenses-step5__field">
+            <span class="depenses-step5__field-label">{{ 'journee.step6.colType' | translate }}</span>
+            <select
+              class="depenses-step5__cell-input"
+              [value]="line.expenseType"
+              (change)="updateExpenseType(line.id, $event)"
+              [attr.aria-label]="('journee.step6.colType' | translate) + ' ' + (i + 1)"
+            >
+              <option value="">{{ 'journee.step6.typePlaceholder' | translate }}</option>
+              @for (type of expenseTypes; track type) {
+                <option [value]="type">{{ type }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="depenses-step5__field">
+            <span class="depenses-step5__field-label">{{ 'journee.step6.colDescription' | translate }}</span>
+            <input
+              type="text"
+              class="depenses-step5__cell-input"
+              [placeholder]="'journee.step6.descriptionPlaceholder' | translate"
+              [value]="line.description"
+              (input)="updateDescription(line.id, $event)"
+              [attr.aria-label]="('journee.step6.colDescription' | translate) + ' ' + (i + 1)"
+            />
+          </label>
+
+          <label class="depenses-step5__field">
+            <span class="depenses-step5__field-label">{{ 'journee.step6.colAmount' | translate }}</span>
+            <div class="depenses-step5__amount-wrap">
+              <input
+                type="number"
+                class="depenses-step5__cell-input depenses-step5__cell-input--amount pr-10"
+                min="0"
+                step="0.01"
+                inputmode="decimal"
+                [value]="line.amount || ''"
+                (input)="updateAmount(line.id, $event)"
+                [attr.aria-label]="('journee.step6.colAmount' | translate) + ' ' + (i + 1)"
+              />
+              <span class="depenses-step5__amount-suffix">DH</span>
+            </div>
+          </label>
+
+          <label class="depenses-step5__field">
+            <span class="depenses-step5__field-label">{{ 'journee.step6.colMode' | translate }}</span>
+            <select
+              class="depenses-step5__cell-input"
+              [value]="line.paymentMode"
+              (change)="updatePaymentMode(line.id, $event)"
+              [attr.aria-label]="('journee.step6.colMode' | translate) + ' ' + (i + 1)"
+            >
+              @for (mode of paymentModes; track mode) {
+                <option [value]="mode">{{ mode }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="depenses-step5__field">
+            <span class="depenses-step5__field-label">{{ 'journee.step6.colNote' | translate }}</span>
+            <input
+              type="text"
+              class="depenses-step5__cell-input"
+              [placeholder]="'journee.step6.notePlaceholder' | translate"
+              [value]="line.note"
+              (input)="updateNote(line.id, $event)"
+              [attr.aria-label]="('journee.step6.colNote' | translate) + ' ' + (i + 1)"
+            />
+          </label>
+        </li>
+      }
+    </ul>
+
+    <div class="depenses-step5__total-card md:hidden">
+      <span class="depenses-step5__total-label">{{ 'journee.step6.total' | translate }}</span>
+      <div class="depenses-step5__total-value">
+        <p class="font-display text-2xl font-bold leading-none text-primary tabular-nums">
+          {{ total() | localeNumber:'1.2-2' }}
+        </p>
+        <p class="mt-1 text-sm font-semibold text-primary">DH</p>
+      </div>
+    </div>
+
+    <section
+      class="depenses-step5__table-wrap hidden w-full overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest shadow-sm md:block"
+      aria-busy="{{ loading() }}"
+    >
+      <table class="depenses-step5__table w-full border-collapse text-base">
+        <thead>
+          <tr class="bg-table-header">
+            <th class="depenses-step5__col-num px-3 py-3.5 text-center font-display text-sm font-bold uppercase tracking-wide text-white">
+              {{ 'common.table.num' | translate }}
+            </th>
+            <th class="depenses-step5__col-type px-3 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">
+              {{ 'journee.step6.colType' | translate }}
+            </th>
+            <th class="depenses-step5__col-description px-3 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">
+              {{ 'journee.step6.colDescription' | translate }}
+            </th>
+            <th class="depenses-step5__col-amount px-3 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">
+              {{ 'journee.step6.colAmount' | translate }}
+            </th>
+            <th class="depenses-step5__col-mode px-3 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">
+              {{ 'journee.step6.colMode' | translate }}
+            </th>
+            <th class="depenses-step5__col-note px-3 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">
+              {{ 'journee.step6.colNote' | translate }}
+            </th>
+            <th class="depenses-step5__col-actions px-2 py-3.5 text-center font-display text-sm font-bold uppercase tracking-wide text-white">
+              <span class="sr-only">{{ 'common.table.actions' | translate }}</span>
+            </th>
           </tr>
-        } @else if (lines().length === 0) {
-          <tr>
-            <td colspan="7" class="py-12 text-center text-on-surface-variant">
-              {{ 'journee.step6.empty' | translate }}
-            </td>
-          </tr>
-        } @else {
+        </thead>
+        <tbody>
           @for (line of lines(); track line.id; let i = $index) {
             <tr class="border-t border-outline-variant/50 bg-surface-container-lowest even:bg-surface-container/40">
               <td class="px-3 py-2 text-center text-sm tabular-nums text-on-surface-variant">
@@ -92,7 +192,7 @@
                   [placeholder]="'journee.step6.descriptionPlaceholder' | translate"
                   [value]="line.description"
                   (input)="updateDescription(line.id, $event)"
-                  [attr.aria-label]="'Description ligne ' + (i + 1)"
+                  [attr.aria-label]="('journee.step6.colDescription' | translate) + ' ' + (i + 1)"
                 />
               </td>
               <td class="px-2 py-2">
@@ -105,7 +205,7 @@
                     inputmode="decimal"
                     [value]="line.amount || ''"
                     (input)="updateAmount(line.id, $event)"
-                    [attr.aria-label]="'Montant ligne ' + (i + 1)"
+                    [attr.aria-label]="('journee.step6.colAmount' | translate) + ' ' + (i + 1)"
                   />
                   <span class="depenses-step5__amount-suffix">DH</span>
                 </div>
@@ -115,7 +215,7 @@
                   class="depenses-step5__cell-input"
                   [value]="line.paymentMode"
                   (change)="updatePaymentMode(line.id, $event)"
-                  [attr.aria-label]="'Mode de paiement ligne ' + (i + 1)"
+                  [attr.aria-label]="('journee.step6.colMode' | translate) + ' ' + (i + 1)"
                 >
                   @for (mode of paymentModes; track mode) {
                     <option [value]="mode">{{ mode }}</option>
@@ -129,7 +229,7 @@
                   [placeholder]="'journee.step6.notePlaceholder' | translate"
                   [value]="line.note"
                   (input)="updateNote(line.id, $event)"
-                  [attr.aria-label]="'Note ligne ' + (i + 1)"
+                  [attr.aria-label]="('journee.step6.colNote' | translate) + ' ' + (i + 1)"
                 />
               </td>
               <td class="px-2 py-2 text-center">
@@ -165,10 +265,8 @@
               </td>
             </tr>
           }
-        }
-      </tbody>
-      <tfoot>
-        @if (!loading() && lines().length > 0) {
+        </tbody>
+        <tfoot>
           <tr class="border-t-2 border-outline-variant bg-surface-container">
             <td
               colspan="3"
@@ -184,17 +282,17 @@
             </td>
             <td colspan="3"></td>
           </tr>
-        }
-      </tfoot>
-    </table>
-  </section>
+        </tfoot>
+      </table>
+    </section>
+  }
 
-  <footer class="mt-8 flex flex-wrap items-center gap-4">
-    <a routerLink="/journees/nouvelle/encaissements-step4">
-      <app-button variant="secondary">← Retour</app-button>
+  <footer class="mt-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
+    <a routerLink="/journees/nouvelle/encaissements-step4" class="w-full sm:w-auto">
+      <app-button variant="secondary" class="w-full sm:w-auto">← Retour</app-button>
     </a>
     <app-wizard-step-errors [errors]="stepValidationErrors()" />
-    <app-button variant="primary" class="ml-auto" [disabled]="loading()" (pressed)="next()">
+    <app-button variant="primary" class="w-full sm:ml-auto sm:w-auto" [disabled]="loading()" (pressed)="next()">
       Suivant →
     </app-button>
   </footer>

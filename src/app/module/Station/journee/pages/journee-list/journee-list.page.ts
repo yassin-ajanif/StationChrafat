@@ -54,4 +54,18 @@ export class JourneeListPage implements OnInit {
     }
     return `${base} bg-surface-container text-on-surface`;
   }
+
+  badgeClass(status: JourneeStatus): string {
+    const base = 'journee-list__badge';
+    if (status === 'en_cours') {
+      return `${base} journee-list__badge--active`;
+    }
+    if (status === 'cloturee') {
+      return `${base} journee-list__badge--closed`;
+    }
+    if (status === 'soumise') {
+      return `${base} journee-list__badge--submitted`;
+    }
+    return `${base} journee-list__badge--draft`;
+  }
 }

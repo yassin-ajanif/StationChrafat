@@ -6,10 +6,10 @@
         aria-hidden="true"
       >📦</span>
       <div>
-        <h1 class="font-display text-2xl font-bold uppercase text-on-surface">
+        <h1 class="font-display text-xl font-bold uppercase text-on-surface md:text-2xl">
           {{ 'journee.stepStock.title' | translate }}
         </h1>
-        <p class="mt-1 text-base text-on-surface-variant">
+        <p class="mt-1 text-sm text-on-surface-variant md:text-base">
           {{ 'journee.stepStock.subtitle' | translate }}
         </p>
       </div>
@@ -20,50 +20,115 @@
     <p class="mb-4 text-sm text-primary" role="alert">{{ err }}</p>
   }
 
-  <section
-    class="controle-stock-step6__table-wrap w-full overflow-hidden rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest shadow-sm"
-    aria-busy="{{ loading() }}"
-  >
-    <table class="controle-stock-step6__table w-full border-collapse text-base">
-      <thead>
-        <tr class="bg-table-header">
-          <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">
-            {{ 'journee.stepStock.colProduct' | translate }}
-          </th>
-          <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">
-            {{ 'journee.stepStock.colCategory' | translate }}
-          </th>
-          <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">
-            {{ 'journee.stepStock.colTheoretical' | translate }}
-          </th>
-          <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">
-            {{ 'journee.stepStock.colMeasured' | translate }}
-          </th>
-          <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">
-            {{ 'journee.stepStock.colUnit' | translate }}
-          </th>
-          <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">
-            {{ 'journee.stepStock.colGap' | translate }}
-          </th>
-          <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">
-            {{ 'journee.stepStock.colLoss' | translate }}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        @if (loading()) {
-          <tr>
-            <td colspan="7" class="py-12 text-center text-on-surface-variant">
-              {{ 'journee.stepStock.loading' | translate }}
-            </td>
+  @if (loading()) {
+    <p class="controle-stock-step6__status py-12 text-center text-on-surface-variant">
+      {{ 'journee.stepStock.loading' | translate }}
+    </p>
+  } @else if (rows().length === 0) {
+    <p class="controle-stock-step6__status py-12 text-center text-on-surface-variant">
+      {{ 'journee.stepStock.empty' | translate }}
+    </p>
+  } @else {
+    <ul class="controle-stock-step6__cards md:hidden">
+      @for (row of rows(); track row.line.id) {
+        <li class="controle-stock-step6__card">
+          <div class="controle-stock-step6__card-head">
+            <p class="controle-stock-step6__card-name">{{ row.line.name }}</p>
+            <p class="controle-stock-step6__card-category">{{ row.line.categoryLabel }}</p>
+          </div>
+
+          <div class="controle-stock-step6__card-grid">
+            <div class="controle-stock-step6__field">
+              <span class="controle-stock-step6__field-label">{{ 'journee.stepStock.colTheoretical' | translate }}</span>
+              <span class="controle-stock-step6__readonly">
+                {{ row.line.theoreticalStock | localeNumber:'1.0-2' }}
+              </span>
+            </div>
+
+            <label class="controle-stock-step6__field">
+              <span class="controle-stock-step6__field-label">{{ 'journee.stepStock.colMeasured' | translate }}</span>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                class="controle-stock-step6__input"
+                [value]="row.line.measuredStock ?? ''"
+                (input)="onMeasuredInput(row.line.id, $event)"
+                [attr.aria-label]="('journee.stepStock.colMeasured' | translate) + ' — ' + row.line.name"
+              />
+            </label>
+
+            <div class="controle-stock-step6__field">
+              <span class="controle-stock-step6__field-label">{{ 'journee.stepStock.colUnit' | translate }}</span>
+              <span class="controle-stock-step6__unit">{{ row.line.unit }}</span>
+            </div>
+
+            <div class="controle-stock-step6__field">
+              <span class="controle-stock-step6__field-label">{{ 'journee.stepStock.colGap' | translate }}</span>
+              <span
+                class="controle-stock-step6__readonly controle-stock-step6__readonly--gap"
+                [class.text-primary]="row.gap < 0"
+                [class.text-secondary]="row.gap > 0"
+                [class.text-on-surface-variant]="row.line.measuredStock == null || row.gap === 0"
+              >
+                @if (row.line.measuredStock == null) {
+                  —
+                } @else if (row.gap > 0) {
+                  +{{ row.gap | localeNumber:'1.0-2' }}
+                } @else if (row.gap < 0) {
+                  {{ row.gap | localeNumber:'1.0-2' }}
+                } @else {
+                  0
+                }
+              </span>
+            </div>
+          </div>
+
+          <div class="controle-stock-step6__card-loss">
+            <span class="controle-stock-step6__field-label">{{ 'journee.stepStock.colLoss' | translate }}</span>
+            <span class="controle-stock-step6__loss-value">
+              @if (row.lossValue > 0) {
+                {{ row.lossValue | localeCurrency }}
+              } @else {
+                —
+              }
+            </span>
+          </div>
+        </li>
+      }
+    </ul>
+
+    <section
+      class="controle-stock-step6__table-wrap hidden w-full overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest shadow-sm md:block"
+      aria-busy="{{ loading() }}"
+    >
+      <table class="controle-stock-step6__table w-full border-collapse text-base">
+        <thead>
+          <tr class="bg-table-header">
+            <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">
+              {{ 'journee.stepStock.colProduct' | translate }}
+            </th>
+            <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">
+              {{ 'journee.stepStock.colCategory' | translate }}
+            </th>
+            <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">
+              {{ 'journee.stepStock.colTheoretical' | translate }}
+            </th>
+            <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">
+              {{ 'journee.stepStock.colMeasured' | translate }}
+            </th>
+            <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">
+              {{ 'journee.stepStock.colUnit' | translate }}
+            </th>
+            <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">
+              {{ 'journee.stepStock.colGap' | translate }}
+            </th>
+            <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">
+              {{ 'journee.stepStock.colLoss' | translate }}
+            </th>
           </tr>
-        } @else if (rows().length === 0) {
-          <tr>
-            <td colspan="7" class="py-12 text-center text-on-surface-variant">
-              {{ 'journee.stepStock.empty' | translate }}
-            </td>
-          </tr>
-        } @else {
+        </thead>
+        <tbody>
           @for (row of rows(); track row.line.id) {
             <tr class="border-t border-outline-variant/50 bg-surface-container-lowest even:bg-surface-container/40">
               <td class="px-4 py-3">
@@ -78,7 +143,7 @@
                   type="number"
                   min="0"
                   step="0.01"
-                  class="controle-stock-step6__input"
+                  class="controle-stock-step6__input controle-stock-step6__input--table"
                   [value]="row.line.measuredStock ?? ''"
                   (input)="onMeasuredInput(row.line.id, $event)"
                   [attr.aria-label]="('journee.stepStock.colMeasured' | translate) + ' — ' + row.line.name"
@@ -114,10 +179,10 @@
               </td>
             </tr>
           }
-        }
-      </tbody>
-    </table>
-  </section>
+        </tbody>
+      </table>
+    </section>
+  }
 
   <section
     class="controle-stock-step6__summary mt-6 grid gap-4 sm:grid-cols-2"
@@ -141,14 +206,14 @@
     </article>
   </section>
 
-  <footer class="mt-8 flex flex-wrap items-center gap-4">
-    <a routerLink="/journees/nouvelle/depenses-step5">
-      <app-button variant="secondary">← Retour</app-button>
+  <footer class="mt-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
+    <a routerLink="/journees/nouvelle/depenses-step5" class="w-full sm:w-auto">
+      <app-button variant="secondary" class="w-full sm:w-auto">← Retour</app-button>
     </a>
     <app-wizard-step-errors [errors]="stepValidationErrors()" />
     <app-button
       variant="primary"
-      class="ml-auto"
+      class="w-full sm:ml-auto sm:w-auto"
       [disabled]="loading()"
       (pressed)="next()"
     >

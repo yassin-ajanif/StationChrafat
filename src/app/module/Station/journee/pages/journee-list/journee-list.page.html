@@ -1,15 +1,15 @@
 <div class="journee-list mx-auto max-w-6xl">
-  <div class="journee-list__header mb-8 flex flex-wrap items-start justify-between gap-4">
+  <div class="journee-list__header mb-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
     <div>
-      <h1 class="font-display text-3xl font-bold uppercase text-on-surface">
+      <h1 class="journee-list__title font-display text-2xl font-bold uppercase text-on-surface md:text-3xl">
         {{ 'journee.list.title' | translate }}
       </h1>
-      <p class="mt-1 text-sm text-on-surface-variant">
+      <p class="journee-list__subtitle mt-1 text-sm text-on-surface-variant md:text-base">
         {{ 'journee.list.subtitle' | translate }}
       </p>
     </div>
-    <a routerLink="/journees/nouvelle/configuration-step1">
-      <app-button variant="primary">{{ 'journee.list.ctaOpen' | translate }}</app-button>
+    <a routerLink="/journees/nouvelle/configuration-step1" class="w-full sm:w-auto">
+      <app-button variant="primary" class="w-full sm:w-auto">{{ 'journee.list.ctaOpen' | translate }}</app-button>
     </a>
   </div>
 
@@ -65,7 +65,55 @@
     } @else if (listLoading()) {
       <p class="p-8 text-center text-on-surface-variant">{{ 'common.actions.loading' | translate }}</p>
     } @else {
-      <div class="overflow-x-auto">
+      <ul class="journee-list__cards p-4 md:hidden">
+        @for (j of journees(); track j.id) {
+          <li
+            class="journee-list__card"
+            [class.journee-list__card--active]="j.status === 'en_cours'"
+          >
+            <div class="journee-list__card-top">
+              <span class="journee-list__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" />
+                  <path d="M16 2v4M8 2v4M3 10h18" />
+                </svg>
+              </span>
+              <div class="journee-list__card-info">
+                <div class="journee-list__card-title-row">
+                  <p class="journee-list__card-date">{{ j.dateLabel }}</p>
+                  <span [class]="badgeClass(j.status)">{{ statusKey(j.status) | translate }}</span>
+                </div>
+                <p class="journee-list__card-meta">{{ j.chefDePiste.name }}</p>
+              </div>
+            </div>
+
+            <div class="journee-list__stats">
+              <div class="journee-list__stat">
+                <span class="journee-list__stat-label">{{ 'journee.list.colRevenue' | translate }}</span>
+                <span class="journee-list__stat-value journee-list__stat-value--revenue">
+                  @if (j.caTotal > 0) {
+                    {{ j.caTotal | localeCurrency }}
+                  } @else {
+                    —
+                  }
+                </span>
+              </div>
+              <div class="journee-list__stat">
+                <span class="journee-list__stat-label">{{ 'journee.list.colChef' | translate }}</span>
+                <span class="journee-list__stat-value">{{ j.chefDePiste.name }}</span>
+              </div>
+            </div>
+
+            <div class="journee-list__card-actions">
+              <button type="button" class="journee-list__action">
+                {{ 'journee.list.viewDetails' | translate }}
+              </button>
+            </div>
+          </li>
+        }
+      </ul>
+
+      <div class="hidden overflow-x-auto md:block">
         <table class="journee-list__table w-full min-w-[640px] text-left text-sm">
           <thead>
             <tr>

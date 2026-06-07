@@ -80,6 +80,7 @@ export class AppShellComponent {
   readonly locale = inject(LocaleService);
 
   readonly sidebarCollapsed = signal(this.readSidebarCollapsedPreference());
+  readonly mobileNavOpen = signal(false);
 
   readonly navLinks: NavLeaf[] = [
     { labelKey: 'shell.nav.dashboard', route: '/journees', icon: 'dashboard' },
@@ -148,6 +149,7 @@ export class AppShellComponent {
       const url = this.navigationUrl();
       if (url) {
         this.syncSidebarExpansionFromUrl(url);
+        this.mobileNavOpen.set(false);
       }
     });
   }
@@ -242,6 +244,21 @@ export class AppShellComponent {
     return this.sidebarCollapsed()
       ? this.translate.instant('shell.sidebar.toggleExpand')
       : this.translate.instant('shell.sidebar.toggleCollapse');
+  }
+
+  mobileMenuLabel(): string {
+    this.translate.version();
+    return this.mobileNavOpen()
+      ? this.translate.instant('shell.sidebar.closeMenu')
+      : this.translate.instant('shell.sidebar.openMenu');
+  }
+
+  toggleMobileNav(): void {
+    this.mobileNavOpen.update((open) => !open);
+  }
+
+  closeMobileNav(): void {
+    this.mobileNavOpen.set(false);
   }
 
   toggleSidebar(): void {

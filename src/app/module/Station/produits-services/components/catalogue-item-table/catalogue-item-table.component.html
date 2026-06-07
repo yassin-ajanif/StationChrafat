@@ -27,24 +27,71 @@
   @if (items().length === 0) {
     <p class="catalogue-item-table__empty text-on-surface-variant">{{ 'produitsServices.table.empty' | translate }}</p>
   } @else {
-    <div class="catalogue-item-table__wrap overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant">
+    <ul class="catalogue-item-table__cards md:hidden">
+      @for (item of items(); track item.id) {
+        <li class="catalogue-item-table__card">
+          <div class="catalogue-item-table__card-main">
+            <p class="catalogue-item-table__card-name">{{ item.name }}</p>
+            <div class="catalogue-item-table__card-meta">
+              <span class="catalogue-item-table__type-badge" [class]="typeBadgeClass(item.type)">
+                {{ typeLabel(item.type) }}
+              </span>
+              <span class="catalogue-item-table__card-category">{{ categoryLabel(item.categoryId) }}</span>
+            </div>
+          </div>
+          <div class="catalogue-item-table__card-footer">
+            <p class="catalogue-item-table__card-price">
+              {{ item.unitPrice | localeCurrency }} MAD
+            </p>
+            <div class="catalogue-item-table__actions">
+              <button
+                type="button"
+                class="catalogue-item-table__action"
+                [attr.title]="'common.actions.edit' | translate"
+                (click)="edit.emit(item)"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path
+                    d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="catalogue-item-table__action catalogue-item-table__action--delete"
+                [attr.title]="'common.actions.delete' | translate"
+                (click)="remove.emit(item.id)"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M4 7h16M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M6 7l1 12a1 1 0 001 1h8a1 1 0 001-1l1-12" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+
+    <div class="catalogue-item-table__wrap hidden overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant md:block">
       <table class="catalogue-item-table__table w-full border-collapse text-sm">
         <thead>
           <tr class="bg-table-header">
             <th class="px-4 py-3.5 text-left font-display text-xs font-bold uppercase tracking-wide text-white">
-              Article
+              {{ 'produitsServices.table.colArticle' | translate }}
             </th>
             <th class="px-4 py-3.5 text-left font-display text-xs font-bold uppercase tracking-wide text-white">
-              Type
+              {{ 'produitsServices.table.colType' | translate }}
             </th>
             <th class="px-4 py-3.5 text-left font-display text-xs font-bold uppercase tracking-wide text-white">
               {{ 'produitsServices.table.colCategory' | translate }}
             </th>
             <th class="px-4 py-3.5 text-right font-display text-xs font-bold uppercase tracking-wide text-white">
-              Prix
+              {{ 'produitsServices.table.colPrice' | translate }}
             </th>
             <th class="px-4 py-3.5 text-center font-display text-xs font-bold uppercase tracking-wide text-white">
-              Actions
+              {{ 'common.table.actions' | translate }}
             </th>
           </tr>
         </thead>

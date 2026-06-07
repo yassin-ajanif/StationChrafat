@@ -1,62 +1,122 @@
-<div class="stock-product-table overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant">
+<div class="stock-product-table">
   @if (products().length === 0) {
     <p class="px-4 py-8 text-center text-base text-on-surface-variant">{{ 'stock.gestion.empty' | translate }}</p>
   } @else {
-    <table class="stock-product-table__table w-full border-collapse text-base">
-      <thead>
-        <tr class="bg-table-header">
-          <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">{{ 'stock.gestion.colProduit' | translate }}</th>
-          <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">{{ 'produitsServices.table.colCategory' | translate }}</th>
-          <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">{{ 'stock.gestion.colStock' | translate }}</th>
-          <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">{{ 'stock.gestion.colUnite' | translate }}</th>
-          <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">{{ 'stock.gestion.colSeuil' | translate }}</th>
-          <th class="px-4 py-3.5 text-center font-display text-sm font-bold uppercase tracking-wide text-white">{{ 'common.table.status' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (product of products(); track product.id) {
-          <tr class="border-t border-outline-variant/40 bg-surface-container-lowest">
-            <td class="px-4 py-3.5">
-              <div class="flex items-center gap-3">
-                <span class="stock-product-table__icon flex size-9 shrink-0 items-center justify-center rounded bg-surface-container text-on-surface-variant" aria-hidden="true">&#9981;</span>
-                <div class="min-w-0">
-                  <p class="font-semibold text-on-surface">{{ product.name }}</p>
-                  <p class="text-sm text-on-surface-variant">{{ product.subtitle }}</p>
-                </div>
+    <ul class="stock-product-table__cards md:hidden">
+      @for (product of products(); track product.id) {
+        <li
+          class="stock-product-table__card"
+          [class.stock-product-table__card--critique]="product.stockStatus === 'critique'"
+        >
+          <div class="stock-product-table__card-top">
+            <span class="stock-product-table__icon" aria-hidden="true">&#9981;</span>
+            <div class="stock-product-table__card-info">
+              <div class="stock-product-table__card-title-row">
+                <p class="stock-product-table__card-name">{{ product.name }}</p>
+                @if (product.stockStatus === 'optimal') {
+                  <span class="stock-product-table__status stock-product-table__status--optimal">
+                    <span class="stock-product-table__status-dot" aria-hidden="true"></span>
+                    {{ 'stock.gestion.statutOptimal' | translate }}
+                  </span>
+                } @else {
+                  <span class="stock-product-table__status stock-product-table__status--critique">
+                    <span class="stock-product-table__status-dot" aria-hidden="true"></span>
+                    {{ 'stock.gestion.statutCritique' | translate }}
+                  </span>
+                }
               </div>
-            </td>
-            <td class="px-4 py-3.5 text-on-surface-variant">{{ product.categoryLabel }}</td>
-            <td
-              class="px-4 py-3.5 text-right font-bold tabular-nums"
-              [class.text-primary]="product.stockStatus === 'critique'"
-              [class.text-on-surface]="product.stockStatus === 'optimal'"
-            >
-              {{ product.currentStock | localeNumber:'1.0-0' }}
-            </td>
-            <td class="px-4 py-3.5">
-              <span class="stock-product-table__unit font-display text-sm font-bold uppercase text-secondary">
+              <p class="stock-product-table__card-meta">
+                {{ product.subtitle }}
+                <span class="stock-product-table__card-meta-sep" aria-hidden="true">·</span>
+                {{ product.categoryLabel }}
+              </p>
+            </div>
+          </div>
+
+          <div class="stock-product-table__stats">
+            <div class="stock-product-table__stat">
+              <span class="stock-product-table__stat-label">{{ 'stock.gestion.colStock' | translate }}</span>
+              <span
+                class="stock-product-table__stat-value"
+                [class.stock-product-table__stat-value--critique]="product.stockStatus === 'critique'"
+              >
+                {{ product.currentStock | localeNumber:'1.0-0' }}
+              </span>
+            </div>
+            <div class="stock-product-table__stat">
+              <span class="stock-product-table__stat-label">{{ 'stock.gestion.colUnite' | translate }}</span>
+              <span class="stock-product-table__stat-value stock-product-table__stat-value--unit">
                 {{ product.unit }}
               </span>
-            </td>
-            <td class="px-4 py-3.5 text-right tabular-nums text-on-surface-variant">
-              {{ product.threshold | localeNumber:'1.0-0' }}
-            </td>
-            <td class="px-4 py-3.5 text-center">
-              @if (product.stockStatus === 'optimal') {
-                <span class="stock-product-table__status stock-product-table__status--optimal">
-                  <span class="stock-product-table__status-dot" aria-hidden="true"></span>
-                  Optimal
-                </span>
-              } @else {
-                <span class="stock-product-table__status stock-product-table__status--critique">
-                  <span class="stock-product-table__status-dot" aria-hidden="true"></span>
-                  Critique
-                </span>
-              }
-            </td>
+            </div>
+            <div class="stock-product-table__stat">
+              <span class="stock-product-table__stat-label">{{ 'stock.gestion.colSeuil' | translate }}</span>
+              <span class="stock-product-table__stat-value">
+                {{ product.threshold | localeNumber:'1.0-0' }}
+              </span>
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+
+    <div class="stock-product-table__wrap hidden overflow-x-auto md:block">
+      <table class="stock-product-table__table w-full border-collapse text-base">
+        <thead>
+          <tr class="bg-table-header">
+            <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">{{ 'stock.gestion.colProduit' | translate }}</th>
+            <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">{{ 'stock.gestion.colCategorie' | translate }}</th>
+            <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">{{ 'stock.gestion.colStock' | translate }}</th>
+            <th class="px-4 py-3.5 text-left font-display text-sm font-bold uppercase tracking-wide text-white">{{ 'stock.gestion.colUnite' | translate }}</th>
+            <th class="px-4 py-3.5 text-right font-display text-sm font-bold uppercase tracking-wide text-white">{{ 'stock.gestion.colSeuil' | translate }}</th>
+            <th class="px-4 py-3.5 text-center font-display text-sm font-bold uppercase tracking-wide text-white">{{ 'stock.gestion.colStatut' | translate }}</th>
           </tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @for (product of products(); track product.id) {
+            <tr class="border-t border-outline-variant/40 bg-surface-container-lowest">
+              <td class="px-4 py-3.5">
+                <div class="flex items-center gap-3">
+                  <span class="stock-product-table__icon flex size-9 shrink-0 items-center justify-center rounded bg-surface-container text-on-surface-variant" aria-hidden="true">&#9981;</span>
+                  <div class="min-w-0">
+                    <p class="font-semibold text-on-surface">{{ product.name }}</p>
+                    <p class="text-sm text-on-surface-variant">{{ product.subtitle }}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3.5 text-on-surface-variant">{{ product.categoryLabel }}</td>
+              <td
+                class="px-4 py-3.5 text-right font-bold tabular-nums"
+                [class.text-primary]="product.stockStatus === 'critique'"
+                [class.text-on-surface]="product.stockStatus === 'optimal'"
+              >
+                {{ product.currentStock | localeNumber:'1.0-0' }}
+              </td>
+              <td class="px-4 py-3.5">
+                <span class="stock-product-table__unit font-display text-sm font-bold uppercase text-secondary">
+                  {{ product.unit }}
+                </span>
+              </td>
+              <td class="px-4 py-3.5 text-right tabular-nums text-on-surface-variant">
+                {{ product.threshold | localeNumber:'1.0-0' }}
+              </td>
+              <td class="px-4 py-3.5 text-center">
+                @if (product.stockStatus === 'optimal') {
+                  <span class="stock-product-table__status stock-product-table__status--optimal">
+                    <span class="stock-product-table__status-dot" aria-hidden="true"></span>
+                    {{ 'stock.gestion.statutOptimal' | translate }}
+                  </span>
+                } @else {
+                  <span class="stock-product-table__status stock-product-table__status--critique">
+                    <span class="stock-product-table__status-dot" aria-hidden="true"></span>
+                    {{ 'stock.gestion.statutCritique' | translate }}
+                  </span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   }
 </div>

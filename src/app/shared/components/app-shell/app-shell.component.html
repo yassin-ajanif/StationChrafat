@@ -1,12 +1,21 @@
 <div
   class="app-shell min-h-dvh bg-surface"
   dir="ltr"
-  [class.app-shell--sidebar-collapsed]="sidebarCollapsed()"
+  [class.app-shell--sidebar-collapsed]="sidebarCollapsed() && !mobileNavOpen()"
+  [class.app-shell--mobile-nav-open]="mobileNavOpen()"
   [class.app-shell--rtl]="locale.isRtl()"
 >
+  @if (mobileNavOpen()) {
+    <button
+      type="button"
+      class="app-shell__backdrop md:hidden"
+      [attr.aria-label]="mobileMenuLabel()"
+      (click)="closeMobileNav()"
+    ></button>
+  }
   <aside
     class="app-shell__sidebar flex w-[var(--width-sidebar)] shrink-0 flex-col bg-inverse-surface text-inverse-on-surface"
-    [class.app-shell__sidebar--collapsed]="sidebarCollapsed()"
+    [class.app-shell__sidebar--collapsed]="sidebarCollapsed() && !mobileNavOpen()"
     [attr.dir]="locale.direction()"
     id="app-shell-sidebar"
   >
@@ -37,7 +46,7 @@
     </div>
 
     <nav class="app-shell__nav flex flex-1 flex-col gap-1 overflow-y-auto p-2">
-      @if (sidebarCollapsed()) {
+      @if (sidebarCollapsed() && !mobileNavOpen()) {
         @for (item of navLinks; track item.route + item.labelKey) {
           <a
             [routerLink]="item.route!"
@@ -184,8 +193,27 @@
   </aside>
 
   <div class="app-shell__main flex min-w-0 flex-1 flex-col" [attr.dir]="locale.direction()">
-    <header class="app-shell__header flex min-h-16 items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-6">
+    <header class="app-shell__header flex min-h-16 items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-4 md:px-6">
       <div class="flex min-w-0 items-center gap-3">
+        <button
+          type="button"
+          class="app-shell__menu-btn md:hidden"
+          [class.app-shell__menu-btn--open]="mobileNavOpen()"
+          [attr.aria-label]="mobileMenuLabel()"
+          [attr.aria-expanded]="mobileNavOpen()"
+          aria-controls="app-shell-sidebar"
+          (click)="toggleMobileNav()"
+        >
+          @if (mobileNavOpen()) {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          } @else {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+              <path d="M4 7h16M4 12h16M4 17h16" />
+            </svg>
+          }
+        </button>
         <p class="font-display text-sm font-bold uppercase text-on-surface-variant">
           {{ 'shell.header.stationTitle' | translate }}
         </p>

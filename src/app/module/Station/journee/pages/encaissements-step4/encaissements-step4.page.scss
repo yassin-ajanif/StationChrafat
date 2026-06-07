@@ -6,11 +6,11 @@
   }
 
   &__table {
-    table-layout: fixed;
+    @apply min-w-[960px];
 
     th,
     td {
-      @apply break-words align-middle;
+      @apply align-middle whitespace-nowrap;
     }
   }
 
@@ -19,27 +19,63 @@
   }
 
   &__col-client {
-    width: 22%;
+    min-width: 12rem;
   }
 
   &__col-balance {
-    width: 9rem;
+    min-width: 9rem;
   }
 
   &__col-mode {
-    width: 8rem;
+    min-width: 8rem;
   }
 
   &__col-amount {
-    width: 10rem;
+    min-width: 10rem;
   }
 
   &__col-note {
-    width: 18%;
+    min-width: 10rem;
   }
 
   &__col-actions {
     width: 3.5rem;
+  }
+
+  &__cards {
+    @apply flex flex-col gap-3;
+  }
+
+  &__card {
+    @apply flex flex-col gap-3 rounded-[var(--radius-card)] border border-outline-variant bg-surface-container-lowest p-4 shadow-sm;
+  }
+
+  &__card-header {
+    @apply flex items-center justify-between gap-3 border-b border-outline-variant/40 pb-3;
+  }
+
+  &__card-num {
+    @apply inline-flex size-8 items-center justify-center rounded-full bg-surface-container font-display text-sm font-bold text-on-surface;
+  }
+
+  &__field {
+    @apply flex flex-col gap-1.5;
+  }
+
+  &__field-label {
+    @apply font-display text-xs font-bold uppercase tracking-wide text-on-surface-variant;
+  }
+
+  &__total-card {
+    @apply mt-3 flex items-center justify-between gap-4 rounded-[var(--radius-card)] border border-outline-variant bg-surface-container px-4 py-4;
+  }
+
+  &__total-label {
+    @apply font-display text-sm font-bold uppercase tracking-wide text-on-surface;
+  }
+
+  &__total-value {
+    @apply text-right;
   }
 
   &__cell-input {
@@ -51,7 +87,7 @@
   }
 
   &__balance {
-    @apply text-right text-sm font-semibold tabular-nums text-on-surface-variant;
+    @apply text-sm font-semibold tabular-nums text-on-surface-variant;
 
     &--debt {
       @apply text-primary;
