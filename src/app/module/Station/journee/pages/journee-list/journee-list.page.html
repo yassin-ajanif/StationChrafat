@@ -99,8 +99,9 @@
                 </span>
               </div>
               <div class="journee-list__stat">
-                <span class="journee-list__stat-label">{{ 'journee.list.colChef' | translate }}</span>
-                <span class="journee-list__stat-value">{{ j.chefDePiste.name }}</span>
+                <span class="journee-list__stat-label">{{ 'journee.list.colShiftSlot' | translate }}</span>
+                <span class="journee-list__stat-value">{{ shiftSlotKey(j.shiftSlot) | translate }}</span>
+                <span class="journee-list__stat-hint">{{ shiftSlotHoursKey(j.shiftSlot) | translate }}</span>
               </div>
             </div>
 

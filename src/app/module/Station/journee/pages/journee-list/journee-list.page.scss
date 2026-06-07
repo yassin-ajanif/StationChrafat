@@ -89,6 +89,10 @@
     }
   }
 
+  &__stat-hint {
+    @apply text-[11px] leading-tight text-on-surface-variant;
+  }
+
   &__card-actions {
     @apply border-t border-outline-variant/50;
   }

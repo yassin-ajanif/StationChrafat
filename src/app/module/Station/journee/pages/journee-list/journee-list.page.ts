@@ -3,7 +3,7 @@ import { LocaleNumberPipe, LocaleCurrencyPipe, TranslatePipe } from '../../../..
 import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
-import { JourneeStatus } from '../../state/journee.store';
+import { JourneeStatus, ShiftSlot } from '../../state/journee.store';
 import { JourneeActions } from '../../state/journee.actions';
 import {
   selectJournees,
@@ -42,6 +42,24 @@ export class JourneeListPage implements OnInit {
       cloturee: 'journee.list.statusCloturee',
     };
     return map[status];
+  }
+
+  shiftSlotKey(slot: ShiftSlot): string {
+    const map: Record<ShiftSlot, string> = {
+      Matin: 'journee.shift.matin',
+      'Apres-midi': 'journee.shift.apresMidi',
+      Nuit: 'journee.shift.nuit',
+    };
+    return map[slot];
+  }
+
+  shiftSlotHoursKey(slot: ShiftSlot): string {
+    const map: Record<ShiftSlot, string> = {
+      Matin: 'journee.shift.matinHours',
+      'Apres-midi': 'journee.shift.apresMidiHours',
+      Nuit: 'journee.shift.nuitHours',
+    };
+    return map[slot];
   }
 
   statusClass(status: JourneeStatus): string {

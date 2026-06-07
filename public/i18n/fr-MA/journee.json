@@ -33,6 +33,7 @@
     "colStatus": "Statut",
     "colRevenue": "CA Total (DH)",
     "colChef": "Chef de piste",
+    "colShiftSlot": "Plage horaire",
     "viewDetails": "Voir les détails",
     "loadingKpis": "Chargement des indicateurs…",
     "loadingList": "Chargement…"

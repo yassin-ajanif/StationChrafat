@@ -23,6 +23,7 @@ export interface JourneeSummary {
   status: JourneeStatus;
   caTotal: number;
   chefDePiste: Operator;
+  shiftSlot: ShiftSlot;
 }
 
 export interface JourneeKpis {

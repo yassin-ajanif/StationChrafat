@@ -48,6 +48,7 @@ export class JourneeApi {
         status: 'en_cours',
         caTotal: 0,
         chefDePiste: this.operators[0],
+        shiftSlot: 'Matin',
       },
       {
         id: 2,
@@ -56,6 +57,7 @@ export class JourneeApi {
         status: 'cloturee',
         caTotal: 89_136,
         chefDePiste: this.operators[0],
+        shiftSlot: 'Apres-midi',
       },
       {
         id: 3,
@@ -64,6 +66,7 @@ export class JourneeApi {
         status: 'cloturee',
         caTotal: 92_450,
         chefDePiste: this.operators[2],
+        shiftSlot: 'Nuit',
       },
     ];
     return of(list).pipe(delay(400));
