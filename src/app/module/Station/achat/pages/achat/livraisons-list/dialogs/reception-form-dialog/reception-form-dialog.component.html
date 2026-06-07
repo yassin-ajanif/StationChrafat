@@ -1,31 +1,65 @@
 @if (open()) {
-  <div class="erp-dialog__backdrop fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/50 p-4" data-dialog-backdrop="true" role="presentation" (click)="onBackdropClick($event)">
-    <div class="erp-dialog__panel w-full max-w-6xl rounded-[var(--radius-card)] bg-surface-container-lowest shadow-lg" role="dialog" aria-modal="true" aria-labelledby="reception-form-dialog-title" (click)="$event.stopPropagation()">
-      <header class="flex items-start justify-between border-b border-outline-variant px-6 py-4">
-        <div>
-          <h2 id="reception-form-dialog-title" class="font-display text-xl font-bold uppercase text-on-surface">
+  <div
+    class="erp-dialog__backdrop"
+    data-dialog-backdrop="true"
+    role="presentation"
+    (click)="onBackdropClick($event)"
+  >
+    <div
+      class="erp-dialog__panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="reception-form-dialog-title"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="erp-dialog__header">
+        <div class="min-w-0 flex-1">
+          <h2 id="reception-form-dialog-title" class="erp-dialog__title">
             @if (isEditMode()) {
               {{ 'achat.reception.dialogEdit' | translate }}
             } @else {
               {{ 'achat.reception.dialogNew' | translate }}
             }
           </h2>
-          <p class="mt-1 text-sm text-on-surface-variant">{{ 'common.documentLines.hint' | translate }}</p>
+          <p class="erp-dialog__subtitle">
+            {{ 'common.documentLines.hint' | translate }}
+          </p>
         </div>
-        <button type="button" class="text-2xl leading-none text-on-surface-variant hover:text-on-surface" [attr.aria-label]="'common.actions.close' | translate" (click)="cancel()">�</button>
+        <button
+          type="button"
+          class="erp-dialog__close"
+          [attr.aria-label]="'common.actions.close' | translate"
+          (click)="cancel()"
+        >
+          ×
+        </button>
       </header>
-      <div class="max-h-[70vh] overflow-y-auto px-6 py-5">
-        <div class="mb-6 grid gap-4 sm:grid-cols-2">
+
+      <div class="erp-dialog__body">
+        <div class="erp-dialog__fields">
           <div>
             <label class="erp-dialog__label" for="dialog-reception-fournisseur">
               {{ 'common.table.supplier' | translate }}
               <span class="text-primary" aria-hidden="true">*</span>
             </label>
-            <input id="dialog-reception-fournisseur" type="text" class="erp-dialog__input" required [placeholder]="'common.placeholders.companyName' | translate" [value]="fournisseur()" (input)="fournisseur.set($any($event.target).value)" />
+            <input
+              id="dialog-reception-fournisseur"
+              type="text"
+              class="erp-dialog__input"
+              required
+              [placeholder]="'common.placeholders.companyName' | translate"
+              [value]="fournisseur()"
+              (input)="fournisseur.set($any($event.target).value)"
+            />
           </div>
           <div>
             <label class="erp-dialog__label" for="dialog-reception-statut">{{ 'common.table.status' | translate }}</label>
-            <select id="dialog-reception-statut" class="erp-dialog__input" [value]="statut()" (change)="statut.set($any($event.target).value)">
+            <select
+              id="dialog-reception-statut"
+              class="erp-dialog__input"
+              [value]="statut()"
+              (change)="statut.set($any($event.target).value)"
+            >
               @for (s of statutOptions; track s) {
                 <option [value]="s">{{ statutKeys[s] | translate }}</option>
               }
@@ -33,43 +67,96 @@
           </div>
           <div>
             <label class="erp-dialog__label" for="dialog-reception-date">{{ 'achat.reception.date' | translate }}</label>
-            <input id="dialog-reception-date" type="date" class="erp-dialog__input" [value]="dateReception()" (input)="dateReception.set($any($event.target).value)" />
+            <input
+              id="dialog-reception-date"
+              type="date"
+              class="erp-dialog__input"
+              [value]="dateReception()"
+              (input)="dateReception.set($any($event.target).value)"
+            />
           </div>
           <div>
             <label class="erp-dialog__label" for="dialog-reception-reference">{{ 'achat.reception.reference' | translate }}</label>
-            <input id="dialog-reception-reference" type="text" class="erp-dialog__input" [placeholder]="'achat.reception.referencePlaceholder' | translate" [value]="reference()" (input)="reference.set($any($event.target).value)" />
+            <input
+              id="dialog-reception-reference"
+              type="text"
+              class="erp-dialog__input"
+              [placeholder]="'achat.reception.referencePlaceholder' | translate"
+              [value]="reference()"
+              (input)="reference.set($any($event.target).value)"
+            />
           </div>
           <div class="sm:col-span-2">
             <label class="erp-dialog__label" for="dialog-reception-description">{{ 'ventes.commande.description' | translate }}</label>
-            <input id="dialog-reception-description" type="text" class="erp-dialog__input" [placeholder]="'common.placeholders.subjectComment' | translate" [value]="description()" (input)="description.set($any($event.target).value)" />
+            <input
+              id="dialog-reception-description"
+              type="text"
+              class="erp-dialog__input"
+              [placeholder]="'common.placeholders.subjectComment' | translate"
+              [value]="description()"
+              (input)="description.set($any($event.target).value)"
+            />
           </div>
         </div>
-        <section class="mb-8"><app-document-lines-table [titleKey]="'common.documentLines.services'" [addRowLabelKey]="'common.documentLines.addService'" [rows]="serviceRows()" (rowChange)="onServiceRowChange($event)" (addRowRequested)="addServiceRow()" (clearRowRequested)="clearServiceRow($event)" /></section>
-        <section class="mb-8"><app-document-lines-table [titleKey]="'common.documentLines.products'" [addRowLabelKey]="'common.documentLines.addProduct'" [rows]="productRows()" (rowChange)="onProductRowChange($event)" (addRowRequested)="addProductRow()" (clearRowRequested)="clearProductRow($event)" /></section>
-        <app-bon-recap-payments inputIdPrefix="reception" [serviceTotal]="serviceTotal()" [productTotal]="productTotal()" [bonTotal]="receptionTotal()" [payments]="payments()" (paymentsChange)="payments.set($event)" />
+
+        <section class="erp-dialog__section">
+          <app-document-lines-table
+            [titleKey]="'common.documentLines.services'"
+            [addRowLabelKey]="'common.documentLines.addService'"
+            [rows]="serviceRows()"
+            (rowChange)="onServiceRowChange($event)"
+            (addRowRequested)="addServiceRow()"
+            (clearRowRequested)="clearServiceRow($event)"
+          />
+        </section>
+
+        <section class="erp-dialog__section">
+          <app-document-lines-table
+            [titleKey]="'common.documentLines.products'"
+            [addRowLabelKey]="'common.documentLines.addProduct'"
+            [rows]="productRows()"
+            (rowChange)="onProductRowChange($event)"
+            (addRowRequested)="addProductRow()"
+            (clearRowRequested)="clearProductRow($event)"
+          />
+        </section>
+
+        <app-bon-recap-payments
+          inputIdPrefix="reception"
+          [serviceTotal]="serviceTotal()"
+          [productTotal]="productTotal()"
+          [bonTotal]="receptionTotal()"
+          [payments]="payments()"
+          (paymentsChange)="payments.set($event)"
+        />
       </div>
-      <footer class="flex flex-wrap items-center justify-between gap-4 border-t border-outline-variant px-6 py-4">
-        <div class="min-w-[12rem] flex-1">
-          <p class="text-sm text-on-surface-variant">
+
+      <footer class="erp-dialog__footer">
+        <div class="erp-dialog__footer-meta">
+          <p class="erp-dialog__footer-total">
             {{ 'achat.reception.total' | translate }}
             <span class="font-bold tabular-nums text-on-surface">{{ receptionTotal() | localeCurrency }}</span>
           </p>
           @if (!canSave() && saveBlockers().length > 0) {
-            <ul class="mt-2 list-disc space-y-0.5 pl-4 text-sm text-primary" role="status">
+            <ul class="erp-dialog__errors" role="status">
               @for (key of saveBlockers(); track key) {
                 <li>{{ key | translate }}</li>
               }
             </ul>
           }
         </div>
-        <app-button variant="secondary" (pressed)="cancel()">{{ 'common.actions.cancel' | translate }}</app-button>
-        <app-button variant="primary" [disabled]="!canSave()" (pressed)="save()">
-          @if (isEditMode()) {
-            {{ 'common.actions.saveChanges' | translate }}
-          } @else {
-            {{ 'achat.reception.save' | translate }}
-          }
-        </app-button>
+        <div class="erp-dialog__footer-actions">
+          <app-button variant="secondary" (pressed)="cancel()">
+            {{ 'common.actions.cancel' | translate }}
+          </app-button>
+          <app-button variant="primary" [disabled]="!canSave()" (pressed)="save()">
+            @if (isEditMode()) {
+              {{ 'common.actions.saveChanges' | translate }}
+            } @else {
+              {{ 'achat.reception.save' | translate }}
+            }
+          </app-button>
+        </div>
       </footer>
     </div>
   </div>
