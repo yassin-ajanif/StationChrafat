@@ -8,7 +8,7 @@
   @if (mobileNavOpen()) {
     <button
       type="button"
-      class="app-shell__backdrop md:hidden"
+      class="app-shell__backdrop"
       [attr.aria-label]="mobileMenuLabel()"
       (click)="closeMobileNav()"
     ></button>
@@ -197,7 +197,7 @@
       <div class="flex min-w-0 items-center gap-3">
         <button
           type="button"
-          class="app-shell__menu-btn md:hidden"
+          class="app-shell__menu-btn"
           [class.app-shell__menu-btn--open]="mobileNavOpen()"
           [attr.aria-label]="mobileMenuLabel()"
           [attr.aria-expanded]="mobileNavOpen()"
