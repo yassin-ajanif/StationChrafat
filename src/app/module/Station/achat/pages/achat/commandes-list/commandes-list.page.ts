@@ -3,6 +3,7 @@ import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../..
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
+import { RecordListCardComponent } from '../../../../../../shared/components/record-list-card/record-list-card.component';
 import {
   CommandeAchat,
   CommandeAchatDraft,
@@ -28,7 +29,7 @@ import { CommandeAchatFormDialogComponent } from './dialogs/commande-achat-form-
 @Component({
   selector: 'app-erp-achat-commandes-list-page',
   standalone: true,
-  imports: [ButtonComponent, CommandeAchatFormDialogComponent, DatePipe, LocaleCurrencyPipe, TranslatePipe],
+  imports: [ButtonComponent, CommandeAchatFormDialogComponent, DatePipe, LocaleCurrencyPipe, RecordListCardComponent, TranslatePipe],
   templateUrl: './commandes-list.page.html',
   styleUrl: './commandes-list.page.scss',
 })

@@ -3,6 +3,7 @@ import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../..
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
+import { RecordListCardComponent } from '../../../../../../shared/components/record-list-card/record-list-card.component';
 import { LivraisonFormDialogComponent } from '../../../../shared/components/dialogs/livraison-form-dialog/livraison-form-dialog.component';
 import { Livraison, LivraisonDraft, LivraisonStatut } from '../../../state/store';
 
@@ -23,7 +24,7 @@ import {
 @Component({
   selector: 'app-erp-livraisons-list-page',
   standalone: true,
-  imports: [ButtonComponent, LivraisonFormDialogComponent, DatePipe, LocaleCurrencyPipe, TranslatePipe],
+  imports: [ButtonComponent, LivraisonFormDialogComponent, DatePipe, LocaleCurrencyPipe, RecordListCardComponent, TranslatePipe],
   templateUrl: './livraisons-list.page.html',
   styleUrl: './livraisons-list.page.scss',
 })

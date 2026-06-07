@@ -3,6 +3,7 @@ import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../..
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
+import { RecordListCardComponent } from '../../../../../../shared/components/record-list-card/record-list-card.component';
 import {
   AvoirFournisseur,
   AvoirFournisseurDraft,
@@ -26,7 +27,7 @@ import { AvoirFournisseurFormDialogComponent } from './dialogs/avoir-fournisseur
 @Component({
   selector: 'app-erp-achat-avoirs-list-page',
   standalone: true,
-  imports: [ButtonComponent, AvoirFournisseurFormDialogComponent, DatePipe, LocaleCurrencyPipe, TranslatePipe],
+  imports: [ButtonComponent, AvoirFournisseurFormDialogComponent, DatePipe, LocaleCurrencyPipe, RecordListCardComponent, TranslatePipe],
   templateUrl: './avoirs-list.page.html',
   styleUrl: './avoirs-list.page.scss',
 })

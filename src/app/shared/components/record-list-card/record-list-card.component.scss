@@ -1,0 +1,77 @@
+@reference '../../../../tailwind.css';
+
+.record-list-card {
+  @apply overflow-hidden rounded-[var(--radius-card)] border border-outline-variant/70 bg-surface-container-lowest shadow-sm;
+
+  &__top {
+    @apply flex gap-3 p-4 pb-3;
+  }
+
+  &__info {
+    @apply min-w-0 flex-1;
+  }
+
+  &__title-row {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  &__title {
+    @apply font-mono text-sm font-bold uppercase leading-tight text-on-surface;
+  }
+
+  &__meta {
+    @apply mt-1.5 text-sm leading-snug text-on-surface-variant;
+  }
+
+  &__meta-sep {
+    @apply mx-1 text-on-surface-variant/50;
+  }
+
+  &__icon {
+    @apply flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-card)] bg-surface-container text-on-surface-variant;
+
+    svg {
+      @apply size-5;
+    }
+  }
+
+  &__badge {
+    @apply inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase leading-none;
+  }
+
+  &__stats {
+    @apply grid grid-cols-2 divide-x divide-outline-variant/50 border-t border-outline-variant/50 bg-surface-container/60;
+  }
+
+  &__stat {
+    @apply flex flex-col items-center gap-1 px-3 py-3 text-center;
+  }
+
+  &__stat-label {
+    @apply font-display text-[10px] font-bold uppercase leading-tight tracking-wide text-on-surface-variant;
+  }
+
+  &__stat-value {
+    @apply text-sm font-semibold leading-snug text-on-surface;
+
+    &--accent {
+      @apply font-display text-base font-bold tabular-nums text-secondary;
+    }
+  }
+
+  &__actions {
+    @apply grid grid-cols-2 divide-x divide-outline-variant/50 border-t border-outline-variant/50;
+  }
+
+  &__action {
+    @apply min-h-[var(--spacing-touch)] px-3 py-2 text-xs font-bold uppercase transition;
+
+    &--edit {
+      @apply text-secondary hover:bg-secondary/10;
+    }
+
+    &--delete {
+      @apply text-primary hover:bg-primary/10;
+    }
+  }
+}

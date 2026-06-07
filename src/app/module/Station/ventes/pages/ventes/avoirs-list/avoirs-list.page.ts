@@ -3,6 +3,7 @@ import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../..
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
+import { RecordListCardComponent } from '../../../../../../shared/components/record-list-card/record-list-card.component';
 import { Avoir, AvoirDraft, AvoirStatut } from '../../../state/store';
 
 const AVOIR_STATUT_KEYS: Record<AvoirStatut, string> = {
@@ -22,7 +23,7 @@ import { AvoirFormDialogComponent } from './dialogs/avoir-form-dialog/avoir-form
 @Component({
   selector: 'app-erp-avoirs-list-page',
   standalone: true,
-  imports: [ButtonComponent, AvoirFormDialogComponent, DatePipe, LocaleCurrencyPipe, TranslatePipe],
+  imports: [ButtonComponent, AvoirFormDialogComponent, DatePipe, LocaleCurrencyPipe, RecordListCardComponent, TranslatePipe],
   templateUrl: './avoirs-list.page.html',
   styleUrl: './avoirs-list.page.scss',
 })

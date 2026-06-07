@@ -3,6 +3,7 @@ import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../..
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
+import { RecordListCardComponent } from '../../../../../../shared/components/record-list-card/record-list-card.component';
 import { Facture, FactureDraft, FactureStatut } from '../../../state/store';
 
 const FACTURE_STATUT_KEYS: Record<FactureStatut, string> = {
@@ -23,7 +24,7 @@ import { FactureFormDialogComponent } from './dialogs/facture-form-dialog/factur
 @Component({
   selector: 'app-erp-factures-list-page',
   standalone: true,
-  imports: [ButtonComponent, FactureFormDialogComponent, DatePipe, LocaleCurrencyPipe, TranslatePipe],
+  imports: [ButtonComponent, FactureFormDialogComponent, DatePipe, LocaleCurrencyPipe, RecordListCardComponent, TranslatePipe],
   templateUrl: './factures-list.page.html',
   styleUrl: './factures-list.page.scss',
 })

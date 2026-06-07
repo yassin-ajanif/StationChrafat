@@ -3,6 +3,7 @@ import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../..
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
+import { RecordListCardComponent } from '../../../../../../shared/components/record-list-card/record-list-card.component';
 import { Retour, RetourDraft, RetourStatut } from '../../../state/store';
 
 const RETOUR_STATUT_KEYS: Record<RetourStatut, string> = {
@@ -23,7 +24,7 @@ import { RetourFormDialogComponent } from './dialogs/retour-form-dialog/retour-f
 @Component({
   selector: 'app-erp-retours-list-page',
   standalone: true,
-  imports: [ButtonComponent, RetourFormDialogComponent, DatePipe, LocaleCurrencyPipe, TranslatePipe],
+  imports: [ButtonComponent, RetourFormDialogComponent, DatePipe, LocaleCurrencyPipe, RecordListCardComponent, TranslatePipe],
   templateUrl: './retours-list.page.html',
   styleUrl: './retours-list.page.scss',
 })

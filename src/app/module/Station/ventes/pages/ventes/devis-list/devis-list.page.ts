@@ -3,6 +3,7 @@ import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../..
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
+import { RecordListCardComponent } from '../../../../../../shared/components/record-list-card/record-list-card.component';
 import { DevisFormDialogComponent } from './dialogs/devis-form-dialog/devis-form-dialog.component';
 import { Devis, DevisDraft, DevisStatut } from '../../../state/store';
 
@@ -23,7 +24,7 @@ import {
 @Component({
   selector: 'app-erp-devis-list-page',
   standalone: true,
-  imports: [ButtonComponent, DevisFormDialogComponent, DatePipe, LocaleCurrencyPipe, TranslatePipe],
+  imports: [ButtonComponent, DevisFormDialogComponent, DatePipe, LocaleCurrencyPipe, RecordListCardComponent, TranslatePipe],
   templateUrl: './devis-list.page.html',
   styleUrl: './devis-list.page.scss',
 })

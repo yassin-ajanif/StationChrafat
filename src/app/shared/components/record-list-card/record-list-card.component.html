@@ -1,0 +1,59 @@
+<article class="record-list-card">
+  <div class="record-list-card__top">
+    <span class="record-list-card__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+        <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
+      </svg>
+    </span>
+    <div class="record-list-card__info">
+      <div class="record-list-card__title-row">
+        <p class="record-list-card__title">{{ title() }}</p>
+        <span class="record-list-card__badge {{ statusClass() }}">{{ statusLabel() }}</span>
+      </div>
+      @if (meta() || metaHint()) {
+        <p class="record-list-card__meta">
+          @if (meta()) {
+            <span>{{ meta() }}</span>
+          }
+          @if (meta() && metaHint()) {
+            <span class="record-list-card__meta-sep" aria-hidden="true">·</span>
+          }
+          @if (metaHint()) {
+            <span>{{ metaHint() }}</span>
+          }
+        </p>
+      }
+    </div>
+  </div>
+
+  <div class="record-list-card__stats">
+    <div class="record-list-card__stat">
+      <span class="record-list-card__stat-label">{{ statLeftLabel() }}</span>
+      <span
+        class="record-list-card__stat-value"
+        [class.record-list-card__stat-value--accent]="statLeftAccent()"
+      >
+        {{ statLeftValue() ?? '' }}
+      </span>
+    </div>
+    <div class="record-list-card__stat">
+      <span class="record-list-card__stat-label">{{ statRightLabel() }}</span>
+      <span
+        class="record-list-card__stat-value"
+        [class.record-list-card__stat-value--accent]="statRightAccent()"
+      >
+        {{ statRightValue() ?? '' }}
+      </span>
+    </div>
+  </div>
+
+  <div class="record-list-card__actions">
+    <button type="button" class="record-list-card__action record-list-card__action--edit" (click)="edited.emit()">
+      {{ 'common.actions.edit' | translate }}
+    </button>
+    <button type="button" class="record-list-card__action record-list-card__action--delete" (click)="deleted.emit()">
+      {{ 'common.actions.delete' | translate }}
+    </button>
+  </div>
+</article>

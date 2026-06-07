@@ -1,12 +1,12 @@
 <div class="flex w-full flex-col gap-6">
-  <header class="flex flex-wrap items-start justify-between gap-4">
+  <header class="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
     <div>
       <h1 class="font-display text-2xl font-bold uppercase text-on-surface">{{ 'ventes.avoir.title' | translate }}</h1>
       <p class="mt-0.5 text-sm text-on-surface-variant">
         {{ 'ventes.avoir.subtitle' | translate }}
       </p>
     </div>
-    <app-button variant="primary" (pressed)="openNew()">
+    <app-button variant="primary" class="w-full sm:w-auto" (pressed)="openNew()">
       {{ 'ventes.avoir.cta' | translate }}
     </app-button>
   </header>
@@ -16,8 +16,33 @@
   } @else if (error(); as err) {
     <p class="rounded-[var(--radius-card)] border border-primary bg-primary/10 px-4 py-3 text-sm text-primary" role="alert">{{ err }}</p>
   } @else {
-    <div class="overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant shadow-sm">
-      <table class="w-full border-collapse text-sm">
+    @if (avoirs().length === 0) {
+      <p class="py-12 text-center text-on-surface-variant md:hidden">{{ 'ventes.avoir.empty' | translate }}</p>
+    } @else {
+      <ul class="flex flex-col gap-3 md:hidden">
+        @for (a of avoirs(); track a.id) {
+          <li>
+            <app-record-list-card
+              [title]="a.numero"
+              [meta]="a.client"
+              [metaHint]="a.factureLiee"
+              [statusLabel]="statutKeys[a.statut] | translate"
+              [statusClass]="statutClass(a.statut)"
+              [statLeftLabel]="'common.table.amount' | translate"
+              [statLeftValue]="a.montant | localeCurrency"
+              [statLeftAccent]="true"
+              [statRightLabel]="'common.table.date' | translate"
+              [statRightValue]="a.dateEmission | date: 'dd/MM/yyyy'"
+              (edited)="openEdit(a)"
+              (deleted)="removeAvoir(a.id)"
+            />
+          </li>
+        }
+      </ul>
+    }
+
+    <div class="hidden overflow-x-auto rounded-[var(--radius-card)] border border-outline-variant shadow-sm md:block">
+      <table class="w-full min-w-[840px] border-collapse text-sm">
         <thead>
           <tr class="bg-table-header">
             <th class="px-4 py-3 text-left font-display text-xs font-bold uppercase text-white">{{ 'ventes.avoir.colNumero' | translate }}</th>

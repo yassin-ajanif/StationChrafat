@@ -3,6 +3,7 @@ import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../..
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
+import { RecordListCardComponent } from '../../../../../../shared/components/record-list-card/record-list-card.component';
 import { RetourFournisseur, RetourFournisseurDraft, RetourFournisseurStatut } from '../../../state/store';
 
 const RETOUR_FOURNISSEUR_STATUT_KEYS: Record<RetourFournisseurStatut, string> = {
@@ -23,7 +24,7 @@ import { RetourFournisseurFormDialogComponent } from './dialogs/retour-fournisse
 @Component({
   selector: 'app-erp-retours-fournisseur-list-page',
   standalone: true,
-  imports: [ButtonComponent, RetourFournisseurFormDialogComponent, DatePipe, LocaleCurrencyPipe, TranslatePipe],
+  imports: [ButtonComponent, RetourFournisseurFormDialogComponent, DatePipe, LocaleCurrencyPipe, RecordListCardComponent, TranslatePipe],
   templateUrl: './retours-list.page.html',
   styleUrl: './retours-list.page.scss',
 })

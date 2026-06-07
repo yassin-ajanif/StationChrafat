@@ -3,6 +3,7 @@ import { TranslateService, TranslatePipe, LocaleCurrencyPipe } from '../../../..
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
+import { RecordListCardComponent } from '../../../../../../shared/components/record-list-card/record-list-card.component';
 import { Commande, CommandeDraft, CommandeStatut } from '../../../state/store';
 
 const COMMANDE_STATUT_KEYS: Record<CommandeStatut, string> = {
@@ -24,7 +25,7 @@ import { CommandeFormDialogComponent } from './dialogs/commande-form-dialog/comm
 @Component({
   selector: 'app-erp-commandes-list-page',
   standalone: true,
-  imports: [ButtonComponent, CommandeFormDialogComponent, DatePipe, LocaleCurrencyPipe, TranslatePipe],
+  imports: [ButtonComponent, CommandeFormDialogComponent, DatePipe, LocaleCurrencyPipe, RecordListCardComponent, TranslatePipe],
   templateUrl: './commandes-list.page.html',
   styleUrl: './commandes-list.page.scss',
 })
